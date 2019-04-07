@@ -1,0 +1,2 @@
+/Users/todddube/Library/Developer/Xcode/DerivedData/SpaceRunner-ebdjtrwwcjgtgjdguccalqpnxffn/Build/Products/Debug-iphonesimulator/SpaceRunner.app
+iPhone Developer
