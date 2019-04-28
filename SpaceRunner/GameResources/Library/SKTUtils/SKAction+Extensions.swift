@@ -33,16 +33,19 @@ public extension SKAction {
   /**
    * Performs a block after the specified delay.
    */
-    func afterDelay(delay: TimeInterval, runBlock block: @escaping ()->()) -> SKAction {
+  /*
+     * Abiguous refefence for this -
+     func afterDelay(delay: TimeInterval, runBlock block: @escaping ()->()) -> SKAction {
         return SKAction.afterDelay(delay, performAction: SKAction.run(block))
-
+ 
   }
-
+*/
+    
   /**
    * Removes the node from its parent after the specified delay.
    */
     func removeFromParentAfterDelay(delay: TimeInterval) -> SKAction {
-    return SKAction.afterDelay(delay, performAction: SKAction.removeFromParent())
+        return SKAction.afterDelay(delay, performAction: SKAction.removeFromParent())
   }
 
   /**
