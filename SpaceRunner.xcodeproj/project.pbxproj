@@ -10,10 +10,7 @@
 		2706E41F1C9E1AC20068CDAD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E41E1C9E1AC20068CDAD /* AppDelegate.swift */; };
 		2706E4231C9E1AC20068CDAD /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E4221C9E1AC20068CDAD /* GameScene.swift */; };
 		2706E4251C9E1AC20068CDAD /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E4241C9E1AC20068CDAD /* GameViewController.swift */; };
-		2706E4281C9E1AC20068CDAD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2706E4261C9E1AC20068CDAD /* Main.storyboard */; };
 		2706E42A1C9E1AC20068CDAD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2706E4291C9E1AC20068CDAD /* Assets.xcassets */; };
-		2706E4381C9E1AC20068CDAD /* SpaceRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E4371C9E1AC20068CDAD /* SpaceRunnerTests.swift */; };
-		2706E4431C9E1AC20068CDAD /* SpaceRunnerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E4421C9E1AC20068CDAD /* SpaceRunnerUITests.swift */; };
 		2706E46D1C9EE5080068CDAD /* editundo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2706E4571C9EE5080068CDAD /* editundo.ttf */; };
 		2706E46E1C9EE5080068CDAD /* CGFloat+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E45A1C9EE5080068CDAD /* CGFloat+Extensions.swift */; };
 		2706E46F1C9EE5080068CDAD /* CGPoint+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E45B1C9EE5080068CDAD /* CGPoint+Extensions.swift */; };
@@ -93,15 +90,10 @@
 		2706E41E1C9E1AC20068CDAD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2706E4221C9E1AC20068CDAD /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		2706E4241C9E1AC20068CDAD /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
-		2706E4271C9E1AC20068CDAD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2706E4291C9E1AC20068CDAD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2706E42E1C9E1AC20068CDAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2706E4331C9E1AC20068CDAD /* SpaceRunner.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpaceRunner.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2706E4371C9E1AC20068CDAD /* SpaceRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceRunnerTests.swift; sourceTree = "<group>"; };
-		2706E4391C9E1AC20068CDAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2706E43E1C9E1AC20068CDAD /* SpaceRunner.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpaceRunner.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2706E4421C9E1AC20068CDAD /* SpaceRunnerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceRunnerUITests.swift; sourceTree = "<group>"; };
-		2706E4441C9E1AC20068CDAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2706E4571C9EE5080068CDAD /* editundo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = editundo.ttf; sourceTree = "<group>"; };
 		2706E45A1C9EE5080068CDAD /* CGFloat+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGFloat+Extensions.swift"; sourceTree = "<group>"; };
 		2706E45B1C9EE5080068CDAD /* CGPoint+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extensions.swift"; sourceTree = "<group>"; };
@@ -188,8 +180,6 @@
 			isa = PBXGroup;
 			children = (
 				2706E41D1C9E1AC20068CDAD /* SpaceRunner */,
-				2706E4361C9E1AC20068CDAD /* SpaceRunnerTests */,
-				2706E4411C9E1AC20068CDAD /* SpaceRunnerUITests */,
 				2706E41C1C9E1AC20068CDAD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -210,29 +200,10 @@
 				2706E4541C9E1E620068CDAD /* Classes */,
 				2706E4551C9EE5080068CDAD /* Game Resources */,
 				2792AD861CA1E264001C4393 /* Launch */,
-				2706E4261C9E1AC20068CDAD /* Main.storyboard */,
 				2706E4291C9E1AC20068CDAD /* Assets.xcassets */,
 				2706E42E1C9E1AC20068CDAD /* Info.plist */,
 			);
 			path = SpaceRunner;
-			sourceTree = "<group>";
-		};
-		2706E4361C9E1AC20068CDAD /* SpaceRunnerTests */ = {
-			isa = PBXGroup;
-			children = (
-				2706E4371C9E1AC20068CDAD /* SpaceRunnerTests.swift */,
-				2706E4391C9E1AC20068CDAD /* Info.plist */,
-			);
-			path = SpaceRunnerTests;
-			sourceTree = "<group>";
-		};
-		2706E4411C9E1AC20068CDAD /* SpaceRunnerUITests */ = {
-			isa = PBXGroup;
-			children = (
-				2706E4421C9E1AC20068CDAD /* SpaceRunnerUITests.swift */,
-				2706E4441C9E1AC20068CDAD /* Info.plist */,
-			);
-			path = SpaceRunnerUITests;
 			sourceTree = "<group>";
 		};
 		2706E4541C9E1E620068CDAD /* Classes */ = {
@@ -523,13 +494,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "Todd Dube";
 				TargetAttributes = {
 					2706E41A1C9E1AC20068CDAD = {
 						CreatedOnToolsVersion = 7.2.1;
 						DevelopmentTeam = YT8HJFH9K8;
-						LastSwiftMigration = 0900;
+						LastSwiftMigration = 1020;
 					};
 					2706E4321C9E1AC20068CDAD = {
 						CreatedOnToolsVersion = 7.2.1;
@@ -545,7 +516,7 @@
 			};
 			buildConfigurationList = 2706E4161C9E1AC20068CDAD /* Build configuration list for PBXProject "SpaceRunner" */;
 			compatibilityVersion = "Xcode 8.0";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
@@ -582,7 +553,6 @@
 				2706E47B1C9EE5080068CDAD /* Explosion.caf in Resources */,
 				2706E42A1C9E1AC20068CDAD /* Assets.xcassets in Resources */,
 				2706E4791C9EE5080068CDAD /* GameMusic.mp3 in Resources */,
-				2706E4281C9E1AC20068CDAD /* Main.storyboard in Resources */,
 				2706E47C1C9EE5080068CDAD /* Pickup.caf in Resources */,
 				2792AD8F1CA1E264001C4393 /* Default@2x.png in Resources */,
 				2706E47E1C9EE5080068CDAD /* ShieldUp.caf in Resources */,
@@ -659,7 +629,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2706E4381C9E1AC20068CDAD /* SpaceRunnerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -667,7 +636,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2706E4431C9E1AC20068CDAD /* SpaceRunnerUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -686,22 +654,12 @@
 		};
 /* End PBXTargetDependency section */
 
-/* Begin PBXVariantGroup section */
-		2706E4261C9E1AC20068CDAD /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				2706E4271C9E1AC20068CDAD /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-/* End PBXVariantGroup section */
-
 /* Begin XCBuildConfiguration section */
 		2706E4451C9E1AC20068CDAD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -745,7 +703,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -758,6 +716,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -794,7 +753,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -817,8 +776,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = SpaceRunnerWorld;
 				PRODUCT_NAME = SpaceRunner;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -833,8 +791,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = SpaceRunnerWorld;
 				PRODUCT_NAME = SpaceRunner;
-				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

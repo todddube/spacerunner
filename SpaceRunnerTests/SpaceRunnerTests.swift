@@ -7,7 +7,7 @@
 //
 
 import XCTest
-@testable import SpaceRunner
+// @testable import SpaceRunner
 
 class SpaceRunnerTests: XCTestCase {
     
