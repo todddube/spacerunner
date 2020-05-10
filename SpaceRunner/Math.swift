@@ -18,7 +18,7 @@ func RandomIntegerBetween(min:Int, max: Int) -> Int {
 }
 
 func RandomFloatRange(min:CGFloat, max:CGFloat) -> CGFloat {
-    return CGFloat(Float(arc4random()) / 0xFFFFFFFF) * (max - min) + min
+    return CGFloat(Float(arc4random()) / 0xFFFFFF) * (max - min) + min
 }
 
 func DegressToRadians(degrees: CGFloat) -> CGFloat {

@@ -43,6 +43,7 @@
 		274BFB251C9EFB97001A6852 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274BFB241C9EFB97001A6852 /* Math.swift */; };
 		274BFB271C9EFD0D001A6852 /* GameParticles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274BFB261C9EFD0D001A6852 /* GameParticles.swift */; };
 		274BFB2A1C9F5355001A6852 /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274BFB291C9F5355001A6852 /* Background.swift */; };
+		2754039524685ACA001C5B2A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2754039424685ACA001C5B2A /* Main.storyboard */; };
 		2758A4A21CA737AB00683552 /* GameOverTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2758A4A11CA737AB00683552 /* GameOverTitle.swift */; };
 		2758A4A41CA7FE8B00683552 /* ScoreBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2758A4A31CA7FE8B00683552 /* ScoreBoard.swift */; };
 		275F8ABE1CAED3C30081543A /* PauseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 275F8ABD1CAED3C30081543A /* PauseButton.swift */; };
@@ -126,6 +127,7 @@
 		274BFB241C9EFB97001A6852 /* Math.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 		274BFB261C9EFD0D001A6852 /* GameParticles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameParticles.swift; sourceTree = "<group>"; };
 		274BFB291C9F5355001A6852 /* Background.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
+		2754039424685ACA001C5B2A /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		2758A4A11CA737AB00683552 /* GameOverTitle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOverTitle.swift; sourceTree = "<group>"; };
 		2758A4A31CA7FE8B00683552 /* ScoreBoard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScoreBoard.swift; sourceTree = "<group>"; };
 		275F8ABD1CAED3C30081543A /* PauseButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PauseButton.swift; sourceTree = "<group>"; };
@@ -179,6 +181,7 @@
 		2706E4121C9E1AC20068CDAD = {
 			isa = PBXGroup;
 			children = (
+				2754039424685ACA001C5B2A /* Main.storyboard */,
 				2706E41D1C9E1AC20068CDAD /* SpaceRunner */,
 				2706E41C1C9E1AC20068CDAD /* Products */,
 			);
@@ -547,6 +550,7 @@
 				2792AD8E1CA1E264001C4393 /* Default-667h@2x.png in Resources */,
 				27B6EEC01CCD2DE400D48CCE /* StarParticle.sks in Resources */,
 				2706E47A1C9EE5080068CDAD /* ButtonTap.caf in Resources */,
+				2754039524685ACA001C5B2A /* Main.storyboard in Resources */,
 				271707601CB2E2260084BADE /* Grayscale.fsh in Resources */,
 				2706E46D1C9EE5080068CDAD /* editundo.ttf in Resources */,
 				2792AD8D1CA1E264001C4393 /* Default-568h@2x.png in Resources */,
@@ -703,7 +707,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -753,7 +757,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
