@@ -17,8 +17,13 @@ func RandomIntegerBetween(min:Int, max: Int) -> Int {
     return Int(UInt32(min) + arc4random_uniform(UInt32(max - min + 1)))
 }
 
+//func RandomFloatRange(min:CGFloat, max:CGFloat) -> CGFloat {
+//    return CGFloat(Float(arc4random()) / 0xFFFFFF) * (max - min) + min
+//}
+
+// New random flota May 2020
 func RandomFloatRange(min:CGFloat, max:CGFloat) -> CGFloat {
-    return CGFloat(Float(arc4random()) / 0xFFFFFF) * (max - min) + min
+    return CGFloat(arc4random() / 0xFFFFFFFF) * (max - min) + min
 }
 
 func DegressToRadians(degrees: CGFloat) -> CGFloat {
