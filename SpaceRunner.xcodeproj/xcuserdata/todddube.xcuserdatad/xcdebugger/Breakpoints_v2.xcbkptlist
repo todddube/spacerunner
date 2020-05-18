@@ -78,8 +78,8 @@
             filePath = "SpaceRunner/Math.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "26"
-            endingLineNumber = "26"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
             landmarkName = "RandomFloatRange(min:max:)"
             landmarkType = "9">
          </BreakpointContent>
@@ -97,6 +97,22 @@
             startingLineNumber = "83"
             endingLineNumber = "83"
             landmarkName = "spawnMeteors()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "68A79CAC-BA2B-42A2-A490-BFCE97C2C56E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SpaceRunner/StatusBar.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "50"
+            endingLineNumber = "50"
+            landmarkName = "setupStatusBarBackground()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

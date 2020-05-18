@@ -21,10 +21,12 @@ func RandomIntegerBetween(min:Int, max: Int) -> Int {
 //    return CGFloat(Float(arc4random()) / 0xFFFFFF) * (max - min) + min
 //}
 
-// New random flota May 2020
+// New random float May 2020
+// Article: https://stackoverflow.com/questions/25050309/swift-random-float-between-0-and-1/33078096
 func RandomFloatRange(min:CGFloat, max:CGFloat) -> CGFloat {
-    return CGFloat(arc4random() / 0xFFFFFFFF) * (max - min) + min
-}
+    // return CGFloat(arc4random() / 0xFFFFFFFF) * (max - min) + min
+    return CGFloat.random() * (max - min) + min
+ }
 
 func DegressToRadians(degrees: CGFloat) -> CGFloat {
     // return degrees * CGFloat(M_PI) / 180.0  // Deprecated Swift 4 09.27.17
