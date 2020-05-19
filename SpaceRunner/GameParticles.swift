@@ -96,7 +96,7 @@ class GameParticles {
         // Setup Green Particles First
         // Birthrate and Lifetime
         self.engineParticlesGreen.particleBirthRate = 25.0
-        self.engineParticlesGreen.particleLifetime = 0.25
+        self.engineParticlesGreen.particleLifetime = 0.45
         
         // Position Range
         self.engineParticlesGreen.particlePositionRange = CGVector(dx: 0, dy: 0)

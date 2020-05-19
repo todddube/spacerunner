@@ -63,7 +63,7 @@ class Player: SKSpriteNode {
         // Initial position is centered horz and 20% up the Y axis
         self.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.2)
         self.targetPosition = self.position
-//        self.zPosition = GameLayer.Player
+        self.zPosition = GameLayer.Player
     }
     
     fileprivate func setupPlayerPhysics() {
