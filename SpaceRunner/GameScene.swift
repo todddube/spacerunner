@@ -375,7 +375,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         })
     }
     
-    
+    // MARK: - Explode Player
     func explodePlayer(_ pos: CGPoint) {
         
         let emitterNode = SKEmitterNode(fileNamed: SpriteName.Explosion)
@@ -385,7 +385,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(emitterNode!)
         
         // Remove emitter after the explosion
-        self.run(SKAction.wait(forDuration: 2.0), completion: {
+        self.run(SKAction.wait(forDuration: 1.0), completion: {
             emitterNode?.removeFromParent()
         })
     }
