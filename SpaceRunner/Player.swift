@@ -1,8 +1,7 @@
 //
 //  Player.swift
+//  Player controller `
 //  SpaceRunner
-//
-//  Created by Todd Dube on 3/22/16.
 //  Copyright © 2020 Todd Dube. All rights reserved.
 //
 
@@ -128,6 +127,7 @@ class Player: SKSpriteNode {
     
     
     // MARK: - Contact
+    // Actions for when player contacts meteor
     func hitMeteor() {
         // subtract from lives
         self.updatePlayerLives()
