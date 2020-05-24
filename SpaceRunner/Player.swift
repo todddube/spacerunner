@@ -1,9 +1,8 @@
 //
 //  Player.swift
+//  Player controller `
 //  SpaceRunner
-//
-//  Created by Todd Dube on 3/22/16.
-//  Copyright © 2016 Todd Dube. All rights reserved.
+//  Copyright © 2020 Todd Dube. All rights reserved.
 //
 
 import Foundation
@@ -63,7 +62,7 @@ class Player: SKSpriteNode {
         // Initial position is centered horz and 20% up the Y axis
         self.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.2)
         self.targetPosition = self.position
-//        self.zPosition = GameLayer.Player
+        self.zPosition = GameLayer.Player
     }
     
     fileprivate func setupPlayerPhysics() {
@@ -128,6 +127,7 @@ class Player: SKSpriteNode {
     
     
     // MARK: - Contact
+    // Actions for when player contacts meteor
     func hitMeteor() {
         // subtract from lives
         self.updatePlayerLives()

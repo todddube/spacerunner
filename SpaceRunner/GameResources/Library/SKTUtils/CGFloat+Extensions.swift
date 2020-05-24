@@ -68,7 +68,10 @@ public extension CGFloat {
    * Returns a random floating point number between 0.0 and 1.0, inclusive.
    */
    static func random() -> CGFloat {
-    return CGFloat(Float(arc4random()) / 0xFFFFFFFF)
+    // updated as below commented out wasnt working
+    // return CGFloat(Float(arc4random()) / 0xFFFFFFFF)
+    return CGFloat(Float.random(in: 0 ..< 1))
+    
   }
 
   /**

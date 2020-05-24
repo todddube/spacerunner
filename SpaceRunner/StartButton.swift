@@ -3,7 +3,7 @@
 //  SpaceRunner
 //
 //  Created by Todd Dube on 3/22/16.
-//  Copyright © 2016 Todd Dube. All rights reserved.
+//  Copyright © 2020 Todd Dube. All rights reserved.
 //
 
 import Foundation

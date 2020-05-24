@@ -3,7 +3,7 @@
 //  SpaceRunner
 //
 //  Created by Todd Dube on 3/22/16.
-//  Copyright © 2016 Todd Dube. All rights reserved.
+//  Copyright © 2020 Todd Dube. All rights reserved.
 //
 
 import Foundation
@@ -54,7 +54,7 @@ class GameOverScene: SKScene {
         
         
         // Add Author / Copyright Information
-        let authorLabel = fonts.createLabel(string: "Copyright 2016 - Todd Dube", labelType: fontType)
+        let authorLabel = fonts.createLabel(string: "Copyright 2020 - Todd Dube", labelType: fontType)
         
         authorLabel.position = CGPoint(x: kViewSize.width * 0.05, y: kViewSize.height * 0.05)
 

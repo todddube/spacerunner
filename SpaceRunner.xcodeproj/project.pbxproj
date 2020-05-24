@@ -43,11 +43,13 @@
 		274BFB251C9EFB97001A6852 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274BFB241C9EFB97001A6852 /* Math.swift */; };
 		274BFB271C9EFD0D001A6852 /* GameParticles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274BFB261C9EFD0D001A6852 /* GameParticles.swift */; };
 		274BFB2A1C9F5355001A6852 /* Background.swift in Sources */ = {isa = PBXBuildFile; fileRef = 274BFB291C9F5355001A6852 /* Background.swift */; };
+		2754039524685ACA001C5B2A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2754039424685ACA001C5B2A /* Main.storyboard */; };
 		2758A4A21CA737AB00683552 /* GameOverTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2758A4A11CA737AB00683552 /* GameOverTitle.swift */; };
 		2758A4A41CA7FE8B00683552 /* ScoreBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2758A4A31CA7FE8B00683552 /* ScoreBoard.swift */; };
 		275F8ABE1CAED3C30081543A /* PauseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 275F8ABD1CAED3C30081543A /* PauseButton.swift */; };
 		2766309A1CADA5A300CF2E43 /* GameAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276630991CADA5A300CF2E43 /* GameAudio.swift */; };
 		2781DA3C1CA047CF001F9106 /* PlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2781DA3B1CA047CF001F9106 /* PlayButton.swift */; };
+		2782E46B247B058B00204498 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2782E469247B058B00204498 /* Assets.xcassets */; };
 		2792AD8D1CA1E264001C4393 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2792AD871CA1E264001C4393 /* Default-568h@2x.png */; };
 		2792AD8E1CA1E264001C4393 /* Default-667h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2792AD881CA1E264001C4393 /* Default-667h@2x.png */; };
 		2792AD8F1CA1E264001C4393 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2792AD891CA1E264001C4393 /* Default@2x.png */; };
@@ -94,7 +96,7 @@
 		2706E42E1C9E1AC20068CDAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2706E4331C9E1AC20068CDAD /* SpaceRunner.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpaceRunner.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2706E43E1C9E1AC20068CDAD /* SpaceRunner.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpaceRunner.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2706E4571C9EE5080068CDAD /* editundo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = editundo.ttf; sourceTree = "<group>"; };
+		2706E4571C9EE5080068CDAD /* editundo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = editundo.ttf; path = /Users/todddube/Documents/GitHub/spacerunner/SpaceRunner/GameResources/Fonts/editundo.ttf; sourceTree = "<absolute>"; };
 		2706E45A1C9EE5080068CDAD /* CGFloat+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGFloat+Extensions.swift"; sourceTree = "<group>"; };
 		2706E45B1C9EE5080068CDAD /* CGPoint+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extensions.swift"; sourceTree = "<group>"; };
 		2706E45C1C9EE5080068CDAD /* CGVector+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGVector+Extensions.swift"; sourceTree = "<group>"; };
@@ -126,11 +128,13 @@
 		274BFB241C9EFB97001A6852 /* Math.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
 		274BFB261C9EFD0D001A6852 /* GameParticles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameParticles.swift; sourceTree = "<group>"; };
 		274BFB291C9F5355001A6852 /* Background.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Background.swift; sourceTree = "<group>"; };
+		2754039424685ACA001C5B2A /* Main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		2758A4A11CA737AB00683552 /* GameOverTitle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOverTitle.swift; sourceTree = "<group>"; };
 		2758A4A31CA7FE8B00683552 /* ScoreBoard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScoreBoard.swift; sourceTree = "<group>"; };
 		275F8ABD1CAED3C30081543A /* PauseButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PauseButton.swift; sourceTree = "<group>"; };
 		276630991CADA5A300CF2E43 /* GameAudio.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameAudio.swift; sourceTree = "<group>"; };
 		2781DA3B1CA047CF001F9106 /* PlayButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayButton.swift; sourceTree = "<group>"; };
+		2782E469247B058B00204498 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = GameResources/Assets.xcassets; sourceTree = "<group>"; };
 		2792AD871CA1E264001C4393 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		2792AD881CA1E264001C4393 /* Default-667h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-667h@2x.png"; sourceTree = "<group>"; };
 		2792AD891CA1E264001C4393 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
@@ -179,6 +183,7 @@
 		2706E4121C9E1AC20068CDAD = {
 			isa = PBXGroup;
 			children = (
+				2754039424685ACA001C5B2A /* Main.storyboard */,
 				2706E41D1C9E1AC20068CDAD /* SpaceRunner */,
 				2706E41C1C9E1AC20068CDAD /* Products */,
 			);
@@ -407,6 +412,7 @@
 			isa = PBXGroup;
 			children = (
 				270759091D3173F100D9C0C0 /* ExplosionParticle.sks */,
+				2782E469247B058B00204498 /* Assets.xcassets */,
 				27D586E01CC29ACF00D78CEC /* spark.png */,
 				27B6EEBF1CCD2DE400D48CCE /* StarParticle.sks */,
 			);
@@ -543,10 +549,12 @@
 				27D586E21CC29ACF00D78CEC /* spark.png in Resources */,
 				2792AD911CA1E264001C4393 /* Default@3x.png in Resources */,
 				2792AD921CA1E264001C4393 /* Default~ipad.png in Resources */,
+				2782E46B247B058B00204498 /* Assets.xcassets in Resources */,
 				2706E47D1C9EE5080068CDAD /* ShieldDown.caf in Resources */,
 				2792AD8E1CA1E264001C4393 /* Default-667h@2x.png in Resources */,
 				27B6EEC01CCD2DE400D48CCE /* StarParticle.sks in Resources */,
 				2706E47A1C9EE5080068CDAD /* ButtonTap.caf in Resources */,
+				2754039524685ACA001C5B2A /* Main.storyboard in Resources */,
 				271707601CB2E2260084BADE /* Grayscale.fsh in Resources */,
 				2706E46D1C9EE5080068CDAD /* editundo.ttf in Resources */,
 				2792AD8D1CA1E264001C4393 /* Default-568h@2x.png in Resources */,
@@ -703,7 +711,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -753,7 +761,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;

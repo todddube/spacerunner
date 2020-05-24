@@ -3,7 +3,7 @@
 //  SpaceRunner
 //
 //  Created by Todd Dube on 3/20/16.
-//  Copyright © 2016 Todd Dube. All rights reserved.
+//  Copyright © 2020 Todd Dube. All rights reserved.
 //
 
 import Foundation
@@ -42,9 +42,9 @@ class GameParticles {
     fileprivate func setupMagicParticles() {
         
         // Birthrate and Lifetime
-        self.magicParticles.particleBirthRate = 35.0
-        self.magicParticles.particleLifetime = 5.0
-        self.magicParticles.particleLifetimeRange = 1.25
+        self.magicParticles.particleBirthRate = 50.0
+        self.magicParticles.particleLifetime = 8.0
+        self.magicParticles.particleLifetimeRange = 2.25
         
         // Position Range
         self.magicParticles.particlePositionRange = CGVector(dx: kViewSize.width * 2, dy: kViewSize.height * 2)
@@ -96,7 +96,7 @@ class GameParticles {
         // Setup Green Particles First
         // Birthrate and Lifetime
         self.engineParticlesGreen.particleBirthRate = 25.0
-        self.engineParticlesGreen.particleLifetime = 0.25
+        self.engineParticlesGreen.particleLifetime = 0.45
         
         // Position Range
         self.engineParticlesGreen.particlePositionRange = CGVector(dx: 0, dy: 0)

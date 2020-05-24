@@ -3,7 +3,7 @@
 //  SpaceRunner
 //
 //  Created by Jeremy Novak on 1/29/16.
-//  Copyright © 2016 Jeremy Novak. All rights reserved.
+//  Copyright © 2020 Jeremy Novak. All rights reserved.
 //
 
 import Foundation

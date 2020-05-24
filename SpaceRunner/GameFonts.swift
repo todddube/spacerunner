@@ -3,7 +3,7 @@
 //  SpaceRunner
 //
 //  Created by Todd Dube on 3/23/16.
-//  Copyright © 2016 Todd Dube. All rights reserved.
+//  Copyright © 2020 Todd Dube. All rights reserved.
 //
 
 import Foundation
@@ -24,8 +24,9 @@ class GameFonts {
     }
     
     // MARK: - Private class constants
-    fileprivate let fontName = "Edit Undo BRK"
-    fileprivate let scoreSizePad:CGFloat = 24.0   
+    // MARK: - ToDo Fix Font Path
+    fileprivate let fontName = "./editundo.tff"
+    fileprivate let scoreSizePad:CGFloat = 24.0
     fileprivate let scoreSizePhone:CGFloat = 16.0
     fileprivate let bonusSizePad:CGFloat = 72.0
     fileprivate let bonusSizePhone:CGFloat = 36.0

@@ -3,7 +3,7 @@
 //  SpaceRunner
 //
 //  Created by Todd Dube on 3/20/16.
-//  Copyright © 2016 Todd Dube. All rights reserved.
+//  Copyright © 2020 Todd Dube. All rights reserved.
 //
 
 import Foundation
@@ -51,10 +51,10 @@ class MenuScene:SKScene {
         // Add Author / Copyright Information
         let appVersion = Bundle.main.infoDictionary!["CFBundleVersion"] as! String
         let authorLabel = fonts.createLabel(string: "By Todd Dube", labelType: fontType)
-        let versionLabel = fonts.createLabel(string: "v0.9." + appVersion, labelType: fontType)
+        let versionLabel = fonts.createLabel(string: "v0.5." + appVersion, labelType: fontType)
         
-        authorLabel.position = CGPoint(x: kViewSize.width * 0.10, y: kViewSize.height * 0.05)
         versionLabel.position = CGPoint(x: kViewSize.width * 0.38 , y: kViewSize.height * 0.64)
+        authorLabel.position = CGPoint(x: kViewSize.width * 0.35, y: kViewSize.height * 0.60)
         
         self.addChild(authorLabel)
         self.addChild(versionLabel) 
