@@ -11,7 +11,7 @@ import SpriteKit
 
 class MenuScene:SKScene {
     // MARK: - Private class variables
-    // private var sceneLabel = SKLabelNode()
+    private var sceneLabel = SKLabelNode()
     
     // MARK: - Private convience constants
     fileprivate let fonts = GameFonts.sharedInstance

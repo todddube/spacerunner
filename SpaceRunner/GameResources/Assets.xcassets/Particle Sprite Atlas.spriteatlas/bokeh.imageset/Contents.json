@@ -6,10 +6,12 @@
       "scale" : "1x"
     },
     {
+      "filename" : "boken128x128-1.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "boken192x192.png",
       "idiom" : "universal",
       "scale" : "3x"
     }

@@ -39,9 +39,10 @@ class GameTitleShip: SKSpriteNode {
     }
     
     fileprivate func setupAnimation() {
-        let moveIn = SKAction.move(to: kScreenCenter, duration: 0.5)
-        let scaleUp = SKAction.scale(to: 1.1, duration: 0.125)
-        let scaleDown = SKAction.scale(to: 1.1, duration: 0.125)
+        // updated durations for better animation on the start up
+        let moveIn = SKAction.move(to: kScreenCenter, duration: 1.5)
+        let scaleUp = SKAction.scale(to: 1.1, duration: 0.25)
+        let scaleDown = SKAction.scale(to: 1.1, duration: 0.25)
         
         self.animation = SKAction.sequence([moveIn, scaleUp, scaleDown])
     }

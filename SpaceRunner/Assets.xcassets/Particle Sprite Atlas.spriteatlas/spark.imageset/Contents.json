@@ -1,21 +1,23 @@
 {
   "images" : [
     {
-      "idiom" : "universal",
       "filename" : "spark.png",
+      "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "spark128x128.png",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "spark192x192.png",
       "idiom" : "universal",
       "scale" : "3x"
     }
   ],
   "info" : {
-    "version" : 1,
-    "author" : "xcode"
+    "author" : "xcode",
+    "version" : 1
   }
 }
