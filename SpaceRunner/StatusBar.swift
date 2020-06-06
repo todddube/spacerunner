@@ -49,18 +49,21 @@ class StatusBar: SKNode {
         // Make a CGRect that is as wide as the screen and 3% of the height of the screen
         let statusBarBackgroundSize = CGSize(width: kViewSize.width, height: kViewSize.height * 0.03)
         
-        // Make an SKSpriteNode that is a black color and the size of statusBarBackgroundSize
-        self.statusBarBackground = SKSpriteNode(color: SKColor.black, size: statusBarBackgroundSize)
+        // Make an SKSpriteNode that is a dark gray color and the size of statusBarBackgroundSize
+        self.statusBarBackground = SKSpriteNode(color: SKColor.darkGray, size: statusBarBackgroundSize)
         
         // Make the anchorPoint 0,0 so it is positioned using the lower left corner
         self.statusBarBackground.anchorPoint = CGPoint.zero
         
         // Position statusBarBackground on the left edge of the screen and 95% up the screen
-        // Adjusted from .97 to .93 for nothc
-        self.statusBarBackground.position = CGPoint(x: 0, y: kViewSize.height * 0.93)
+        // Adjusted from .97 to .93 for notched phones
+        // orig top of screen code
+        // self.statusBarBackground.position = CGPoint(x: 0, y: kViewSize.height * 0.93)
+        // MARK: statusBarPostion
+        self.statusBarBackground.position = CGPoint(x: 0, y: kViewSize.height * 0.015)
         
         // Set the alpha to 75% opacity
-        self.statusBarBackground.alpha = 1.0
+        self.statusBarBackground.alpha = 0.75
         
 
         // Add statusBarBackground to the StatusBar node
@@ -90,7 +93,9 @@ class StatusBar: SKNode {
         self.statusBarBackground.addChild(self.starsCollectedLabel)
         
         // Rotate the starsCollectedIcon forever
-        self.starsCollectedIcon.run(SKAction.repeatForever(SKAction.rotate(byAngle: 5.0, duration: 1.5)))
+        self.starsCollectedIcon.run(
+            SKAction.repeatForever(
+                SKAction.rotate(byAngle: 5.0, duration: 1.5)))
         
     }
     
