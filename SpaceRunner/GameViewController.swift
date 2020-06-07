@@ -22,10 +22,10 @@ class GameViewController: UIViewController {
                     skView.showsNodeCount = true
                 }
             
-            // skView.ignoresSiblingOrder = true
+            skView.ignoresSiblingOrder = true
                 
             let menuScene = MenuScene(size: kViewSize)
-            let menuTransition = SKTransition.fade(with: SKColor.black, duration: 0.25)
+            let menuTransition = SKTransition.fade(with: SKColor.black, duration: 0.75)
             skView.presentScene(menuScene, transition: menuTransition)
             }
         }

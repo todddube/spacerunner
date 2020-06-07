@@ -101,6 +101,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         // Switch on GameState
         switch self.state {
             case GameState.tutorial:
+                // setting up
                 return
             
             case GameState.running:
@@ -200,13 +201,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     self.switchToRunning()
                 }
             
-            // TODO: Pause while awaiting Start needs to be fixed
-            // 05/01/16 - Commented this out as Pause w/ Start button waiting didnt work or make sense
-//                if self.statusBar.pauseButton.containsPoint(touchLocation) {
-//                    self.pauseButtonPressed()
-//                }
-            
-            
             case GameState.running:
                 if self.statusBar.pauseButton.contains(touchLocation) {
                     self.pauseButtonPressed()
@@ -226,7 +220,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     // MARK: - State Functions
     fileprivate func swithToTutorial() {
-        // TODO: Need to setup some animations while in Tutorial mode. 
+        // TODO: Need to setup some animations while in Tutorial mode.
+        // self.meteorController.startSendingMeteors()
+        // self.starController.startSendingStars()
     }
     
     fileprivate func switchToRunning() {
