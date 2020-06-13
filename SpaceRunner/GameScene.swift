@@ -207,6 +207,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 } else {
                     self.player.updateTargetLocation(newLocation: touchLocation)
             }
+                // working on getting touch elsewhere on status bar event
+                // eventing a pause for the time being will use this for settings scene display w/ pause
+                if self.statusBar.contains(touchLocation) {
+                    self.pauseButtonPressed()
+                } else {
+                    self.player.updateTargetLocation(newLocation: touchLocation)
+            }
             
             case GameState.paused:
                 if self.statusBar.pauseButton.contains(touchLocation) {
