@@ -11,7 +11,6 @@
 		2706E4231C9E1AC20068CDAD /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E4221C9E1AC20068CDAD /* GameScene.swift */; };
 		2706E4251C9E1AC20068CDAD /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E4241C9E1AC20068CDAD /* GameViewController.swift */; };
 		2706E42A1C9E1AC20068CDAD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2706E4291C9E1AC20068CDAD /* Assets.xcassets */; };
-		2706E46D1C9EE5080068CDAD /* editundo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2706E4571C9EE5080068CDAD /* editundo.ttf */; };
 		2706E46E1C9EE5080068CDAD /* CGFloat+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E45A1C9EE5080068CDAD /* CGFloat+Extensions.swift */; };
 		2706E46F1C9EE5080068CDAD /* CGPoint+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E45B1C9EE5080068CDAD /* CGPoint+Extensions.swift */; };
 		2706E4701C9EE5080068CDAD /* CGVector+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E45C1C9EE5080068CDAD /* CGVector+Extensions.swift */; };
@@ -97,7 +96,6 @@
 		2706E42E1C9E1AC20068CDAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2706E4331C9E1AC20068CDAD /* SpaceRunner.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpaceRunner.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2706E43E1C9E1AC20068CDAD /* SpaceRunner.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpaceRunner.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2706E4571C9EE5080068CDAD /* editundo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = editundo.ttf; path = /Users/todddube/Documents/GitHub/spacerunner/SpaceRunner/GameResources/Fonts/editundo.ttf; sourceTree = "<absolute>"; };
 		2706E45A1C9EE5080068CDAD /* CGFloat+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGFloat+Extensions.swift"; sourceTree = "<group>"; };
 		2706E45B1C9EE5080068CDAD /* CGPoint+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extensions.swift"; sourceTree = "<group>"; };
 		2706E45C1C9EE5080068CDAD /* CGVector+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGVector+Extensions.swift"; sourceTree = "<group>"; };
@@ -124,6 +122,7 @@
 		2723BDAE1CA188B2002F6EBC /* RetryButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RetryButton.swift; sourceTree = "<group>"; };
 		2723BDB21CA18B57002F6EBC /* GameOverScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameOverScene.swift; sourceTree = "<group>"; };
 		2726ED531CA3127A00B4D34A /* GameFonts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameFonts.swift; sourceTree = "<group>"; };
+		273792602529FF2700E0AEA8 /* editundo.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = editundo.ttf; sourceTree = "<group>"; };
 		274BFB1E1C9EF7C5001A6852 /* GameTextures.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameTextures.swift; sourceTree = "<group>"; };
 		274BFB211C9EF9F8001A6852 /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		274BFB241C9EFB97001A6852 /* Math.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
@@ -248,7 +247,7 @@
 		2706E4561C9EE5080068CDAD /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
-				2706E4571C9EE5080068CDAD /* editundo.ttf */,
+				273792602529FF2700E0AEA8 /* editundo.ttf */,
 			);
 			path = Fonts;
 			sourceTree = "<group>";
@@ -503,7 +502,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0730;
-				LastUpgradeCheck = 1020;
+				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Todd Dube";
 				TargetAttributes = {
 					2706E41A1C9E1AC20068CDAD = {
@@ -559,7 +558,6 @@
 				2706E47A1C9EE5080068CDAD /* ButtonTap.caf in Resources */,
 				2754039524685ACA001C5B2A /* Main.storyboard in Resources */,
 				271707601CB2E2260084BADE /* Grayscale.fsh in Resources */,
-				2706E46D1C9EE5080068CDAD /* editundo.ttf in Resources */,
 				2792AD8D1CA1E264001C4393 /* Default-568h@2x.png in Resources */,
 				2706E47B1C9EE5080068CDAD /* Explosion.caf in Resources */,
 				2706E42A1C9E1AC20068CDAD /* Assets.xcassets in Resources */,
@@ -690,6 +688,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -699,7 +698,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -715,9 +714,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
-				ONLY_ACTIVE_ARCH = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -747,6 +746,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -765,7 +765,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -783,7 +783,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = SpaceRunner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = SpaceRunnerWorld;
 				PRODUCT_NAME = SpaceRunner;
@@ -799,7 +799,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = SpaceRunner/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = SpaceRunnerWorld;
 				PRODUCT_NAME = SpaceRunner;
