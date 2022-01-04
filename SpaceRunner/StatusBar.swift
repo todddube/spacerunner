@@ -48,7 +48,7 @@ class StatusBar: SKNode {
     fileprivate func setupStatusBarBackground() {
         // Make a CGRect that is as wide as the screen and 3% of the height of the screen
         let statusBarBackgroundSize = CGSize(width: kViewSize.width, height: kViewSize.height * 0.03)
-        
+    
         // Make an SKSpriteNode that is a dark gray color and the size of statusBarBackgroundSize
         self.statusBarBackground = SKSpriteNode(color: SKColor.darkGray, size: statusBarBackgroundSize)
         
