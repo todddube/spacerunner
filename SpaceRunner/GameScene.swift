@@ -226,7 +226,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     // MARK: - State Functions
-    fileprivate func swithToTutorial() {
+    fileprivate func switchToTutorial() {
         // TODO: Need to setup some animations while in Tutorial mode.
         // self.meteorController.startSendingMeteors()
         // self.starController.startSendingStars()
