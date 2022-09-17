@@ -24,7 +24,6 @@ class GameFonts {
     }
     
     // MARK: - Private class constants
-    // MARK: - ToDo Fix Font Path
     // fileprivate let fontName = "./editundo.tff"
     fileprivate let fontName = "editundo.tff"
     fileprivate let scoreSizePad:CGFloat = 24.0
