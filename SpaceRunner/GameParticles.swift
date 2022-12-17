@@ -45,6 +45,8 @@ class GameParticles {
         self.magicParticles.particleBirthRate = 50.0
         self.magicParticles.particleLifetime = 8.0
         self.magicParticles.particleLifetimeRange = 2.25
+    
+        
         
         // Position Range
         self.magicParticles.particlePositionRange = CGVector(dx: kViewSize.width * 2, dy: kViewSize.height * 2)

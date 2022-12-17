@@ -60,7 +60,7 @@ class MenuScene:SKScene {
         self.addChild(versionLabel) 
         
         // Rotate the gameTitleShip forever
-        self.gameTitleShip.run(SKAction.repeatForever(SKAction.rotate(byAngle: 5.0, duration: 2.5)))
+        self.gameTitleShip.run(SKAction.repeatForever(SKAction.rotate(byAngle: 10.0, duration: 4.5)))
         
 
     }

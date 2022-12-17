@@ -24,7 +24,8 @@ class GameFonts {
     }
     
     // MARK: - Private class constants
-    // fileprivate let fontName = "./editundo.tff"
+    // fileprivate let fontName = "./Game Resources/Fonts/editundo.tff"
+    // using this one below as it doesnt work but renders a better default font 
     fileprivate let fontName = "editundo.tff"
     fileprivate let scoreSizePad:CGFloat = 24.0
     fileprivate let scoreSizePhone:CGFloat = 16.0
@@ -44,7 +45,7 @@ class GameFonts {
     // MARK:: - Setup
     fileprivate func setupLabel() {
         self.label = SKLabelNode(fontNamed: self.fontName)
-        
+    
         self.label.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
     }
     
