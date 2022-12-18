@@ -24,9 +24,9 @@ class GameFonts {
     }
     
     // MARK: - Private class constants
-    // fileprivate let fontName = "./Game Resources/Fonts/editundo.tff"
+    // fileprivate let fontName = "./Game Resources/Fonts/editundo.ttf"
     // using this one below as it doesnt work but renders a better default font 
-    fileprivate let fontName = "editundo.tff"
+    fileprivate let fontName = "editundo.ttf"
     fileprivate let scoreSizePad:CGFloat = 24.0
     fileprivate let scoreSizePhone:CGFloat = 16.0
     fileprivate let bonusSizePad:CGFloat = 72.0

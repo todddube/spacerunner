@@ -48,19 +48,24 @@ class MenuScene:SKScene {
         self.addChild(self.gameTitle)
         self.addChild(self.gameTitleShip)
         
-        // Add Author / Copyright Information
+        // Add Author / Copyright Information / Version and Build
         let appVersion = Bundle.main.infoDictionary!["CFBundleVersion"] as! String
-        let versionLabel = fonts.createLabel(string: "v0.5." + appVersion, labelType: fontType)
+        let versionLabel = fonts.createLabel(string: "v0.5.12/22", labelType: fontType)
+        let buildLabel = fonts.createLabel(string: "(build: " + appVersion + ")", labelType: fontType)
         let authorLabel = fonts.createLabel(string: "By Todd Dube", labelType: fontType)
         
-        versionLabel.position = CGPoint(x: kViewSize.width * 0.35 , y: kViewSize.height * 0.65)
-        authorLabel.position = CGPoint(x: kViewSize.width * 0.35, y: kViewSize.height * 0.67)
+        // Postion the lables
+        authorLabel.position = CGPoint(x: kViewSize.width * 0.40, y: kViewSize.height * 0.67)
+        versionLabel.position = CGPoint(x: kViewSize.width * 0.43 , y: kViewSize.height * 0.65)
+        buildLabel.position = CGPoint(x: kViewSize.width * 0.38, y: kViewSize.height * 0.63)
+        
         
         self.addChild(authorLabel)
-        self.addChild(versionLabel) 
+        self.addChild(versionLabel)
+        self.addChild(buildLabel)
         
         // Rotate the gameTitleShip forever
-        self.gameTitleShip.run(SKAction.repeatForever(SKAction.rotate(byAngle: 10.0, duration: 4.5)))
+        self.gameTitleShip.run(SKAction.repeatForever(SKAction.rotate(byAngle: 15.0, duration: 4.5)))
         
 
     }

@@ -12,7 +12,7 @@ import SpriteKit
 class Background: SKNode {
     
     // MARK: - Private class constants
-    fileprivate let backgroundRunSpeed: CGFloat = -200.0
+    fileprivate let backgroundRunSpeed: CGFloat = -350.0
     fileprivate let backgroundStopSpeed: CGFloat = -25.0
     
     // MARK: - Private class variables
