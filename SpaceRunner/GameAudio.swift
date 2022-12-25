@@ -18,10 +18,13 @@ private class SoundEffects {
     // Shields
     class var ShieldUp:String   { return "ShieldUp.caf"}
     class var ShieldDown:String { return "ShieldDown.caf"}
+    
     // Interface
     class var ButtonTap:String  { return "ButtonTap.caf"}
+    
     // Explosion
     class var Explosion:String  { return "Explosion.caf"}
+    
     // Scoring
     class var Pickup:String     { return "Pickup.caf"}
 }

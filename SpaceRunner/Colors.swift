@@ -19,6 +19,7 @@ class Colors {
     class var Border:Int        {return 0x49b9ea}
     class var EngineGreen:Int   {return 0x55f87e}
     class var EngineYellow:Int  {return 0xEEF954}
+    class var EngineRed:Int     {return 0xf44336}
     
     class func colorFromRGB(rgbvalue rgbValue:Int) -> SKColor {
         return SKColor(red: CGFloat((rgbValue & 0xFF0000)>>16)/255.0,

@@ -59,7 +59,6 @@ class MenuScene:SKScene {
         versionLabel.position = CGPoint(x: kViewSize.width * 0.43 , y: kViewSize.height * 0.65)
         buildLabel.position = CGPoint(x: kViewSize.width * 0.38, y: kViewSize.height * 0.63)
         
-        
         self.addChild(authorLabel)
         self.addChild(versionLabel)
         self.addChild(buildLabel)
