@@ -34,7 +34,7 @@ class StartButton: SKSpriteNode {
     
     // MARK: - Actions
     func fadeStartButton() {
-        self.run(SKAction.fadeOut(withDuration: 0.5), completion: { () -> Void in self.removeFromParent()
+        self.run(SKAction.fadeOut(withDuration: 1.5), completion: { () -> Void in self.removeFromParent()
         }) 
     }
     

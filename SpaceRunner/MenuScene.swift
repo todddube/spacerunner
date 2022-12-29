@@ -50,14 +50,14 @@ class MenuScene:SKScene {
         
         // Add Author / Copyright Information / Version and Build
         let appVersion = Bundle.main.infoDictionary!["CFBundleVersion"] as! String
-        let versionLabel = fonts.createLabel(string: "v0.5.12/22", labelType: fontType)
-        let buildLabel = fonts.createLabel(string: "(build: " + appVersion + ")", labelType: fontType)
-        let authorLabel = fonts.createLabel(string: "By Todd Dube", labelType: fontType)
+        let versionLabel = fonts.createLabel(string: "v0.5.12/22", labelType: GameFonts.LabelType.menu)
+        let buildLabel = fonts.createLabel(string: "(build: " + appVersion + ")", labelType: GameFonts.LabelType.menu)
+        let authorLabel = fonts.createLabel(string: "By Todd Dube", labelType: GameFonts.LabelType.menu)
         
         // Postion the lables
-        authorLabel.position = CGPoint(x: kViewSize.width * 0.40, y: kViewSize.height * 0.67)
-        versionLabel.position = CGPoint(x: kViewSize.width * 0.43 , y: kViewSize.height * 0.65)
-        buildLabel.position = CGPoint(x: kViewSize.width * 0.38, y: kViewSize.height * 0.63)
+        authorLabel.position = CGPoint(x: kViewSize.width * 0.50, y: kViewSize.height * 0.65)
+        versionLabel.position = CGPoint(x: kViewSize.width * 0.50 , y: kViewSize.height * 0.62)
+        buildLabel.position = CGPoint(x: kViewSize.width * 0.50, y: kViewSize.height * 0.59)
         
         self.addChild(authorLabel)
         self.addChild(versionLabel)

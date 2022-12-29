@@ -55,12 +55,13 @@ class StatusBar: SKNode {
         // Make the anchorPoint 0,0 so it is positioned using the lower left corner
         self.statusBarBackground.anchorPoint = CGPoint.zero
         
+        // MARK: statusBarPostion
         // Position statusBarBackground on the left edge of the screen and 95% up the screen
         // Adjusted from .97 to .93 for notched phones
-        // orig top of screen code
-        // self.statusBarBackground.position = CGPoint(x: 0, y: kViewSize.height * 0.93)
-        // MARK: statusBarPostion
-        self.statusBarBackground.position = CGPoint(x: 0, y: kViewSize.height * 0.015)
+        // self.statusBarBackground.position = CGPoint(x: 0, y: kViewSize.height * 0.91)
+        
+        // Bottom of screen options testing dunno
+        self.statusBarBackground.position = CGPoint(x: 0, y: kViewSize.height * 0.030)
         
         // Set the alpha to 75% opacity
         self.statusBarBackground.alpha = 0.75
@@ -102,12 +103,12 @@ class StatusBar: SKNode {
     fileprivate func setupStatusBarScore(score: Int) {
         // Static Label
         let scoreText = GameFonts.sharedInstance.createLabel(string: "Score: ", labelType: GameFonts.LabelType.statusBar)
-        scoreText.position = CGPoint(x: self.statusBarBackground.size.width * 0.6, y: self.statusBarBackground.size.height / 2)
+        scoreText.position = CGPoint(x: self.statusBarBackground.size.width * 0.75, y: self.statusBarBackground.size.height / 2)
         self.statusBarBackground.addChild(scoreText)
         
         // Score Label
         self.scoreLabel = GameFonts.sharedInstance.createLabel(string: String(score), labelType: GameFonts.LabelType.statusBar)
-        let offsetX = self.statusBarBackground.size.width * 0.75
+        let offsetX = self.statusBarBackground.size.width * 0.90
         let offsetY = self.statusBarBackground.size.height / 2
         self.scoreLabel.position = CGPoint(x: offsetX, y: offsetY)
         self.statusBarBackground.addChild(self.scoreLabel)

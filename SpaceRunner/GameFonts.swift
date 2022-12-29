@@ -21,11 +21,13 @@ class GameFonts {
         case statusBar
         case bonus
         case message
+        case menu
     }
     
     // MARK: - Private class constants
     // fileprivate let fontName = "./Game Resources/Fonts/editundo.ttf"
-    // using this one below as it doesnt work but renders a better default font 
+    // using this one below as it doesnt work but renders a better default font
+    // not specifying the fontName for now...
     fileprivate let fontName = "editundo.ttf"
     fileprivate let scoreSizePad:CGFloat = 24.0
     fileprivate let scoreSizePhone:CGFloat = 16.0
@@ -44,7 +46,8 @@ class GameFonts {
     
     // MARK:: - Setup
     fileprivate func setupLabel() {
-        self.label = SKLabelNode(fontNamed: self.fontName)
+        // self.label = SKLabelNode(fontNamed: self.fontName)
+        self.label = SKLabelNode()
     
         self.label.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
     }
@@ -69,6 +72,12 @@ class GameFonts {
             case LabelType.message:
                 copiedLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
                 copiedLabel.fontColor = Colors.colorFromRGB(rgbvalue: Colors.FontBonus)
+                copiedLabel.fontSize = kDeviceTablet ? self.messageSizePad : self.messageSizePhone
+                copiedLabel.text = string
+            
+            case LabelType.menu:
+                copiedLabel.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.center
+                copiedLabel.fontColor = Colors.colorFromRGB(rgbvalue: Colors.FontMenu)
                 copiedLabel.fontSize = kDeviceTablet ? self.messageSizePad : self.messageSizePhone
                 copiedLabel.text = string
         }

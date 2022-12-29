@@ -39,9 +39,11 @@ class PauseButton:SKSpriteNode {
         self.anchorPoint = CGPoint(x: 1.0, y: 1.0)
         
         // position at top right corner of the screen
+        // MARK: - Play Pause Button
         // moved status bar to bottom of the screen
-        // self.position = CGPoint(x: kViewSize.width, y:(kViewSize.height * 0.90))
-        self.position = CGPoint(x: kViewSize.width * 0.95, y:(kViewSize.height * 0.04))
+        // self.position = CGPoint(x: kViewSize.width, y:(kViewSize.height * 0.94))
+        self.position = CGPoint(x: kViewSize.width * 0.65, y:(kViewSize.height * 0.053))
+        
         // TODO: need to update / scale the pause button
         self.setScale(0.65)
     }

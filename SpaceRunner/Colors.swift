@@ -16,6 +16,7 @@ class Colors {
     class var ScreenFlash:Int   {return 0xffffcc}
     class var FontBonus:Int     {return 0xb3ff01}
     class var FontScore:Int     {return 0xe6e7e8}
+    class var FontMenu:Int      {return 0xffffff}
     class var Border:Int        {return 0x49b9ea}
     class var EngineGreen:Int   {return 0x55f87e}
     class var EngineYellow:Int  {return 0xEEF954}
