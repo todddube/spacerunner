@@ -228,8 +228,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     // MARK: - State Functions
     fileprivate func switchToTutorial() {
         // TODO: Need to setup some animations while in Tutorial mode.
-        // self.meteorController.startSendingMeteors()
-        // self.starController.startSendingStars()
+        self.meteorController.startSendingMeteors()
+        self.starController.startSendingStars()
     }
     
     fileprivate func switchToRunning() {
@@ -378,10 +378,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         })
     }
     
+    
     // MARK: - Explode Player
     func explodePlayer(_ pos: CGPoint) {
         
-        let emitterNode = SKEmitterNode(fileNamed: SpriteName.Explosion)
+        // let emitterNode = SKEmitterNode(fileNamed: SpriteName.Explosion)
+        // New explode sks implemented Jan 2023
+        let emitterNode = SKEmitterNode(fileNamed: SpriteName.Explode)
         // Set emitterNode at the provided position
         emitterNode?.position = pos
         

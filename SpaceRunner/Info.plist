@@ -24,8 +24,12 @@
 	<true/>
 	<key>NSHumanReadableCopyright</key>
 	<string>Copyright (c) Todd Dube - All Rights Reserved</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>editundo.ttf</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
-	<string>Main</string>
+	<string>Main.storyboard</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -42,10 +46,6 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UIAppFonts</key>
-	<array>
-		<string>editundo.ttf</string>
 	</array>
 </dict>
 </plist>

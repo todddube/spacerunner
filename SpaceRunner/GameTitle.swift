@@ -39,7 +39,7 @@ class GameTitle: SKSpriteNode {
     
     fileprivate func setupAnimation() {
         let moveIn = SKAction.move(to: CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.7), duration: 1.5)
-        let scaleUp = SKAction.scale(to: 2.0, duration: 0.125)
+        let scaleUp = SKAction.scale(to: 1.1, duration: 0.125)
         let scaleDown = SKAction.scale(to: 1.0, duration: 0.125)
         
         self.animation = SKAction.sequence([moveIn, scaleUp, scaleDown])

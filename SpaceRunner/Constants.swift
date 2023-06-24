@@ -49,6 +49,7 @@ class SpriteName {
     // Particles
     class var Magic:String          {return "Magic"}
     class var Explosion:String      {return "ExplosionParticle.sks"}
+    class var Explode: String       {return "explode.sks"}
     class var ExplodeStar:String    {return "StarParticle.sks"}
     
     // Status Bar
