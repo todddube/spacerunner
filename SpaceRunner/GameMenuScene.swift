@@ -56,7 +56,7 @@ class GameMenuScene: SKScene {
         
         
         // Add Author / Copyright Information
-        let authorLabel = fonts.createLabel(string: "Copyright 2022 - Todd Dube", labelType: fontType)
+        let authorLabel = fonts.createLabel(string: "Copyright 2023 - Todd Dube", labelType: fontType)
         
         authorLabel.position = CGPoint(x: kViewSize.width * 0.05, y: kViewSize.height * 0.05)
 
