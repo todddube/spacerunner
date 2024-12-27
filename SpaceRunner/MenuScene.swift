@@ -50,7 +50,7 @@ class MenuScene:SKScene {
         
         // Add Author / Copyright Information / Version and Build
         let appVersion = Bundle.main.infoDictionary!["CFBundleVersion"] as! String
-        let versionLabel = fonts.createLabel(string: "v0.5.12/22", labelType: GameFonts.LabelType.menu)
+        let versionLabel = fonts.createLabel(string: "v0.5.12.24", labelType: GameFonts.LabelType.menu)
         let buildLabel = fonts.createLabel(string: "(build: " + appVersion + ")", labelType: GameFonts.LabelType.menu)
         let authorLabel = fonts.createLabel(string: "By Todd Dube", labelType: GameFonts.LabelType.menu)
         
