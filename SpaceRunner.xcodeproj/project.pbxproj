@@ -48,6 +48,7 @@
 		2758A4A41CA7FE8B00683552 /* ScoreBoard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2758A4A31CA7FE8B00683552 /* ScoreBoard.swift */; };
 		275F8ABE1CAED3C30081543A /* PauseButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 275F8ABD1CAED3C30081543A /* PauseButton.swift */; };
 		2766309A1CADA5A300CF2E43 /* GameAudio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276630991CADA5A300CF2E43 /* GameAudio.swift */; };
+		277ADDF62E2C19260066E326 /* auto_increment_version.sh in Resources */ = {isa = PBXBuildFile; fileRef = 277ADDF42E2C19260066E326 /* auto_increment_version.sh */; };
 		2781DA3C1CA047CF001F9106 /* PlayButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2781DA3B1CA047CF001F9106 /* PlayButton.swift */; };
 		2782E46B247B058B00204498 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2782E469247B058B00204498 /* Assets.xcassets */; };
 		2792AD8D1CA1E264001C4393 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 2792AD871CA1E264001C4393 /* Default-568h@2x.png */; };
@@ -138,6 +139,7 @@
 		2765EC42292C0F2000186D93 /* en */ = {isa = PBXFileReference; lastKnownFileType = file; name = en; path = en.lproj/editundo.ttf; sourceTree = "<group>"; };
 		2765EC44292C0F2900186D93 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file; name = Base; path = Base.lproj/editundo.ttf; sourceTree = "<group>"; };
 		276630991CADA5A300CF2E43 /* GameAudio.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameAudio.swift; sourceTree = "<group>"; };
+		277ADDF42E2C19260066E326 /* auto_increment_version.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = auto_increment_version.sh; sourceTree = "<group>"; };
 		2781DA3B1CA047CF001F9106 /* PlayButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayButton.swift; sourceTree = "<group>"; };
 		2782E469247B058B00204498 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Assets.xcassets; path = GameResources/Assets.xcassets; sourceTree = "<group>"; };
 		2792AD871CA1E264001C4393 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -213,6 +215,7 @@
 		2706E41D1C9E1AC20068CDAD /* SpaceRunner */ = {
 			isa = PBXGroup;
 			children = (
+				277ADDF52E2C19260066E326 /* Scripts */,
 				2706E4541C9E1E620068CDAD /* Classes */,
 				2706E4551C9EE5080068CDAD /* Game Resources */,
 				2792AD861CA1E264001C4393 /* Launch */,
@@ -365,6 +368,14 @@
 				2717075F1CB2E2260084BADE /* Grayscale.fsh */,
 			);
 			name = Shaders;
+			sourceTree = "<group>";
+		};
+		277ADDF52E2C19260066E326 /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				277ADDF42E2C19260066E326 /* auto_increment_version.sh */,
+			);
+			path = Scripts;
 			sourceTree = "<group>";
 		};
 		2781DA3A1CA047BB001F9106 /* Buttons */ = {
@@ -577,6 +588,7 @@
 				2792AD8E1CA1E264001C4393 /* Default-667h@2x.png in Resources */,
 				27B6EEC01CCD2DE400D48CCE /* StarParticle.sks in Resources */,
 				2706E47A1C9EE5080068CDAD /* ButtonTap.caf in Resources */,
+				277ADDF62E2C19260066E326 /* auto_increment_version.sh in Resources */,
 				2754039524685ACA001C5B2A /* Main.storyboard in Resources */,
 				271707601CB2E2260084BADE /* Grayscale.fsh in Resources */,
 				2792AD8D1CA1E264001C4393 /* Default-568h@2x.png in Resources */,

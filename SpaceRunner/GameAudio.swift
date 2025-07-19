@@ -37,7 +37,7 @@ final class GameAudio {
     // MARK: - Observable Properties
     private(set) var isInitialized: Bool = false
     private(set) var isMusicPlaying: Bool = false
-    private(set) var musicVolume: Float = 0.15 {
+    private(set) var musicVolume: Float = 0.6 {
         didSet { updateMusicVolume() }
     }
     private(set) var effectsVolume: Float = 1.0
@@ -55,9 +55,12 @@ final class GameAudio {
     
     // MARK: - Initialization
     private init() {
-        Task {
-            await setupAudioEngine()
-        }
+        // Initialization happens asynchronously
+    }
+    
+    func initializeAudio() async {
+        guard !isInitialized else { return }
+        await setupAudioEngine()
     }
     
     // MARK: - Audio Engine Setup
@@ -77,7 +80,7 @@ final class GameAudio {
     @MainActor
     private func configureAudioSession() async throws {
         let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.ambient, mode: .gameChat, options: [.mixWithOthers])
+        try session.setCategory(.playback, mode: .gameChat, options: [.duckOthers])
         try session.setActive(true)
     }
     
@@ -172,11 +175,19 @@ final class GameAudio {
     
     // MARK: - Public Audio Control
     func playBackgroundMusic(_ track: MusicTrack = .game) {
-        guard isInitialized, let buffer = currentMusicBuffer else {
-            logger.warning("Audio not initialized or music buffer not loaded")
-            return
+        Task {
+            await ensureInitialized()
+            await MainActor.run {
+                guard isInitialized, let buffer = currentMusicBuffer else {
+                    logger.warning("Audio not initialized or music buffer not loaded")
+                    return
+                }
+                startPlayingMusic(buffer: buffer, track: track)
+            }
         }
-        
+    }
+    
+    private func startPlayingMusic(buffer: AVAudioPCMBuffer, track: MusicTrack) {
         stopBackgroundMusic()
         
         musicPlayerNode.scheduleBuffer(buffer, at: nil, options: .loops) { [weak self] in
@@ -188,6 +199,12 @@ final class GameAudio {
         musicPlayerNode.play()
         isMusicPlaying = true
         logger.info("Started playing background music: \(track.fileName)")
+    }
+    
+    private func ensureInitialized() async {
+        if !isInitialized {
+            await initializeAudio()
+        }
     }
     
     func stopBackgroundMusic() {

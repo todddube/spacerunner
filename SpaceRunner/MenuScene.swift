@@ -49,9 +49,10 @@ class MenuScene:SKScene {
         self.addChild(self.gameTitleShip)
         
         // Add Author / Copyright Information / Version and Build
-        let appVersion = Bundle.main.infoDictionary!["CFBundleVersion"] as! String
-        let versionLabel = fonts.createLabel(string: "v0.5.12.24", labelType: GameFonts.LabelType.menu)
-        let buildLabel = fonts.createLabel(string: "(build: " + appVersion + ")", labelType: GameFonts.LabelType.menu)
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+        let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
+        let versionLabel = fonts.createLabel(string: "v\(appVersion)", labelType: GameFonts.LabelType.menu)
+        let buildLabel = fonts.createLabel(string: "(build: \(buildNumber))", labelType: GameFonts.LabelType.menu)
         let authorLabel = fonts.createLabel(string: "By Todd Dube", labelType: GameFonts.LabelType.menu)
         
         // Postion the lables

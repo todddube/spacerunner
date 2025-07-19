@@ -121,6 +121,12 @@ To fix: Add these files to the Xcode project manually via "Add Files to Project"
    - Info.plist must reference: `GameResources/Fonts/Base.lproj/editundo.ttf`
    - GameFonts.swift includes fallback to system font if custom font fails
 
+7. **No game music playing** - Audio initialization and session issues
+   - GameAudio now initializes in AppDelegate.didFinishLaunching
+   - Audio session changed from `.ambient` to `.playback` for proper game music
+   - Music volume increased from 0.15 to 0.6 for audibility
+   - Async initialization ensures audio is ready before music attempts to play
+
 ### Troubleshooting
 - Always build for iOS Simulator to avoid provisioning issues
 - Use `grep -E "(error:|warning:)"` to filter build output for actual issues

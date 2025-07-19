@@ -12,7 +12,7 @@ import Observation
 
 @available(iOS 18.0, *)
 @MainActor
-final class GameScene: SKScene, SKPhysicsContactDelegate {
+final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     
     // MARK: - Game State
     @Observable
