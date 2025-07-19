@@ -50,7 +50,7 @@ class PauseButton:SKSpriteNode {
     
     // MARK: - Actions
     func tapped() {
-        self.run(GameAudio.sharedInstance.soundButtonTap)
+        GameAudio.shared.playSoundEffect(.buttonTap)
         
         // Flip the value of gamePaused
         self.gamePaused = !self.gamePaused

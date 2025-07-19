@@ -90,4 +90,23 @@ class StarController: SKNode {
             }
         }
     }
+    
+    // MARK: - Reset
+    func reset() {
+        // Stop sending stars
+        sendingStars = false
+        movingStars = false
+        
+        // Reset frame counter
+        frameCount = 0.0
+        
+        // Remove all active stars from the scene
+        removeAllChildren()
+        
+        // Reset star template to initial state
+        star.removeFromParent()
+        star.removeAllActions()
+        star.alpha = 1.0
+        star.colorBlendFactor = 0.0
+    }
 }

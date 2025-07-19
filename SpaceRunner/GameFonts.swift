@@ -43,7 +43,13 @@ class GameFonts {
     
     // MARK:: - Setup
     fileprivate func setupLabel() {
-        self.label = SKLabelNode(fontNamed: self.fontName)
+        // Try to load custom font, fallback to system font if it fails
+        if let _ = UIFont(name: self.fontName, size: 12) {
+            self.label = SKLabelNode(fontNamed: self.fontName)
+        } else {
+            print("Warning: Custom font '\(self.fontName)' not found, using system font")
+            self.label = SKLabelNode(fontNamed: "Helvetica-Bold")
+        }
     
         self.label.verticalAlignmentMode = SKLabelVerticalAlignmentMode.center
     }

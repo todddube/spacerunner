@@ -108,4 +108,25 @@ class MeteorController: SKNode {
             }
         }
     }
+    
+    // MARK: - Reset
+    func reset() {
+        // Stop sending meteors
+        sendingMeteors = false
+        movingMeteors = false
+        
+        // Reset frame counter
+        frameCount = 0.0
+        
+        // Remove all active meteors from the scene
+        removeAllChildren()
+        
+        // Reset meteor templates to initial state
+        for meteor in meteorArray {
+            meteor.removeFromParent()
+            meteor.removeAllActions()
+            meteor.alpha = 1.0
+            meteor.colorBlendFactor = 0.0
+        }
+    }
 }

@@ -65,9 +65,9 @@ class GameOverScene: SKScene {
     
     fileprivate func setupScoreBoard(score: Int, stars: Int, streak: Int) {
         // Retrieve the best score, starts, and streak
-        let bestScore = GameSettings.sharedInstance.getBestScore()
-        let bestStars = GameSettings.sharedInstance.getBestStars()
-        let bestStreak = GameSettings.sharedInstance.getBestStreak()
+        let bestScore = GameSettings.shared.bestScore
+        let bestStars = GameSettings.shared.bestStars
+        let bestStreak = GameSettings.shared.bestStreak
     
         self.scoreBoard = ScoreBoard(score: score, bestScore: bestScore, streak: streak, bestStreak: bestStreak, stars: stars, bestStars: bestStars)
         

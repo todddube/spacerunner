@@ -47,7 +47,7 @@ class PlayButton: SKSpriteNode {
     
     // MARK: - Actions
     func tapped() {
-        self.run(GameAudio.sharedInstance.soundButtonTap)
+        GameAudio.shared.playSoundEffect(.buttonTap)
     }
     
     // MARK: - Animations

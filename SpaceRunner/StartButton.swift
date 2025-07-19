@@ -39,6 +39,6 @@ class StartButton: SKSpriteNode {
     }
     
     func tapped() {
-        self.run(GameAudio.sharedInstance.soundButtonTap)
+        GameAudio.shared.playSoundEffect(.buttonTap)
     }
 }

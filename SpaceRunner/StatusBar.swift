@@ -160,4 +160,30 @@ class StatusBar: SKNode {
         
         return scaleSequence
     }
+    
+    // MARK: - Reset
+    func reset() {
+        // Reset all displays to initial values
+        updateScore(score: 0)
+        updateLives(lives: 3)
+        updateStarsCollected(collected: 0)
+        
+        // Remove any active animations
+        removeAllActions()
+        
+        // Reset pause button state
+        pauseButton.removeAllActions()
+        pauseButton.alpha = 1.0
+        
+        // Reset visual effects
+        alpha = 1.0
+        
+        // Reset labels to initial states
+        scoreLabel.removeAllActions()
+        starsCollectedLabel.removeAllActions()
+        
+        // Reset background
+        statusBarBackground.removeAllActions()
+        statusBarBackground.alpha = 1.0
+    }
 }

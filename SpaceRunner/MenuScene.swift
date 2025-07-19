@@ -35,7 +35,7 @@ class MenuScene:SKScene {
     }
     
     override func didMove(to view: SKView) {
-        GameAudioSharedInstace.playBackgroundMusic(fileName: Music.Game)
+        GameAudio.shared.playBackgroundMusic()
         self.setupMenuScene()
     }
     

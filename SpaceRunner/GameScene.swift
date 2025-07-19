@@ -3,36 +3,59 @@
 //  SpaceRunner
 //
 //  Created by Todd Dube : 2025
-//  Purpose: Primary gameplay scene managing game states, player input, and collision detection.
+//  Purpose: Modern game scene with reactive state management and iOS 18+ optimizations.
 //
 
 import SpriteKit
+import OSLog
+import Observation
 
-class GameScene: SKScene, SKPhysicsContactDelegate {
+@available(iOS 18.0, *)
+@MainActor
+final class GameScene: SKScene, SKPhysicsContactDelegate {
     
-    // MARK: - Private class enum
-    fileprivate enum GameState:Int {
-        case tutorial
-        case running
-        case paused
-        case gameOver
+    // MARK: - Game State
+    @Observable
+    final class GameState {
+        enum Phase {
+            case tutorial
+            case running
+            case paused
+            case gameOver
+        }
+        
+        var currentPhase: Phase = .tutorial
+        var score: Int = 0
+        var lives: Int = 3
+        var starsCollected: Int = 0
+        var isGameActive: Bool { currentPhase == .running }
     }
     
-    // MARK: - Private class constants
-    fileprivate let gameNode = SKNode()
-    fileprivate let interfaceNode = SKNode()
-    fileprivate let background = Background()
-    fileprivate let startButton = StartButton()
-    fileprivate let player = Player()
-    fileprivate let meteorController = MeteorController()
-    fileprivate let starController = StarController()
+    // MARK: - Properties
+    private(set) var gameState = GameState()
+    private let gameSettings = GameSettings.shared
+    private let audioManager = GameAudio.shared
+    // private let accessibilityManager = AccessibilityManager.shared // TODO: Add AccessibilityManager to project
     
-    // MARK: - Private class variables
-    fileprivate var state = GameState.tutorial
-    fileprivate var lastUpdateTime:TimeInterval = 0.0
-    fileprivate var frameCount:TimeInterval = 0.0
-    fileprivate var statusBar = StatusBar()
+    private let gameNode = SKNode()
+    private let interfaceNode = SKNode()
+    private let background = Background()
+    private let startButton = StartButton()
+    private let player = Player()
+    private let meteorController = MeteorController()
+    private let starController = StarController()
+    private var statusBar = StatusBar()
     
+    private var lastUpdateTime: TimeInterval = 0.0
+    private var frameCount: TimeInterval = 0.0
+    
+    private let logger = Logger(subsystem: "com.todddube.spacerunner", category: "GameScene")
+    
+    // MARK: - Notification Names
+    private enum NotificationName {
+        static let pauseGame = Notification.Name("PauseGame")
+        static let resumeGame = Notification.Name("ResumeGame")
+    }
     
     // MARK: - Init
     required init?(coder aDecoder: NSCoder) {
@@ -44,360 +67,322 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     }
     
     override func didMove(to view: SKView) {
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(GameScene.pauseGame), name: NSNotification.Name(rawValue: "PauseGame"), object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(GameScene.resumeGame), name: NSNotification.Name(rawValue: "ResumeGame"), object: nil)
-        self.setupGameScene()
+        Task {
+            await setupScene()
+        }
+        setupNotifications()
+        logger.info("GameScene initialized and moved to view")
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        logger.info("GameScene deinitialized")
     }
     
     // MARK: - Setup
-    fileprivate func setupGameScene() {
-        // set the background color to black
-        self.backgroundColor = SKColor.black
+    private func setupScene() async {
+        backgroundColor = .black
+        setupPhysics()
+        await setupGameNodes()
+        setupInterface()
+        setupAccessibility()
         
-        // Set up the physics for the world
-        self.physicsWorld.gravity = CGVector(dx: 0, dy: 0)
-        self.physicsWorld.contactDelegate = self
+        // Initialize game state
+        gameState.lives = player.lives
+        gameState.score = player.score
+        gameState.starsCollected = 0 // TODO: Track stars collected separately
         
-        // Create the physics body for the gameNode
-        let screenBounds = CGRect(x: -self.player.size.width / 2, y: 0, width: kViewSize.width + self.player.size.width, height: kViewSize.height)
-        self.gameNode.physicsBody = SKPhysicsBody(edgeLoopFrom: screenBounds)
-        self.gameNode.physicsBody?.categoryBitMask = Contact.Scene
-        
-        // Add gameNode to the scene
-        self.addChild(self.gameNode)
-        
-        // Add the background node to the game node
-        self.gameNode.addChild(background)
-        
-        // Add the play button to the gameNode
-        self.gameNode.addChild(self.startButton)
-        
-        // Add the meteor controller to the gameNode
-        self.gameNode.addChild(self.meteorController)
-        
-        // Add the starController to the gameNode
-        self.gameNode.addChild(self.starController)
-        
-        // Add the player to the gameNode
-        self.gameNode.addChild(self.player)
-        
-        // Add the interfaceNode to the scene
-        self.addChild(self.interfaceNode)
-        
-        // Add the statusBar to the InterfaceNode
-        self.statusBar = StatusBar(lives: self.player.lives, score: self.player.score, stars: self.player.starsCollected)
-        self.interfaceNode.addChild(self.statusBar)
-        
+        // Start tutorial phase
+        setCurrentPhase(.tutorial)
     }
     
-    // MARK: - Update
+    private func setupPhysics() {
+        physicsWorld.contactDelegate = self
+        physicsWorld.gravity = CGVector(dx: 0.0, dy: 0.0)
+    }
+    
+    private func setupGameNodes() async {
+        // Add main game node
+        addChild(gameNode)
+        gameNode.zPosition = GameLayer.Background
+        
+        // Setup background
+        background.zPosition = GameLayer.Background
+        gameNode.addChild(background)
+        
+        // Setup player
+        player.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.15)
+        player.zPosition = GameLayer.Player
+        gameNode.addChild(player)
+        
+        // Setup controllers
+        gameNode.addChild(meteorController)
+        gameNode.addChild(starController)
+        
+        // Initialize audio
+        audioManager.playBackgroundMusic()
+    }
+    
+    private func setupInterface() {
+        // Add interface node
+        addChild(interfaceNode)
+        interfaceNode.zPosition = GameLayer.Interface
+        
+        // Setup start button
+        startButton.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height / 2)
+        startButton.zPosition = GameLayer.Interface
+        interfaceNode.addChild(startButton)
+        
+        // Setup status bar
+        statusBar.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height - 60)
+        statusBar.zPosition = GameLayer.Interface
+        interfaceNode.addChild(statusBar)
+    }
+    
+    private func setupAccessibility() {
+        accessibilityLabel = "SpaceRunner Game Scene"
+        isAccessibilityElement = false
+        
+        // Configure child element accessibility
+        gameNode.accessibilityLabel = "Game World"
+        interfaceNode.accessibilityLabel = "Game Interface"
+    }
+    
+    private func setupNotifications() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(pauseGame),
+            name: NotificationName.pauseGame,
+            object: nil
+        )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(resumeGame),
+            name: NotificationName.resumeGame,
+            object: nil
+        )
+    }
+    
+    // MARK: - Game State Management
+    private func setCurrentPhase(_ phase: GameState.Phase) {
+        gameState.currentPhase = phase
+        
+        switch phase {
+        case .tutorial:
+            showTutorial()
+        case .running:
+            startGame()
+        case .paused:
+            pauseGameplay()
+        case .gameOver:
+            endGame()
+        }
+        
+        logger.info("Game phase changed to: \(String(describing: phase))")
+    }
+    
+    private func showTutorial() {
+        startButton.isHidden = false
+        statusBar.isHidden = true
+        
+        // Pause physics
+        physicsWorld.speed = 0.0
+        
+        // Show tutorial elements
+        player.disableMovement() // Start with movement disabled in tutorial
+    }
+    
+    private func startGame() {
+        startButton.isHidden = true
+        statusBar.isHidden = false
+        
+        // Resume physics
+        physicsWorld.speed = 1.0
+        
+        // Start gameplay
+        player.enableMovement()
+        meteorController.startSendingMeteors()
+        starController.startSendingStars()
+        
+        // Update UI
+        updateStatusBar()
+    }
+    
+    private func pauseGameplay() {
+        physicsWorld.speed = 0.0
+        meteorController.stopSendingMetors()  // No pause method, use stop
+        starController.stopSendingStars()     // No pause method, use stop
+        audioManager.pauseBackgroundMusic()
+    }
+    
+    private func endGame() {
+        physicsWorld.speed = 0.0
+        meteorController.stopSendingMetors()
+        starController.stopSendingStars()
+        
+        // Update high scores
+        gameSettings.updateBestScore(gameState.score)
+        gameSettings.updateBestStars(gameState.starsCollected)
+        
+        // Show game over elements
+        player.gameOver()
+        meteorController.gameOver()
+        starController.gameOver()
+        
+        // Transition to game over scene after delay
+        let waitAction = SKAction.wait(forDuration: 2.0)
+        let transitionAction = SKAction.run { [weak self] in
+            self?.transitionToGameOver()
+        }
+        
+        run(SKAction.sequence([waitAction, transitionAction]))
+    }
+    
+    private func transitionToGameOver() {
+        guard let view = view else { return }
+        
+        let gameOverScene = GameOverScene(size: size, score: gameState.score, stars: gameState.starsCollected, streak: 0)
+        
+        let transition = SKTransition.fade(with: .black, duration: 0.75)
+        view.presentScene(gameOverScene, transition: transition)
+        
+        logger.info("Transitioned to game over scene")
+    }
+    
+    // MARK: - Update Loop
     override func update(_ currentTime: TimeInterval) {
-        // Calc "delta"
-        let delta = currentTime - self.lastUpdateTime
-        self.lastUpdateTime = currentTime
+        guard gameState.isGameActive else { return }
         
-        // Switch on GameState
-        switch self.state {
-            case GameState.tutorial:
-                // setting up
-                return
-            
-            case GameState.running:
-                // check if the player has more than 0 lives
-                if self.player.lives > 0 {
-                    // manually run the update on the player
-                    self.player.update()
-                
-                    // manually run the update on meteorController
-                    self.meteorController.update(delta: delta)
-                    
-                    // manually run update on the StarController
-                    self.starController.update(delta: delta)
-                    
-                    // increase frameCount by delta
-                    self.frameCount += delta
-                    
-                    // if frameCount is greater than 1.0, approximately 1 second has passed
-                    if self.frameCount >= 1.0 {
-                        // increase the players score by 1 point
-                        self.updateDistanceTick()
-                        
-                        // reset the frameCount to 0
-                        self.frameCount = 0.0
-                    }
-                } else {
-                    // the player is out of lives
-                    self.switchToGameOver()
-            }
-            case GameState.paused:
-                return
-            
-            case GameState.gameOver:
-                return
+        let deltaTime = calculateDeltaTime(currentTime)
+        frameCount += deltaTime
+        
+        // Update game objects
+        player.update()
+        meteorController.update(delta: deltaTime)
+        starController.update(delta: deltaTime)
+        
+        // Update game state
+        updateGameState()
+        updateStatusBar()
+    }
+    
+    private func calculateDeltaTime(_ currentTime: TimeInterval) -> TimeInterval {
+        let deltaTime = lastUpdateTime > 0 ? currentTime - lastUpdateTime : 0
+        lastUpdateTime = currentTime
+        return min(deltaTime, 1.0/30.0) // Cap at 30 FPS minimum
+    }
+    
+    private func updateGameState() {
+        gameState.score = player.score
+        gameState.lives = player.lives
+        // starsCollected is tracked directly in gameState when stars are collected
+        
+        // Check for game over
+        if player.lives <= 0 && gameState.currentPhase == .running {
+            setCurrentPhase(.gameOver)
         }
     }
     
-    func didBegin(_ contact: SKPhysicsContact) {
-        if self.state == GameState.tutorial || self.state == GameState.paused || self.state == GameState.gameOver {
-            return
-        } else {
-            // Which body is not the player
-            let other = contact.bodyA.categoryBitMask == Contact.Player ? contact.bodyB : contact.bodyA
-            
-            if other.categoryBitMask == Contact.Meteor {
-                // Player is not immune
-                if !self.player.immune {
-                    
-                    self.player.hitMeteor()
-                    self.statusBar.updateLives(lives: self.player.lives)
-                    
-                    if let meteor = other.node as? Meteor {
-                        meteor.hitMeteor()
-                    }
-                    
-                    self.explodePlayer(self.player.position)
-                    self.flashBackground()   // Run Flash Background
-                    self.shakeScreen()       // shake the screen
-                    
-                } else {
-                    // player is immune
-                    return
-                }
-            }
-            
-            if other.categoryBitMask == Contact.Star {
-                // update the players score
-                self.player.pickedUpStar()
-                
-                // update the players score on the status bar
-                self.statusBar.updateScore(score: self.player.score)
-                
-                // update the players star count on the status bar
-                self.statusBar.updateStarsCollected(collected: self.player.starsCollected)
-                
-                if let star = other.node as? Star {
-                    star.pickedUpStar()
-                
-                // star explode
-                self.explodeStar(self.player.position)
-                    
-                }
-            }
-        }
+    private func updateStatusBar() {
+        statusBar.updateScore(score: gameState.score)
+        statusBar.updateLives(lives: gameState.lives)
+        statusBar.updateStarsCollected(collected: gameState.starsCollected)
     }
     
-    // MARK: Touch Events
+    // MARK: - Touch Handling
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let touch:UITouch = touches.first! as UITouch
-        let touchLocation = touch.location(in: self)
+        guard let touch = touches.first else { return }
+        let location = touch.location(in: self)
         
-        switch state {
-            case GameState.tutorial:
-                if self.startButton.contains(touchLocation) {
-                    // Change the state to running
-                    self.startButton.tapped()
-                    self.switchToRunning()
-                }
-            
-            case GameState.running:
-                if self.statusBar.pauseButton.contains(touchLocation) {
-                    self.pauseButtonPressed()
-                } else {
-                    self.player.updateTargetLocation(newLocation: touchLocation)
-            }
-                // working on getting touch elsewhere on status bar event
-                // eventing a pause for the time being will use this for settings scene display w/ pause
-                if self.statusBar.contains(touchLocation) {
-                    self.pauseButtonPressed()
-                } else {
-                    self.player.updateTargetLocation(newLocation: touchLocation)
-            }
-            
-            case GameState.paused:
-                if self.statusBar.pauseButton.contains(touchLocation) {
-                    self.pauseButtonPressed()
-                }
-            
-            case GameState.gameOver:
-                return
+        switch gameState.currentPhase {
+        case .tutorial:
+            handleTutorialTouch(at: location)
+        case .running:
+            handleGameplayTouch(at: location)
+        case .paused, .gameOver:
+            break
         }
     }
     
-    // MARK: - State Functions
-    fileprivate func switchToTutorial() {
-        // TODO: Need to setup some animations while in Tutorial mode.
-        self.meteorController.startSendingMeteors()
-        self.starController.startSendingStars()
-    }
-    
-    fileprivate func switchToRunning() {
-        self.state = GameState.running
-        
-        // Enable Player Movement 
-        self.player.enableMovement()
-        
-        // Move Player up to the StartButton location
-        self.player.updateTargetLocation(newLocation: self.startButton.position)
-        
-        // Fade StartButton out and remove it from the scene
-        self.startButton.fadeStartButton()
-        
-        // Start the background
-        self.background.startBackgrond()
-        
-        // Start sending meteors
-        self.meteorController.startSendingMeteors()
-        
-        // start sending stars
-        self.starController.startSendingStars()
-    }
-    
-    fileprivate func switchToPaused() {
-        self.state = GameState.paused
-    }
-    
-    // Was private but casued crashed because it couldnt find on resume this function.
-    // public was changed by xcode to internal.
-    @objc internal func switchToResume() {
-        self.state = GameState.running
-    }
-    
-    fileprivate func switchToGameOver() {
-        self.state = GameState.gameOver
-        
-        // Disable Player movement
-        self.player.disableMovement()
-        
-        // Run the gameOver function to check scores
-        self.player.gameOver()
-        
-        // Run the gameOver function on the meteors
-        self.meteorController.gameOver()
-        
-        // Run the gameOver function on the stars
-        self.starController.gameOver()
-        
-        // Run the gameOver function on the backgrond
-        self.background.gameOver()
-
-        // Stop background
-        self.background.stopBackground()
-        
-        // Stop sending meteors
-        self.meteorController.stopSendingMetors()
-        
-        // stop sending stars
-        self.starController.stopSendingStars()
-        
-        // load the GameOverScene after a 1.5 second delay
-        self.run(SKAction.wait(forDuration: 1.5), completion: {
-            self.loadGameOverScene()
-        })
-    }
-    
-    // MARK: - Pause Button Actions
-    fileprivate func pauseButtonPressed() {
-        self.statusBar.pauseButton.tapped()
-        
-        if self.statusBar.pauseButton.getPauseState() {
-            // pause the gameNode
-            self.gameNode.isPaused = true
-            
-            // set the state to paused
-            self.switchToPaused()
-            
-            // pause the background music
-            GameAudio.sharedInstance.pauseBackgroundMusic()
-        } else {
-            // resume the gameNode
-            self.gameNode.isPaused = false
-            
-            // swtich state to running without doing the other init in switchToRunning()
-            self.switchToResume()
-            
-            // resume the background music
-            GameAudio.sharedInstance.resumeBackgroundMusic()
+    private func handleTutorialTouch(at location: CGPoint) {
+        if startButton.contains(location) {
+            audioManager.playSoundEffect(.buttonTap)
+            setCurrentPhase(.running)
         }
     }
     
-    // MARK: - Load Scene
-    fileprivate func loadGameOverScene() {
-        let gameOverScene = GameOverScene(size: kViewSize, score: self.player.score, stars: self.player.starsCollected, streak: self.player.highStreak)
-//        let transition = SKTransition.fadeWithColor(SKColor.blackColor(), duration: 0.25)
-        let transition = SKTransition.doorsCloseVertical(withDuration: 1.0)
+    private func handleGameplayTouch(at location: CGPoint) {
+        player.updateTargetLocation(newLocation: location)
+    }
+    
+    // MARK: - Physics Contact
+    func didBegin(_ contact: SKPhysicsContact) {
+        let contactA = contact.bodyA.categoryBitMask
+        let contactB = contact.bodyB.categoryBitMask
         
-        self.view?.presentScene(gameOverScene, transition: transition)
-    }
-    
-    // MARK: - Scoring functions
-    fileprivate func updateDistanceTick() {
-        self.player.updatePlayerScore(score: 1)
-        self.statusBar.updateScore(score: self.player.score)
-    }
-    
-    // MARK: - NSNotifications functions
-    @objc func pauseGame() {
-        self.switchToPaused()
-    }
-    
-    @objc func resumeGame() {
-        // Run a timer that resumes the game after 1 second
-        Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector (GameScene.switchToResume)    , userInfo:  nil, repeats:  false)
-    }
-    
-    // MARK: - deinit 
-    // best practice when using NSNotificationCenter - when GameScene exits we want it 
-    // to "unregister" from notifications
-    deinit {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    // MARK: - Animation Functions
-    func flashBackground() {
-        let colorFlash = SKAction.run({
-            self.backgroundColor = Colors.colorFromRGB(rgbvalue: Colors.ScreenFlash)
-            self.run(SKAction.wait(forDuration: 0.15), completion: {
-                self.backgroundColor = Colors.colorFromRGB(rgbvalue: Colors.Background)
-            })
-        })
-        self.run(colorFlash)
-    }
-
-    func explodeStar(_ pos: CGPoint) {
-        let emitterNode = SKEmitterNode(fileNamed: SpriteName.ExplodeStar)
-        // set emitterNode at the provide position
-        emitterNode?.position = pos
+        // Player collision with meteor
+        if (contactA == Contact.Player && contactB == Contact.Meteor) ||
+           (contactA == Contact.Meteor && contactB == Contact.Player) {
+            handlePlayerMeteorCollision(contact)
+        }
         
-        self.addChild(emitterNode!)
-        
-        // remove emitter after the explosion
-        self.run(SKAction.wait(forDuration: 1.0), completion: {
-            emitterNode?.removeFromParent()
-        })
+        // Player collection of star
+        if (contactA == Contact.Player && contactB == Contact.Star) ||
+           (contactA == Contact.Star && contactB == Contact.Player) {
+            handlePlayerStarCollection(contact)
+        }
     }
     
-    
-    // MARK: - Explode Player
-    func explodePlayer(_ pos: CGPoint) {
+    private func handlePlayerMeteorCollision(_ contact: SKPhysicsContact) {
+        guard gameState.isGameActive else { return }
         
-        // let emitterNode = SKEmitterNode(fileNamed: SpriteName.Explosion)
-        // New explode sks implemented Jan 2023
-        let emitterNode = SKEmitterNode(fileNamed: SpriteName.Explode)
-        // Set emitterNode at the provided position
-        emitterNode?.position = pos
+        let meteor = contact.bodyA.categoryBitMask == Contact.Meteor ? 
+                     contact.bodyA.node : contact.bodyB.node
         
-        self.addChild(emitterNode!)
-        
-        // Remove emitter after the explosion
-        self.run(SKAction.wait(forDuration: 1.0), completion: {
-            emitterNode?.removeFromParent()
-        })
+        if let meteorNode = meteor as? Meteor {
+            player.hitMeteor()
+            meteorNode.hitMeteor()
+            audioManager.playSoundEffect(.explosion)
+            
+            logger.info("Player hit by meteor")
+        }
     }
     
-    func shakeScreen() {
-        let shake = SKAction.screenShakeWithNode(self.gameNode, amount: CGPoint(x: 20, y: 15), oscillations: 5, duration: 0.75)
-        self.run(shake)
+    private func handlePlayerStarCollection(_ contact: SKPhysicsContact) {
+        guard gameState.isGameActive else { return }
+        
+        let star = contact.bodyA.categoryBitMask == Contact.Star ? 
+                   contact.bodyA.node : contact.bodyB.node
+        
+        if let starNode = star as? Star {
+            starNode.pickedUpStar()  // This handles the audio and removal
+            gameState.starsCollected += 1
+            player.pickedUpStar()     // Update player's star count
+            
+            logger.info("Star collected")
+        }
+    }
+    
+    // MARK: - Notification Handlers
+    @objc private func pauseGame() {
+        guard gameState.currentPhase == .running else { return }
+        setCurrentPhase(.paused)
+    }
+    
+    @objc private func resumeGame() {
+        guard gameState.currentPhase == .paused else { return }
+        setCurrentPhase(.running)
+    }
+    
+    // MARK: - App Lifecycle
+    func handleAppBackground() {
+        if gameState.currentPhase == .running {
+            setCurrentPhase(.paused)
+        }
+    }
+    
+    func handleAppForeground() {
+        // Game will remain paused until user resumes
     }
 }

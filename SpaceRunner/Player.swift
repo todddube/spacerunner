@@ -145,13 +145,13 @@ class Player: SKSpriteNode {
             // Blink the player to show immunity
             self.blinkPlayer()
             
-            self.run(GameAudio.sharedInstance.soundShieldUp)
+            GameAudio.shared.playSoundEffect(.shieldUp)
             
             // In 3 seconds remove the immunity and the blink action
             self.run(SKAction.wait(forDuration: 3.0), completion: {
                 self.immune = false
                 self.removeAction(forKey: "Blink")
-                self.run(GameAudio.sharedInstance.soundShieldDown)
+                GameAudio.shared.playSoundEffect(.shieldDown)
             })
         }
     }
@@ -220,16 +220,39 @@ class Player: SKSpriteNode {
         // Apply grayscale shader
         GameShaders.sharedInstance.shadeGray(node: self)
         
-        if self.score > GameSettings.sharedInstance.getBestScore() {
-            GameSettings.sharedInstance.saveBestScore(score: self.score)
-        }
+        // Update high scores using modern iOS 18+ settings
+        let gameSettings = GameSettings.shared
         
-        if self.starsCollected > GameSettings.sharedInstance.getBestStars() {
-            GameSettings.sharedInstance.saveBestStars(stars: self.starsCollected)
-        }
+        gameSettings.updateBestScore(self.score)
+        gameSettings.updateBestStars(self.starsCollected)
+        gameSettings.updateBestStreak(self.highStreak)
+    }
+    
+    // MARK: - Reset
+    func reset() {
+        // Reset player stats to initial values
+        score = 0
+        lives = 3
+        starsCollected = 0
+        streakCount = 0
+        highStreak = 0
         
-        if self.highStreak > GameSettings.sharedInstance.getBestStreak() {
-            GameSettings.sharedInstance.saveBestStreak(streak: self.highStreak)
-        }
+        // Reset player state
+        immune = false
+        canMove = false
+        
+        // Reset position to initial location
+        position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.2)
+        targetPosition = position
+        
+        // Remove any active actions
+        removeAllActions()
+        
+        // Reset visual effects
+        alpha = 1.0
+        colorBlendFactor = 0.0
+        
+        // Re-setup player if needed
+        setupEngineParticles()
     }
 }

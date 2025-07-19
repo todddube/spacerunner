@@ -64,6 +64,8 @@
 		27A12E7A248D2B7A00D23AAA /* GameMenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27A12E79248D2B7900D23AAA /* GameMenuScene.swift */; };
 		27B6EEC01CCD2DE400D48CCE /* StarParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = 27B6EEBF1CCD2DE400D48CCE /* StarParticle.sks */; };
 		27B9C8E51CA59F30001CF0A0 /* GameSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B9C8E41CA59F30001CF0A0 /* GameSettings.swift */; };
+		27D22FBA2E2BE8EB007166B8 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27D22FB92E2BE8EB007166B8 /* SwiftUI.framework */; };
+		27D22FBC2E2BE90D007166B8 /* OSLog.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 27D22FBB2E2BE90D007166B8 /* OSLog.framework */; };
 		27D586E21CC29ACF00D78CEC /* spark.png in Resources */ = {isa = PBXBuildFile; fileRef = 27D586E01CC29ACF00D78CEC /* spark.png */; };
 		27FC50881CA2CB9600F601A2 /* Meteor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FC50871CA2CB9600F601A2 /* Meteor.swift */; };
 		27FC508A1CA2D16400F601A2 /* MeteorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FC50891CA2D16400F601A2 /* MeteorController.swift */; };
@@ -152,6 +154,8 @@
 		27A12E79248D2B7900D23AAA /* GameMenuScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameMenuScene.swift; sourceTree = "<group>"; };
 		27B6EEBF1CCD2DE400D48CCE /* StarParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = StarParticle.sks; sourceTree = "<group>"; };
 		27B9C8E41CA59F30001CF0A0 /* GameSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSettings.swift; sourceTree = "<group>"; };
+		27D22FB92E2BE8EB007166B8 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		27D22FBB2E2BE90D007166B8 /* OSLog.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OSLog.framework; path = System/Library/Frameworks/OSLog.framework; sourceTree = SDKROOT; };
 		27D586E01CC29ACF00D78CEC /* spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = spark.png; sourceTree = "<group>"; };
 		27FC50871CA2CB9600F601A2 /* Meteor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Meteor.swift; sourceTree = "<group>"; };
 		27FC50891CA2D16400F601A2 /* MeteorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeteorController.swift; sourceTree = "<group>"; };
@@ -164,6 +168,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				27D22FBC2E2BE90D007166B8 /* OSLog.framework in Frameworks */,
+				27D22FBA2E2BE8EB007166B8 /* SwiftUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -189,6 +195,7 @@
 			children = (
 				2754039424685ACA001C5B2A /* Main.storyboard */,
 				2706E41D1C9E1AC20068CDAD /* SpaceRunner */,
+				27D22FB82E2BE8EB007166B8 /* Frameworks */,
 				2706E41C1C9E1AC20068CDAD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -411,6 +418,15 @@
 				279B4BDC1CA32B8A008D7245 /* StatusBar.swift */,
 			);
 			name = StatusBar;
+			sourceTree = "<group>";
+		};
+		27D22FB82E2BE8EB007166B8 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				27D22FBB2E2BE90D007166B8 /* OSLog.framework */,
+				27D22FB92E2BE8EB007166B8 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		27D586E31CC29E2200D78CEC /* Particles */ = {
@@ -733,7 +749,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -786,7 +802,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -806,8 +822,9 @@
 				DEVELOPMENT_TEAM = YT8HJFH9K8;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = SpaceRunner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SpaceRunner;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -828,8 +845,9 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = YT8HJFH9K8;
 				INFOPLIST_FILE = SpaceRunner/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SpaceRunner;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

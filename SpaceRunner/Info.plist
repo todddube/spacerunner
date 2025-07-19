@@ -26,7 +26,7 @@
 	<string>Copyright (c) Todd Dube - All Rights Reserved</string>
 	<key>UIAppFonts</key>
 	<array>
-		<string>Base.lproj/editundo.ttf</string>
+		<string>GameResources/Fonts/Base.lproj/editundo.ttf</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>Main.storyboard</string>
@@ -34,6 +34,8 @@
 	<string>Main</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array/>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UIStatusBarHidden</key>
 	<true/>
 	<key>UISupportedInterfaceOrientations</key>

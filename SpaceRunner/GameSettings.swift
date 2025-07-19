@@ -3,68 +3,88 @@
 //  SpaceRunner
 //
 //  Created by Todd Dube : 2025
-//  Purpose: Persistent storage manager for high scores, best streaks, and game statistics.
+//  Purpose: Modern observable settings manager for high scores, streaks, and game statistics with reactive updates.
 //
 
 import Foundation
 
-let GameSettingsSharedInstance = GameSettings()
+import Observation
 
-class GameSettings {
-    class var sharedInstance:GameSettings {
-        return GameSettingsSharedInstance
+@available(iOS 18.0, *)
+@MainActor
+@Observable
+final class GameSettings {
+    static let shared = GameSettings()
+    
+    // MARK: - Published Properties
+    private(set) var bestScore: Int = 0 {
+        didSet { UserDefaults.standard.set(bestScore, forKey: Keys.bestScore) }
     }
     
-    // MARK: - Private class constants
-    fileprivate let localDefaults = UserDefaults.standard
-    fileprivate let keyFirstRun = "FirstRun"
-    fileprivate let keyBestScore = "BestScore"
-    fileprivate let keyBestStars = "BestStars"
-    fileprivate let keyBestStreak = "BestStreak"
+    private(set) var bestStars: Int = 0 {
+        didSet { UserDefaults.standard.set(bestStars, forKey: Keys.bestStars) }
+    }
     
-    // MARK: - Init
-    init() {
-        if self.localDefaults.object(forKey: keyFirstRun) == nil {
-            self.firstLaunch()
+    private(set) var bestStreak: Int = 0 {
+        didSet { UserDefaults.standard.set(bestStreak, forKey: Keys.bestStreak) }
+    }
+    
+    private(set) var isFirstLaunch: Bool = true
+    
+    // MARK: - Private Constants
+    private enum Keys {
+        static let firstRun = "FirstRun"
+        static let bestScore = "BestScore"
+        static let bestStars = "BestStars"
+        static let bestStreak = "BestStreak"
+    }
+    
+    private let userDefaults = UserDefaults.standard
+    
+    // MARK: - Initialization
+    private init() {
+        loadSettings()
+    }
+    
+    // MARK: - Private Methods
+    private func loadSettings() {
+        isFirstLaunch = userDefaults.object(forKey: Keys.firstRun) == nil
+        
+        if isFirstLaunch {
+            performFirstLaunchSetup()
+        } else {
+            bestScore = userDefaults.integer(forKey: Keys.bestScore)
+            bestStars = userDefaults.integer(forKey: Keys.bestStars)
+            bestStreak = userDefaults.integer(forKey: Keys.bestStreak)
         }
     }
     
-    // MARK: - Private Functions
-    fileprivate func firstLaunch() {
-        self.localDefaults.set(0, forKey: self.keyBestScore)
-        self.localDefaults.set(false, forKey: self.keyFirstRun)
-        self.localDefaults.set(0, forKey: self.keyBestStars)
-        self.localDefaults.set(0, forKey: self.keyBestStreak)
-        self.localDefaults.synchronize()
+    private func performFirstLaunchSetup() {
+        bestScore = 0
+        bestStars = 0
+        bestStreak = 0
+        userDefaults.set(false, forKey: Keys.firstRun)
     }
     
-    // MARK: - Public saving functions
-    func saveBestScore(score: Int) {
-        self.localDefaults.set(score, forKey: self.keyBestScore)
-        self.localDefaults.synchronize()
+    // MARK: - Public Methods
+    func updateBestScore(_ newScore: Int) {
+        guard newScore > bestScore else { return }
+        bestScore = newScore
     }
     
-    func saveBestStars(stars: Int) {
-        self.localDefaults.set(stars, forKey: self.keyBestStars)
-        self.localDefaults.synchronize()
+    func updateBestStars(_ newStars: Int) {
+        guard newStars > bestStars else { return }
+        bestStars = newStars
     }
     
-    func saveBestStreak(streak: Int) {
-        self.localDefaults.set(streak, forKey: self.keyBestStreak)
-        self.localDefaults.synchronize()
+    func updateBestStreak(_ newStreak: Int) {
+        guard newStreak > bestStreak else { return }
+        bestStreak = newStreak
     }
     
-    
-    // MARK: - Public retrieving functions
-    func getBestScore() -> Int {
-        return self.localDefaults.integer(forKey: self.keyBestScore)
-    }
-    
-    func getBestStars() -> Int {
-        return self.localDefaults.integer(forKey: self.keyBestStars)
-    }
-    
-    func getBestStreak() -> Int {
-        return self.localDefaults.integer(forKey: self.keyBestStreak)
+    func resetAllStats() {
+        bestScore = 0
+        bestStars = 0
+        bestStreak = 0
     }
 }

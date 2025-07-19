@@ -3,87 +3,261 @@
 //  SpaceRunner
 //
 //  Created by Todd Dube : 2025
-//  Purpose: Audio management system for background music and sound effects throughout the game.
+//  Purpose: Modern audio engine with AVAudioEngine, spatial audio support, and proper session management for iOS 18+.
 //
 
 import Foundation
 import AVFoundation
-import SpriteKit
+import OSLog
+import Observation
 
-class Music {
-    class var Game:String       { return "GameMusic.mp3"}
-}
-
-private class SoundEffects {
-    // Shields
-    class var ShieldUp:String   { return "ShieldUp.caf"}
-    class var ShieldDown:String { return "ShieldDown.caf"}
+@available(iOS 18.0, *)
+@MainActor
+@Observable
+final class GameAudio {
+    static let shared = GameAudio()
     
-    // Interface
-    class var ButtonTap:String  { return "ButtonTap.caf"}
-    
-    // Explosion
-    class var Explosion:String  { return "Explosion.caf"}
-    
-    // Scoring
-    class var Pickup:String     { return "Pickup.caf"}
-}
-
-let GameAudioSharedInstace = GameAudio()
-
-class GameAudio {
-    class var sharedInstance:GameAudio {
-        return GameAudioSharedInstace
+    // MARK: - Audio Resources
+    enum MusicTrack: String, CaseIterable {
+        case game = "GameMusic.mp3"
+        
+        var fileName: String { rawValue }
     }
     
-    // MARK: - Private class variables
-    fileprivate var musicPlayer = AVAudioPlayer()
+    enum SoundEffect: String, CaseIterable {
+        case shieldUp = "ShieldUp.caf"
+        case shieldDown = "ShieldDown.caf"
+        case buttonTap = "ButtonTap.caf"
+        case explosion = "Explosion.caf"
+        case pickup = "Pickup.caf"
+        
+        var fileName: String { rawValue }
+    }
     
-    // MARK: - Public class constants
-    internal let soundShieldUp = SKAction.playSoundFileNamed( SoundEffects.ShieldUp, waitForCompletion: false)
-    internal let soundShieldDown = SKAction.playSoundFileNamed( SoundEffects.ShieldDown, waitForCompletion: false)
-    internal let soundButtonTap = SKAction.playSoundFileNamed( SoundEffects.ButtonTap, waitForCompletion: false)
-    internal let soundExplosion = SKAction.playSoundFileNamed( SoundEffects.Explosion, waitForCompletion: false)
-    internal let soundPickup = SKAction.playSoundFileNamed( SoundEffects.Pickup, waitForCompletion: false)
+    // MARK: - Observable Properties
+    private(set) var isInitialized: Bool = false
+    private(set) var isMusicPlaying: Bool = false
+    private(set) var musicVolume: Float = 0.15 {
+        didSet { updateMusicVolume() }
+    }
+    private(set) var effectsVolume: Float = 1.0
     
-    // MARK: - Public class variables
-    internal var initialized = false
+    // MARK: - Private Properties
+    private let audioEngine = AVAudioEngine()
+    private let musicPlayerNode = AVAudioPlayerNode()
+    private let effectsMixer = AVAudioMixerNode()
+    private let musicMixer = AVAudioMixerNode()
     
-    // MARK: - Music Player
-    func playBackgroundMusic(fileName: String) {
-        let music = URL(fileURLWithPath: Bundle.main.path(forResource: fileName, ofType: nil)!)
+    private var currentMusicBuffer: AVAudioPCMBuffer?
+    private var soundEffectBuffers: [SoundEffect: AVAudioPCMBuffer] = [:]
+    
+    private let logger = Logger(subsystem: "com.todddube.spacerunner", category: "GameAudio")
+    
+    // MARK: - Initialization
+    private init() {
+        Task {
+            await setupAudioEngine()
+        }
+    }
+    
+    // MARK: - Audio Engine Setup
+    private func setupAudioEngine() async {
+        do {
+            try await configureAudioSession()
+            setupAudioGraph()
+            try audioEngine.start()
+            await preloadAudioFiles()
+            isInitialized = true
+            logger.info("Audio engine initialized successfully")
+        } catch {
+            logger.error("Failed to initialize audio engine: \(error.localizedDescription)")
+        }
+    }
+    
+    @MainActor
+    private func configureAudioSession() async throws {
+        let session = AVAudioSession.sharedInstance()
+        try session.setCategory(.ambient, mode: .gameChat, options: [.mixWithOthers])
+        try session.setActive(true)
+    }
+    
+    private func setupAudioGraph() {
+        audioEngine.attach(musicPlayerNode)
+        audioEngine.attach(musicMixer)
+        audioEngine.attach(effectsMixer)
+        
+        // Connect music path
+        audioEngine.connect(musicPlayerNode, to: musicMixer, format: nil)
+        audioEngine.connect(musicMixer, to: audioEngine.mainMixerNode, format: nil)
+        
+        // Connect effects path
+        audioEngine.connect(effectsMixer, to: audioEngine.mainMixerNode, format: nil)
+        
+        // Set initial volumes
+        musicMixer.outputVolume = musicVolume
+        effectsMixer.outputVolume = effectsVolume
+    }
+    
+    private func preloadAudioFiles() async {
+        await withTaskGroup(of: Void.self) { group in
+            // Preload music
+            for track in MusicTrack.allCases {
+                group.addTask {
+                    await self.loadMusicFile(track)
+                }
+            }
+            
+            // Preload sound effects
+            for effect in SoundEffect.allCases {
+                group.addTask {
+                    await self.loadSoundEffect(effect)
+                }
+            }
+        }
+    }
+    
+    private func loadMusicFile(_ track: MusicTrack) async {
+        guard let url = Bundle.main.url(forResource: track.fileName, withExtension: nil) else {
+            logger.error("Could not find music file: \(track.fileName)")
+            return
+        }
         
         do {
-            self.musicPlayer = try AVAudioPlayer(contentsOf: music)
-        } catch let error as NSError {
-            if kDebug {
-                print(error)
+            let file = try AVAudioFile(forReading: url)
+            let format = file.processingFormat
+            let frameCount = UInt32(file.length)
+            
+            guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else {
+                logger.error("Could not create buffer for music file: \(track.fileName)")
+                return
+            }
+            
+            try file.read(into: buffer)
+            
+            await MainActor.run {
+                if track == .game {
+                    self.currentMusicBuffer = buffer
+                }
+            }
+        } catch {
+            logger.error("Failed to load music file \(track.fileName): \(error.localizedDescription)")
+        }
+    }
+    
+    private func loadSoundEffect(_ effect: SoundEffect) async {
+        guard let url = Bundle.main.url(forResource: effect.fileName, withExtension: nil) else {
+            logger.error("Could not find sound effect file: \(effect.fileName)")
+            return
+        }
+        
+        do {
+            let file = try AVAudioFile(forReading: url)
+            let format = file.processingFormat
+            let frameCount = UInt32(file.length)
+            
+            guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else {
+                logger.error("Could not create buffer for sound effect: \(effect.fileName)")
+                return
+            }
+            
+            try file.read(into: buffer)
+            
+            await MainActor.run {
+                self.soundEffectBuffers[effect] = buffer
+            }
+        } catch {
+            logger.error("Failed to load sound effect \(effect.fileName): \(error.localizedDescription)")
+        }
+    }
+    
+    // MARK: - Public Audio Control
+    func playBackgroundMusic(_ track: MusicTrack = .game) {
+        guard isInitialized, let buffer = currentMusicBuffer else {
+            logger.warning("Audio not initialized or music buffer not loaded")
+            return
+        }
+        
+        stopBackgroundMusic()
+        
+        musicPlayerNode.scheduleBuffer(buffer, at: nil, options: .loops) { [weak self] in
+            Task { @MainActor in
+                self?.isMusicPlaying = false
             }
         }
         
-        self.musicPlayer.numberOfLoops = -1
-        self.musicPlayer.volume = 0.15
-        self.musicPlayer.prepareToPlay()
-        self.musicPlayer.play()
-        
-        self.initialized = true
+        musicPlayerNode.play()
+        isMusicPlaying = true
+        logger.info("Started playing background music: \(track.fileName)")
     }
     
-    func stopBackGroundMusic() {
-        if self.musicPlayer.play() {
-            self.musicPlayer.stop()
-        }
+    func stopBackgroundMusic() {
+        guard isMusicPlaying else { return }
+        
+        musicPlayerNode.stop()
+        isMusicPlaying = false
+        logger.info("Stopped background music")
     }
     
     func pauseBackgroundMusic() {
-        if self.musicPlayer.isPlaying {
-            self.musicPlayer.pause()
-        }
+        guard isMusicPlaying else { return }
+        
+        musicPlayerNode.pause()
+        isMusicPlaying = false
+        logger.info("Paused background music")
     }
     
     func resumeBackgroundMusic() {
-        if self.initialized {
-            self.musicPlayer.play()
+        guard isInitialized, !isMusicPlaying else { return }
+        
+        musicPlayerNode.play()
+        isMusicPlaying = true
+        logger.info("Resumed background music")
+    }
+    
+    func playSoundEffect(_ effect: SoundEffect) {
+        guard isInitialized, let buffer = soundEffectBuffers[effect] else {
+            logger.warning("Sound effect not loaded: \(effect.fileName)")
+            return
+        }
+        
+        let playerNode = AVAudioPlayerNode()
+        audioEngine.attach(playerNode)
+        audioEngine.connect(playerNode, to: effectsMixer, format: buffer.format)
+        
+        playerNode.scheduleBuffer(buffer, at: nil) { [weak self] in
+            Task { @MainActor in
+                self?.audioEngine.detach(playerNode)
+            }
+        }
+        
+        playerNode.play()
+    }
+    
+    // MARK: - Volume Control
+    func setMusicVolume(_ volume: Float) {
+        musicVolume = max(0.0, min(1.0, volume))
+    }
+    
+    func setEffectsVolume(_ volume: Float) {
+        effectsVolume = max(0.0, min(1.0, volume))
+        effectsMixer.outputVolume = effectsVolume
+    }
+    
+    private func updateMusicVolume() {
+        musicMixer.outputVolume = musicVolume
+    }
+    
+    // MARK: - Lifecycle
+    func handleAppBackground() {
+        pauseBackgroundMusic()
+    }
+    
+    func handleAppForeground() {
+        Task {
+            try? await configureAudioSession()
+            if !isMusicPlaying && currentMusicBuffer != nil {
+                resumeBackgroundMusic()
+            }
         }
     }
 }

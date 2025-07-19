@@ -67,7 +67,8 @@ class Star: SKSpriteNode {
     // MARK: - Action functions
     func pickedUpStar() {
         // pick up star, audio, and then animate it.. remove from parent
-        self.run(GameAudio.sharedInstance.soundPickup, completion: {
+        GameAudio.shared.playSoundEffect(.pickup)
+        self.run(SKAction.sequence([]), completion: {
             self.run(SKAction.repeat(SKAction.rotate(byAngle: 10.0, duration: 2.5), count: 10))
                 
             self.removeFromParent()

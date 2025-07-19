@@ -90,7 +90,8 @@ class Meteor: SKSpriteNode {
     
     // MARK: - Action functions
     func hitMeteor() {
-        self.run(GameAudio.sharedInstance.soundExplosion, completion: {
+        GameAudio.shared.playSoundEffect(.explosion)
+        self.run(SKAction.wait(forDuration: 0.1), completion: {
             self.removeFromParent()
         })
     }

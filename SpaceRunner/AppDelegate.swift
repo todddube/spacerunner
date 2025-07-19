@@ -29,7 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NotificationCenter.default.post(name: Notification.Name(rawValue: "PauseGame"), object: nil)
         
         // pause the music 
-        GameAudio.sharedInstance.pauseBackgroundMusic()
+        GameAudio.shared.pauseBackgroundMusic()
         
         // Pause the view
         let view = self.window?.rootViewController?.view as! SKView
@@ -57,7 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NotificationCenter.default.post(name: Notification.Name(rawValue: "ResumeGame"), object: nil)
         
         // resume music
-        GameAudio.sharedInstance.resumeBackgroundMusic()
+        GameAudio.shared.resumeBackgroundMusic()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
