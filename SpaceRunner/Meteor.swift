@@ -2,8 +2,8 @@
 //  Meteor.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/23/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Individual meteor obstacle sprites with physics and collision properties.
 //
 
 import Foundation

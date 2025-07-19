@@ -2,8 +2,8 @@
 //  ScoreBoard.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/27/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Game over screen scoreboard displaying current and best scores, stars, and streaks.
 //
 
 import Foundation

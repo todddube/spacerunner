@@ -1,6 +1,10 @@
-/*
- * Copyright (c) 2013-2014 Razeware LLC
- */
+//
+//  SKAction+Extensions.swift
+//  SpaceRunner
+//
+//  Created by Todd Dube : 2025
+//  Purpose: SKAction extensions for enhanced animation and timing functionality.
+//
 
 import SpriteKit
 

@@ -2,8 +2,8 @@
 //  GameTextures.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/20/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Centralized texture loading and management for all game sprites and assets.
 //
 
 import Foundation

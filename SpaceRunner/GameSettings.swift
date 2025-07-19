@@ -2,8 +2,8 @@
 //  GameSettings.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/25/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Persistent storage manager for high scores, best streaks, and game statistics.
 //
 
 import Foundation

@@ -2,8 +2,8 @@
 //  GameShaders.swift
 //  SpaceRunner
 //
-//  Created by Jeremy Novak on 1/29/16.
-//  Copyright © 2020 Jeremy Novak. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Shader management system for visual effects like grayscale transitions.
 //
 
 import Foundation

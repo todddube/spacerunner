@@ -2,8 +2,8 @@
 //  SpaceRunnerTests.swift
 //  SpaceRunnerTests
 //
-//  Created by Todd Dube on 3/19/16.
-//  Copyright © 2016 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Unit test suite for testing game logic and functionality.
 //
 
 import XCTest

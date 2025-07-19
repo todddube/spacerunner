@@ -2,10 +2,8 @@
 //  GameMenuScene
 //  SpaceRunner
 //
-//  Working on Game Settings Screen
-//
-//  Created by Todd Dube on 3/22/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Alternative game menu scene implementation with score display functionality.
 //
 
 import Foundation

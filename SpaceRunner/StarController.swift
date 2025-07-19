@@ -2,8 +2,8 @@
 //  StarController.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/25/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Manages spawning, movement, and lifecycle of collectible star objects during gameplay.
 //
 
 import Foundation

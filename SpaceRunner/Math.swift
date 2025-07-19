@@ -2,8 +2,8 @@
 //  Math.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/20/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Mathematical utility functions for smoothing, random generation, and angle calculations.
 //
 
 import Foundation

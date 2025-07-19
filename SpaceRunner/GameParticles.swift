@@ -2,8 +2,8 @@
 //  GameParticles.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/20/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Particle effect system for engine trails, explosions, and background visual effects.
 //
 
 import Foundation

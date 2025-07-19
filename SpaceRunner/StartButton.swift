@@ -2,8 +2,8 @@
 //  StartButton.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/22/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Start button sprite that appears during the tutorial phase to begin gameplay.
 //
 
 import Foundation

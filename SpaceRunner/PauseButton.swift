@@ -2,8 +2,8 @@
 //  PauseButton.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 4/1/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Toggle button that pauses and resumes gameplay with appropriate visual feedback.
 //
 
 import Foundation

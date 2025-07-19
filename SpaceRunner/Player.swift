@@ -2,7 +2,9 @@
 //  Player.swift
 //  Player controller `
 //  SpaceRunner
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//
+//  Created by Todd Dube : 2025
+//  Purpose: Player ship sprite with movement controls, collision detection, and scoring system.
 //
 
 import Foundation

@@ -2,8 +2,8 @@
 //  Constants.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/20/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Global constants for screen dimensions, sprite names, physics categories, and layer z-positions.
 //
 
 import Foundation

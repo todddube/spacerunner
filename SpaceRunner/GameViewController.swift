@@ -2,8 +2,8 @@
 //  GameViewController.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/19/16.
-//  Copyright (c) 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Main view controller that initializes and presents the SpriteKit game scenes.
 //
 
 import UIKit

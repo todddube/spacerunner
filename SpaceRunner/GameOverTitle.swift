@@ -2,8 +2,8 @@
 //  GameOverTitle.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/26/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Animated game over title sprite that appears when the player loses.
 //
 
 import Foundation

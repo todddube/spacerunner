@@ -2,8 +2,8 @@
 //  GameFonts.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/23/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Font loading and text label creation system with different styling options.
 //
 
 import Foundation

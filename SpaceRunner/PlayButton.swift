@@ -2,8 +2,8 @@
 //  PlayButton.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/21/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Animated play button sprite for starting the game from the main menu.
 //
 
 import Foundation

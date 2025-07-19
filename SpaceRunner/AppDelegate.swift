@@ -2,8 +2,8 @@
 //  AppDelegate.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/19/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Handles iOS application lifecycle events and manages game state during app transitions.
 //
 
 import UIKit

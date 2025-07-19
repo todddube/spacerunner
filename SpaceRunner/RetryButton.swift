@@ -2,8 +2,8 @@
 //  RetryButton.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/22/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Retry button sprite that allows players to restart the game after game over.
 //
 
 import Foundation

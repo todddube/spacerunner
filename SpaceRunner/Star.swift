@@ -2,8 +2,8 @@
 //  Star.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/25/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Collectible star sprites that provide points and bonuses when collected by the player.
 //
 
 import Foundation

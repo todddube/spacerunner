@@ -2,8 +2,8 @@
 //  TouchCircle.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/22/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Visual feedback sprite that shows where the player has touched the screen.
 //
 
 import Foundation

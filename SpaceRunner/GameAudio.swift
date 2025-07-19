@@ -2,8 +2,8 @@
 //  GameAudio.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube on 3/31/16.
-//  Copyright © 2020 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: Audio management system for background music and sound effects throughout the game.
 //
 
 import Foundation

@@ -2,8 +2,8 @@
 //  SpaceRunnerUITests.swift
 //  SpaceRunnerUITests
 //
-//  Created by Todd Dube on 3/19/16.
-//  Copyright © 2016 Todd Dube. All rights reserved.
+//  Created by Todd Dube : 2025
+//  Purpose: UI test suite for testing user interface interactions and game flow.
 //
 
 import XCTest
