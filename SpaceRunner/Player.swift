@@ -170,7 +170,7 @@ class Player: SKSpriteNode {
         self.checkStreak(streak: self.streakCount)
         
         var bonus = ""
-        let bonusLabel = GameFonts.sharedInstance.createLabel(string: bonus, labelType: GameFonts.LabelType.bonus)
+        let bonusLabel = GameFonts.shared.createLabel(string: bonus, labelType: GameFonts.LabelType.bonus)
         
         switch self.streakCount {
             case 0..<5:
@@ -212,7 +212,7 @@ class Player: SKSpriteNode {
         bonusLabel.position = self.position
         bonusLabel.text = bonus
         self.parent?.addChild(bonusLabel)
-        bonusLabel.run(GameFonts.sharedInstance.animateFloatingLabel(node: bonusLabel))
+        bonusLabel.run(GameFonts.shared.animateFloatingLabel(node: bonusLabel))
     }
     
     // MARK: - Check and save best score

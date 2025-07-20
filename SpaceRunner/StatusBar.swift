@@ -32,12 +32,20 @@ class StatusBar: SKNode {
     convenience init(lives: Int, score: Int, stars: Int) {
         self.init()
         
+        print("🔥 StatusBar: Initializing with lives: \(lives), score: \(score), stars: \(stars)")
+        
         self.setupStatusBar()
         self.setupStatusBarBackground()
         self.setupStatusBarScore(score: score)
         self.updateLives(lives: lives)
         self.setupStatusBarStarsCollected(collected: stars)
         self.setupPauseButton()
+        
+        // Ensure StatusBar appears above game elements
+        self.zPosition = 100
+        
+        print("🔥 StatusBar: Initialization complete! Position: \(self.position), zPosition: \(self.zPosition)")
+        print("🔥 StatusBar: Background size: \(self.statusBarBackground.size), alpha: \(self.statusBarBackground.alpha)")
     }
     
     // MARK: - Setup
@@ -46,36 +54,65 @@ class StatusBar: SKNode {
     }
     
     fileprivate func setupStatusBarBackground() {
-        // Make a CGRect that is as wide as the screen and 3% of the height of the screen
-        let statusBarBackgroundSize = CGSize(width: kViewSize.width, height: kViewSize.height * 0.03)
+        // Calculate safe status bar height - larger for better visibility
+        let statusBarHeight = max(kViewSize.height * 0.06, 35.0) // At least 44pt for touch targets
+        let statusBarBackgroundSize = CGSize(width: kViewSize.width, height: statusBarHeight)
     
-        // Make an SKSpriteNode that is a dark gray color and the size of statusBarBackgroundSize
-        self.statusBarBackground = SKSpriteNode(color: SKColor.darkGray, size: statusBarBackgroundSize)
+        // Use a highly visible background that stands out dramatically
+        let backgroundColor = SKColor.systemGray.withAlphaComponent(0.80) // Bright blue for testing
+        self.statusBarBackground = SKSpriteNode(color: backgroundColor, size: statusBarBackgroundSize)
+        
+        // Add a bright border for maximum visibility
+        let borderNode = SKShapeNode(rect: CGRect(origin: CGPoint.zero, size: statusBarBackgroundSize))
+        borderNode.strokeColor = SKColor.darkGray
+        borderNode.lineWidth = 1.0
+        borderNode.fillColor = SKColor.clear
+        borderNode.zPosition = 1
+        
+        // Add a subtle border for better definition
+        self.statusBarBackground.physicsBody = nil
         
         // Make the anchorPoint 0,0 so it is positioned using the lower left corner
         self.statusBarBackground.anchorPoint = CGPoint.zero
         
-        // MARK: statusBarPostion
-        // Position statusBarBackground on the left edge of the screen and 95% up the screen
-        // Adjusted from .97 to .93 for notched phones
-        self.statusBarBackground.position = CGPoint(x: 0, y: kViewSize.height * 0.91)
+        // Calculate safe area positioning - adjust for different device types
+        let safeAreaTop: CGFloat
+        if kDeviceTablet {
+            // iPad positioning
+            safeAreaTop = kViewSize.height * 0.96 - statusBarHeight
+        } else {
+            // iPhone positioning - account for notch/Dynamic Island
+            safeAreaTop = kViewSize.height * 0.94 - statusBarHeight
+        }
         
-        // Bottom of screen options testing dunno
-        // self.statusBarBackground.position = CGPoint(x: 0, y: kViewSize.height * 0.030)
+        self.statusBarBackground.position = CGPoint(x: 0, y: safeAreaTop)
         
-        // Set the alpha to 75% opacity
-        self.statusBarBackground.alpha = 0.75
+        // Full opacity for better visibility
+        self.statusBarBackground.alpha = 1.0
         
+        // Add the bright border to background
+        self.statusBarBackground.addChild(borderNode)
+        
+        // Add a subtle drop shadow effect using a second node
+        let shadowNode = SKSpriteNode(color: SKColor.black.withAlphaComponent(0.5), size: statusBarBackgroundSize)
+        shadowNode.anchorPoint = CGPoint.zero
+        shadowNode.position = CGPoint(x: 4, y: -4) // Larger offset for more visible shadow
+        shadowNode.zPosition = -1
+        self.statusBarBackground.addChild(shadowNode)
 
         // Add statusBarBackground to the StatusBar node
         self.addChild(self.statusBarBackground)
+        
+        // Debug logging
+        print("🔥 StatusBar: Created background at position \(self.statusBarBackground.position) with size \(statusBarBackgroundSize)")
+        print("🔥 StatusBar: Safe area top calculated as \(safeAreaTop)")
     }
     
     fileprivate func setupStatusBarStarsCollected(collected: Int) {
         // Collected stars icon
         self.starsCollectedIcon = SKSpriteNode(texture: GameTextures.sharedInstance.textureWithName(name: SpriteName.StarIcon))
         
-        let starOffsetX = self.statusBarBackground.size.width / 2 - self.starsCollectedIcon.size.width * 2
+        let starOffsetX = self.statusBarBackground.size.width / 2 - self.starsCollectedIcon.size.width
         let starOffsetY = self.statusBarBackground.size.height / 2
         
         // setup starIcon in status bar and scale
@@ -83,7 +120,11 @@ class StatusBar: SKNode {
         self.starsCollectedIcon.setScale(0.70)
         
         // collected stars label
-        self.starsCollectedLabel = GameFonts.sharedInstance.createLabel(string: String(collected), labelType: GameFonts.LabelType.statusBar)
+        self.starsCollectedLabel = GameFonts.shared.createLabel(string: String(collected), labelType: GameFonts.LabelType.statusBar)
+        
+        // Use bright white color for maximum contrast
+        self.starsCollectedLabel.fontColor = SKColor.white
+        self.starsCollectedLabel.fontSize = self.starsCollectedLabel.fontSize * 1.5 // Make text larger
         
         let labelOffsetX = self.statusBarBackground.size.width / 2
         let labelOffsetY = self.statusBarBackground.size.height / 2
@@ -102,19 +143,31 @@ class StatusBar: SKNode {
     
     fileprivate func setupStatusBarScore(score: Int) {
         // Static Label
-        let scoreText = GameFonts.sharedInstance.createLabel(string: "Score: ", labelType: GameFonts.LabelType.statusBar)
+        let scoreText = GameFonts.shared.createLabel(string: "Score: ", labelType: GameFonts.LabelType.statusBar)
+        scoreText.fontColor = SKColor.white
+        scoreText.fontSize = scoreText.fontSize * 0.75 // Make text larger
         scoreText.position = CGPoint(x: self.statusBarBackground.size.width * 0.75, y: self.statusBarBackground.size.height / 2)
         self.statusBarBackground.addChild(scoreText)
         
         // Score Label
-        self.scoreLabel = GameFonts.sharedInstance.createLabel(string: String(score), labelType: GameFonts.LabelType.statusBar)
+        self.scoreLabel = GameFonts.shared.createLabel(string: String(score), labelType: GameFonts.LabelType.statusBar)
+        self.scoreLabel.fontColor = SKColor.white
+        self.scoreLabel.fontSize = self.scoreLabel.fontSize * 0.75 // Make text larger
         let offsetX = self.statusBarBackground.size.width * 0.90
         let offsetY = self.statusBarBackground.size.height / 2
         self.scoreLabel.position = CGPoint(x: offsetX, y: offsetY)
         self.statusBarBackground.addChild(self.scoreLabel)
+        
+        // Debug logging
+        print("🔥 StatusBar: Added score labels at positions - scoreText: \(scoreText.position), scoreLabel: \(self.scoreLabel.position)")
     }
     
     fileprivate func setupPauseButton() {
+        // Position pause button in the top-left corner of the status bar
+        let buttonPadding: CGFloat = 8.0
+        self.pauseButton.position = CGPoint(x: buttonPadding + self.pauseButton.size.width / 2, 
+                                          y: self.statusBarBackground.position.y + self.statusBarBackground.size.height / 2)
+        self.pauseButton.zPosition = 1 // Above status bar background
         self.addChild(self.pauseButton)
     }
     
@@ -185,5 +238,9 @@ class StatusBar: SKNode {
         // Reset background
         statusBarBackground.removeAllActions()
         statusBarBackground.alpha = 1.0
+        
+        // Ensure white text colors are maintained
+        scoreLabel.fontColor = SKColor.white
+        starsCollectedLabel.fontColor = SKColor.white
     }
 }
