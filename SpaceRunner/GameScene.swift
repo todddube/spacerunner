@@ -44,7 +44,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     private let player = Player()
     private let meteorController = MeteorController()
     private let starController = StarController()
-    private var statusBar = StatusBar()
+    private var statusBar: StatusBar!
     
     private var lastUpdateTime: TimeInterval = 0.0
     private var frameCount: TimeInterval = 0.0
@@ -133,10 +133,17 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         startButton.zPosition = GameLayer.Interface
         interfaceNode.addChild(startButton)
         
-        // Setup status bar
-        statusBar.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height - 60)
+        // Setup status bar with proper initialization
+        statusBar = StatusBar(lives: gameState.lives, score: gameState.score, stars: gameState.starsCollected)
+        statusBar.position = CGPoint.zero // StatusBar handles its own positioning
         statusBar.zPosition = GameLayer.Interface
         interfaceNode.addChild(statusBar)
+        
+        // Debug logging
+        // print("🎮 GameScene: Added StatusBar to interfaceNode")
+        // print("🎮 GameScene: InterfaceNode position: \(interfaceNode.position), zPosition: \(interfaceNode.zPosition)")
+        // print("🎮 GameScene: StatusBar position: \(statusBar.position), zPosition: \(statusBar.zPosition)")
+        // print("🎮 GameScene: Scene size: \(size), kViewSize: \(kViewSize)")
     }
     
     private func setupAccessibility() {
