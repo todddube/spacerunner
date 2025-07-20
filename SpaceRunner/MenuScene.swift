@@ -52,17 +52,14 @@ class MenuScene:SKScene {
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
         let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
         let versionLabel = fonts.createLabel(string: "v\(appVersion).\(buildNumber)", labelType: GameFonts.LabelType.menu)
-        // let buildLabel = fonts.createLabel(string: "(build: \(buildNumber))", labelType: GameFonts.LabelType.menu)
         let authorLabel = fonts.createLabel(string: "By Todd Dube", labelType: GameFonts.LabelType.menu)
         
         // Postion the lables
         authorLabel.position = CGPoint(x: kViewSize.width * 0.50, y: kViewSize.height * 0.65)
         versionLabel.position = CGPoint(x: kViewSize.width * 0.50 , y: kViewSize.height * 0.62)
-        // buildLabel.position = CGPoint(x: kViewSize.width * 0.50, y: kViewSize.height * 0.59)
         
         self.addChild(authorLabel)
         self.addChild(versionLabel)
-        // self.addChild(buildLabel)
         
         // Rotate the gameTitleShip forever
         self.gameTitleShip.run(SKAction.repeatForever(SKAction.rotate(byAngle: 15.0, duration: 4.5)))

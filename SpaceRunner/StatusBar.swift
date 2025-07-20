@@ -58,10 +58,10 @@ class StatusBar: SKNode {
         // MARK: statusBarPostion
         // Position statusBarBackground on the left edge of the screen and 95% up the screen
         // Adjusted from .97 to .93 for notched phones
-        // self.statusBarBackground.position = CGPoint(x: 0, y: kViewSize.height * 0.91)
+        self.statusBarBackground.position = CGPoint(x: 0, y: kViewSize.height * 0.91)
         
         // Bottom of screen options testing dunno
-        self.statusBarBackground.position = CGPoint(x: 0, y: kViewSize.height * 0.030)
+        // self.statusBarBackground.position = CGPoint(x: 0, y: kViewSize.height * 0.030)
         
         // Set the alpha to 75% opacity
         self.statusBarBackground.alpha = 0.75
