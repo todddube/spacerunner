@@ -14,7 +14,7 @@ class MenuScene:SKScene {
     private var sceneLabel = SKLabelNode()
     
     // MARK: - Private convience constants
-    fileprivate let fonts = GameFonts.sharedInstance
+    fileprivate let fonts = GameFonts.shared
     fileprivate let fontType = GameFonts.LabelType.statusBar
 
     

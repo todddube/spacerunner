@@ -50,7 +50,7 @@ class StatusBar: SKNode {
         let statusBarBackgroundSize = CGSize(width: kViewSize.width, height: kViewSize.height * 0.03)
     
         // Make an SKSpriteNode that is a dark gray color and the size of statusBarBackgroundSize
-        self.statusBarBackground = SKSpriteNode(color: SKColor.darkGray, size: statusBarBackgroundSize)
+        self.statusBarBackground = SKSpriteNode(color: SKColor.white, size: statusBarBackgroundSize)
         
         // Make the anchorPoint 0,0 so it is positioned using the lower left corner
         self.statusBarBackground.anchorPoint = CGPoint.zero
@@ -83,7 +83,7 @@ class StatusBar: SKNode {
         self.starsCollectedIcon.setScale(0.70)
         
         // collected stars label
-        self.starsCollectedLabel = GameFonts.sharedInstance.createLabel(string: String(collected), labelType: GameFonts.LabelType.statusBar)
+        self.starsCollectedLabel = GameFonts.shared.createLabel(string: String(collected), labelType: GameFonts.LabelType.statusBar)
         
         let labelOffsetX = self.statusBarBackground.size.width / 2
         let labelOffsetY = self.statusBarBackground.size.height / 2
@@ -102,12 +102,12 @@ class StatusBar: SKNode {
     
     fileprivate func setupStatusBarScore(score: Int) {
         // Static Label
-        let scoreText = GameFonts.sharedInstance.createLabel(string: "Score: ", labelType: GameFonts.LabelType.statusBar)
+        let scoreText = GameFonts.shared.createLabel(string: "Score: ", labelType: GameFonts.LabelType.statusBar)
         scoreText.position = CGPoint(x: self.statusBarBackground.size.width * 0.75, y: self.statusBarBackground.size.height / 2)
         self.statusBarBackground.addChild(scoreText)
         
         // Score Label
-        self.scoreLabel = GameFonts.sharedInstance.createLabel(string: String(score), labelType: GameFonts.LabelType.statusBar)
+        self.scoreLabel = GameFonts.shared.createLabel(string: String(score), labelType: GameFonts.LabelType.statusBar)
         let offsetX = self.statusBarBackground.size.width * 0.90
         let offsetY = self.statusBarBackground.size.height / 2
         self.scoreLabel.position = CGPoint(x: offsetX, y: offsetY)
