@@ -32,7 +32,7 @@ class StatusBar: SKNode {
     convenience init(lives: Int, score: Int, stars: Int) {
         self.init()
         
-        print("🔥 StatusBar: Initializing with lives: \(lives), score: \(score), stars: \(stars)")
+        // print("🔥 StatusBar: Initializing with lives: \(lives), score: \(score), stars: \(stars)")
         
         self.setupStatusBar()
         self.setupStatusBarBackground()
@@ -44,8 +44,8 @@ class StatusBar: SKNode {
         // Ensure StatusBar appears above game elements
         self.zPosition = 100
         
-        print("🔥 StatusBar: Initialization complete! Position: \(self.position), zPosition: \(self.zPosition)")
-        print("🔥 StatusBar: Background size: \(self.statusBarBackground.size), alpha: \(self.statusBarBackground.alpha)")
+        // print("🔥 StatusBar: Initialization complete! Position: \(self.position), zPosition: \(self.zPosition)")
+        // print("🔥 StatusBar: Background size: \(self.statusBarBackground.size), alpha: \(self.statusBarBackground.alpha)")
     }
     
     // MARK: - Setup
@@ -59,7 +59,7 @@ class StatusBar: SKNode {
         let statusBarBackgroundSize = CGSize(width: kViewSize.width, height: statusBarHeight)
     
         // Use a highly visible background that stands out dramatically
-        let backgroundColor = SKColor.systemGray.withAlphaComponent(0.80) // Bright blue for testing
+        let backgroundColor = SKColor.systemGray.withAlphaComponent(0.80)
         self.statusBarBackground = SKSpriteNode(color: backgroundColor, size: statusBarBackgroundSize)
         
         // Add a bright border for maximum visibility
@@ -94,7 +94,7 @@ class StatusBar: SKNode {
         self.statusBarBackground.addChild(borderNode)
         
         // Add a subtle drop shadow effect using a second node
-        let shadowNode = SKSpriteNode(color: SKColor.black.withAlphaComponent(0.5), size: statusBarBackgroundSize)
+        let shadowNode = SKSpriteNode(color: SKColor.gray.withAlphaComponent(0.5), size: statusBarBackgroundSize)
         shadowNode.anchorPoint = CGPoint.zero
         shadowNode.position = CGPoint(x: 4, y: -4) // Larger offset for more visible shadow
         shadowNode.zPosition = -1
@@ -104,8 +104,8 @@ class StatusBar: SKNode {
         self.addChild(self.statusBarBackground)
         
         // Debug logging
-        print("🔥 StatusBar: Created background at position \(self.statusBarBackground.position) with size \(statusBarBackgroundSize)")
-        print("🔥 StatusBar: Safe area top calculated as \(safeAreaTop)")
+        // print("🔥 StatusBar: Created background at position \(self.statusBarBackground.position) with size \(statusBarBackgroundSize)")
+        // print("🔥 StatusBar: Safe area top calculated as \(safeAreaTop)")
     }
     
     fileprivate func setupStatusBarStarsCollected(collected: Int) {
@@ -117,14 +117,14 @@ class StatusBar: SKNode {
         
         // setup starIcon in status bar and scale
         self.starsCollectedIcon.position = CGPoint(x: starOffsetX, y: starOffsetY)
-        self.starsCollectedIcon.setScale(0.70)
+        self.starsCollectedIcon.setScale(1.0)
         
         // collected stars label
         self.starsCollectedLabel = GameFonts.shared.createLabel(string: String(collected), labelType: GameFonts.LabelType.statusBar)
         
         // Use bright white color for maximum contrast
         self.starsCollectedLabel.fontColor = SKColor.white
-        self.starsCollectedLabel.fontSize = self.starsCollectedLabel.fontSize * 1.5 // Make text larger
+        self.starsCollectedLabel.fontSize = self.starsCollectedLabel.fontSize * 1.25 // Make text larger
         
         let labelOffsetX = self.statusBarBackground.size.width / 2
         let labelOffsetY = self.statusBarBackground.size.height / 2
