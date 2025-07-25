@@ -13,7 +13,7 @@ class Star: SKSpriteNode {
     // MARK: - Public Class properties
     internal var drift = CGFloat()
     
-    // MARK: - INit
+    // MARK: - Init
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }

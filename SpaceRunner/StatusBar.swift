@@ -8,6 +8,7 @@
 
 import Foundation
 import SpriteKit
+import UIKit
 
 class StatusBar: SKNode {
     
@@ -54,126 +55,250 @@ class StatusBar: SKNode {
     }
     
     fileprivate func setupStatusBarBackground() {
-        // Calculate safe status bar height - larger for better visibility
-        let statusBarHeight = max(kViewSize.height * 0.06, 35.0) // At least 44pt for touch targets
+        // Calculate sleek status bar height - optimized for modern devices
+        let statusBarHeight: CGFloat = kDeviceTablet ? 50.0 : 40.0
         let statusBarBackgroundSize = CGSize(width: kViewSize.width, height: statusBarHeight)
     
-        // Use a highly visible background that stands out dramatically
-        let backgroundColor = SKColor.systemGray.withAlphaComponent(0.80)
-        self.statusBarBackground = SKSpriteNode(color: backgroundColor, size: statusBarBackgroundSize)
-        
-        // Add a bright border for maximum visibility
-        let borderNode = SKShapeNode(rect: CGRect(origin: CGPoint.zero, size: statusBarBackgroundSize))
-        borderNode.strokeColor = SKColor.darkGray
-        borderNode.lineWidth = 1.0
-        borderNode.fillColor = SKColor.clear
-        borderNode.zPosition = 1
-        
-        // Add a subtle border for better definition
-        self.statusBarBackground.physicsBody = nil
+        // Create sleek space-themed gradient background
+        let backgroundNode = createGradientBackground(size: statusBarBackgroundSize)
+        self.statusBarBackground = backgroundNode
         
         // Make the anchorPoint 0,0 so it is positioned using the lower left corner
         self.statusBarBackground.anchorPoint = CGPoint.zero
         
-        // Calculate safe area positioning - adjust for different device types
-        let safeAreaTop: CGFloat
-        if kDeviceTablet {
-            // iPad positioning
-            safeAreaTop = kViewSize.height * 0.96 - statusBarHeight
-        } else {
-            // iPhone positioning - account for notch/Dynamic Island
-            safeAreaTop = kViewSize.height * 0.94 - statusBarHeight
-        }
-        
+        // Calculate safe area positioning accounting for notch/Dynamic Island
+        let safeAreaTop = calculateSafeAreaTop(statusBarHeight: statusBarHeight)
         self.statusBarBackground.position = CGPoint(x: 0, y: safeAreaTop)
         
-        // Full opacity for better visibility
-        self.statusBarBackground.alpha = 1.0
-        
-        // Add the bright border to background
-        self.statusBarBackground.addChild(borderNode)
-        
-        // Add a subtle drop shadow effect using a second node
-        let shadowNode = SKSpriteNode(color: SKColor.gray.withAlphaComponent(0.5), size: statusBarBackgroundSize)
-        shadowNode.anchorPoint = CGPoint.zero
-        shadowNode.position = CGPoint(x: 4, y: -4) // Larger offset for more visible shadow
-        shadowNode.zPosition = -1
-        self.statusBarBackground.addChild(shadowNode)
+        // Add modern edge glow effect
+        let glowEffect = createEdgeGlow(size: statusBarBackgroundSize)
+        self.statusBarBackground.addChild(glowEffect)
 
         // Add statusBarBackground to the StatusBar node
         self.addChild(self.statusBarBackground)
+    }
+    
+    private func calculateSafeAreaTop(statusBarHeight: CGFloat) -> CGFloat {
+        if kDeviceTablet {
+            // iPad - simple calculation, no notch
+            return kViewSize.height - statusBarHeight - 20
+        } else {
+            // Try to get actual safe area from the scene's view
+            var actualSafeAreaTop: CGFloat = 0
+            
+            if let scene = self.scene,
+               let view = scene.view,
+               let window = view.window {
+                let safeAreaInsets = window.safeAreaInsets
+                actualSafeAreaTop = safeAreaInsets.top
+                print("📱 StatusBar: Actual safe area top: \(actualSafeAreaTop)")
+            }
+            
+            // If we can't get actual safe area, fall back to device detection
+            if actualSafeAreaTop == 0 {
+                actualSafeAreaTop = detectSafeAreaFromDeviceType()
+            }
+            
+            // Position StatusBar below the safe area with some padding
+            let calculatedTop = kViewSize.height - actualSafeAreaTop - statusBarHeight - 8
+            
+            // Debug logging for safe area calculations
+            print("📱 StatusBar: Using safe area top: \(actualSafeAreaTop), calculated position: \(calculatedTop)")
+            
+            return calculatedTop
+        }
+    }
+    
+    private func detectSafeAreaFromDeviceType() -> CGFloat {
+        let screenHeight = kViewSize.height
+        let screenWidth = kViewSize.width
+        let aspectRatio = screenHeight / screenWidth
         
-        // Debug logging
-        // print("🔥 StatusBar: Created background at position \(self.statusBarBackground.position) with size \(statusBarBackgroundSize)")
-        // print("🔥 StatusBar: Safe area top calculated as \(safeAreaTop)")
+        // Safe area top insets for different iPhone models
+        let safeAreaInset: CGFloat
+        
+        // iPhone 14 Pro Max, 15 Pro Max (Dynamic Island)
+        if screenHeight >= 926 {
+            safeAreaInset = 59
+        }
+        // iPhone 14 Pro, 15 Pro (Dynamic Island)
+        else if screenHeight >= 852 {
+            safeAreaInset = 54
+        }
+        // iPhone 12/13/14/15 series (Notch or Dynamic Island)
+        else if aspectRatio > 2.1 {
+            safeAreaInset = 47
+        }
+        // iPhone X/XS/11 Pro series (Notch)
+        else if aspectRatio > 2.0 {
+            safeAreaInset = 44
+        }
+        // iPhone 8 Plus and similar (No notch)
+        else if screenHeight >= 736 {
+            safeAreaInset = 20
+        }
+        // Standard iPhones (No notch)
+        else {
+            safeAreaInset = 20
+        }
+        
+        print("📱 StatusBar: Device detection - Screen: \(screenWidth)x\(screenHeight), ratio: \(aspectRatio), inset: \(safeAreaInset)")
+        
+        return safeAreaInset
+    }
+    
+    // MARK: - Modern Visual Effects
+    private func createGradientBackground(size: CGSize) -> SKSpriteNode {
+        // Create a dark space-themed background with subtle transparency
+        let primaryColor = SKColor(red: 0.05, green: 0.05, blue: 0.15, alpha: 0.92) // Deep space blue
+        let background = SKSpriteNode(color: primaryColor, size: size)
+        
+        // Add subtle texture overlay for depth
+        let textureOverlay = SKSpriteNode(color: SKColor(white: 1.0, alpha: 0.03), size: size)
+        textureOverlay.anchorPoint = CGPoint.zero
+        textureOverlay.blendMode = .add
+        background.addChild(textureOverlay)
+        
+        return background
+    }
+    
+    private func createEdgeGlow(size: CGSize) -> SKNode {
+        let glowContainer = SKNode()
+        
+        // Top edge glow - cyan accent
+        let topGlow = SKSpriteNode(color: SKColor(red: 0.0, green: 0.8, blue: 1.0, alpha: 0.6), 
+                                 size: CGSize(width: size.width, height: 1.5))
+        topGlow.anchorPoint = CGPoint(x: 0, y: 0)
+        topGlow.position = CGPoint(x: 0, y: size.height - 1.5)
+        topGlow.blendMode = .add
+        
+        // Bottom edge glow - softer blue
+        let bottomGlow = SKSpriteNode(color: SKColor(red: 0.2, green: 0.4, blue: 1.0, alpha: 0.4), 
+                                    size: CGSize(width: size.width, height: 1.0))
+        bottomGlow.anchorPoint = CGPoint(x: 0, y: 0)
+        bottomGlow.position = CGPoint(x: 0, y: 0)
+        bottomGlow.blendMode = .add
+        
+        glowContainer.addChild(topGlow)
+        glowContainer.addChild(bottomGlow)
+        
+        return glowContainer
     }
     
     fileprivate func setupStatusBarStarsCollected(collected: Int) {
-        // Collected stars icon
+        // Create sleek star display section
+        let starContainer = SKNode()
+        
+        // Collected stars icon with font-matched sizing
         self.starsCollectedIcon = SKSpriteNode(texture: GameTextures.sharedInstance.textureWithName(name: SpriteName.StarIcon))
+        self.starsCollectedIcon.setScale(kDeviceTablet ? 0.3 : 0.25) // Smaller to match font size
         
-        let starOffsetX = self.statusBarBackground.size.width / 2 - self.starsCollectedIcon.size.width
-        let starOffsetY = self.statusBarBackground.size.height / 2
+        // Add subtle glow to star icon
+        let starGlow = SKSpriteNode(texture: GameTextures.sharedInstance.textureWithName(name: SpriteName.StarIcon))
+        starGlow.setScale(kDeviceTablet ? 0.4 : 0.35)
+        starGlow.alpha = 0.3
+        starGlow.color = SKColor.cyan
+        starGlow.colorBlendFactor = 0.8
+        starGlow.zPosition = -1
         
-        // setup starIcon in status bar and scale
-        self.starsCollectedIcon.position = CGPoint(x: starOffsetX, y: starOffsetY)
-        self.starsCollectedIcon.setScale(1.0)
+        // Position star elements
+        let starSectionX = self.statusBarBackground.size.width * 0.15
+        let centerY = self.statusBarBackground.size.height / 2
         
-        // collected stars label
+        starGlow.position = CGPoint(x: starSectionX, y: centerY)
+        self.starsCollectedIcon.position = CGPoint(x: starSectionX, y: centerY)
+        
+        // Collected stars label with modern typography
         self.starsCollectedLabel = GameFonts.shared.createLabel(string: String(collected), labelType: GameFonts.LabelType.statusBar)
         
-        // Use bright white color for maximum contrast
-        self.starsCollectedLabel.fontColor = SKColor.white
-        self.starsCollectedLabel.fontSize = self.starsCollectedLabel.fontSize * 1.25 // Make text larger
+        // Sleek text styling
+        self.starsCollectedLabel.fontColor = SKColor(red: 0.9, green: 0.95, blue: 1.0, alpha: 1.0) // Cool white
+        self.starsCollectedLabel.fontSize = kDeviceTablet ? 18 : 14
+        self.starsCollectedLabel.horizontalAlignmentMode = .left
         
-        let labelOffsetX = self.statusBarBackground.size.width / 2
-        let labelOffsetY = self.statusBarBackground.size.height / 2
+        let labelOffsetX = starSectionX + self.starsCollectedIcon.size.width * 0.7
+        self.starsCollectedLabel.position = CGPoint(x: labelOffsetX, y: centerY)
         
-        self.starsCollectedLabel.position = CGPoint(x: labelOffsetX, y: labelOffsetY)
+        // Add elements to container
+        starContainer.addChild(starGlow)
+        starContainer.addChild(self.starsCollectedIcon)
+        starContainer.addChild(self.starsCollectedLabel)
         
-        self.statusBarBackground.addChild(self.starsCollectedIcon)
-        self.statusBarBackground.addChild(self.starsCollectedLabel)
+        self.statusBarBackground.addChild(starContainer)
         
-        // Rotate the starsCollectedIcon forever
+        // Subtle rotation animation
         self.starsCollectedIcon.run(
             SKAction.repeatForever(
-                SKAction.rotate(byAngle: 5.0, duration: 1.5)))
-        
+                SKAction.rotate(byAngle: CGFloat.pi * 2, duration: 4.0)))
     }
     
     fileprivate func setupStatusBarScore(score: Int) {
-        // Static Label
-        let scoreText = GameFonts.shared.createLabel(string: "Score: ", labelType: GameFonts.LabelType.statusBar)
-        scoreText.fontColor = SKColor.white
-        scoreText.fontSize = scoreText.fontSize * 0.75 // Make text larger
-        scoreText.position = CGPoint(x: self.statusBarBackground.size.width * 0.75, y: self.statusBarBackground.size.height / 2)
-        self.statusBarBackground.addChild(scoreText)
+        // Create modern score section
+        let scoreContainer = SKNode()
+        let centerY = self.statusBarBackground.size.height / 2
         
-        // Score Label
-        self.scoreLabel = GameFonts.shared.createLabel(string: String(score), labelType: GameFonts.LabelType.statusBar)
-        self.scoreLabel.fontColor = SKColor.white
-        self.scoreLabel.fontSize = self.scoreLabel.fontSize * 0.75 // Make text larger
-        let offsetX = self.statusBarBackground.size.width * 0.90
-        let offsetY = self.statusBarBackground.size.height / 2
-        self.scoreLabel.position = CGPoint(x: offsetX, y: offsetY)
-        self.statusBarBackground.addChild(self.scoreLabel)
+        // Score value with prominent styling
+        self.scoreLabel = GameFonts.shared.createLabel(string: formatScore(score), labelType: GameFonts.LabelType.statusBar)
+        self.scoreLabel.fontColor = SKColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 1.0) // Bright cyan
+        self.scoreLabel.fontSize = kDeviceTablet ? 20 : 16
+        self.scoreLabel.horizontalAlignmentMode = .right
         
-        // Debug logging
-        print("🔥 StatusBar: Added score labels at positions - scoreText: \(scoreText.position), scoreLabel: \(self.scoreLabel.position)")
+        // Position score at right edge with padding
+        let scoreX = self.statusBarBackground.size.width - (kDeviceTablet ? 25 : 20)
+        self.scoreLabel.position = CGPoint(x: scoreX, y: centerY)
+        
+        // Add subtle glow effect to score
+        let scoreGlow = GameFonts.shared.createLabel(string: formatScore(score), labelType: GameFonts.LabelType.statusBar)
+        scoreGlow.fontColor = SKColor(red: 0.0, green: 0.6, blue: 0.8, alpha: 0.4)
+        scoreGlow.fontSize = self.scoreLabel.fontSize
+        scoreGlow.horizontalAlignmentMode = .right
+        scoreGlow.position = self.scoreLabel.position
+        scoreGlow.zPosition = -1
+        
+        // Add elements to container
+        scoreContainer.addChild(scoreGlow)
+        scoreContainer.addChild(self.scoreLabel)
+        
+        self.statusBarBackground.addChild(scoreContainer)
+    }
+    
+    // MARK: - Helper Methods
+    private func formatScore(_ score: Int) -> String {
+        // Add thousand separators for better readability
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        return formatter.string(from: NSNumber(value: score)) ?? "\(score)"
     }
     
     fileprivate func setupPauseButton() {
-        // Position pause button in the top-left corner of the status bar
-        let buttonPadding: CGFloat = 8.0
+        // Position pause button with modern spacing
+        let buttonPadding: CGFloat = kDeviceTablet ? 15.0 : 12.0
         self.pauseButton.position = CGPoint(x: buttonPadding + self.pauseButton.size.width / 2, 
                                           y: self.statusBarBackground.position.y + self.statusBarBackground.size.height / 2)
         self.pauseButton.zPosition = 1 // Above status bar background
+        
+        // Add subtle glow to pause button
+        let buttonGlow = SKSpriteNode(texture: self.pauseButton.texture)
+        buttonGlow.size = CGSize(width: self.pauseButton.size.width * 1.2, 
+                               height: self.pauseButton.size.height * 1.2)
+        buttonGlow.alpha = 0.2
+        buttonGlow.color = SKColor.cyan
+        buttonGlow.colorBlendFactor = 0.8
+        buttonGlow.zPosition = -1
+        self.pauseButton.addChild(buttonGlow)
+        
         self.addChild(self.pauseButton)
     }
     
     // MARK: - Public Functions
     func updateScore(score: Int) {
-        self.scoreLabel.text = String(score)
+        let formattedScore = formatScore(score)
+        self.scoreLabel.text = formattedScore
+        
+        // Update glow effect if it exists
+        if let scoreGlow = self.scoreLabel.parent?.children.first(where: { $0.zPosition == -1 }) as? SKLabelNode {
+            scoreGlow.text = formattedScore
+        }
     }
     
     func updateStarsCollected(collected: Int) {
@@ -184,23 +309,37 @@ class StatusBar: SKNode {
     }
     
     func updateLives(lives: Int) {
-        // First Clear all of the sprites
+        // Clear existing life sprites
         self.statusBarBackground.enumerateChildNodes(withName: SpriteName.PlayerLives) { node, _ in
             if let livesSprite = node as? SKSpriteNode {
                 livesSprite.removeFromParent()
             }
         }
         
-        // Get the X and Y points where we should draw the sprites
-        var offsetX = CGFloat()
-        let offsetY = self.statusBarBackground.size.height / 2
+        // Create modern lives display in center area
+        let centerY = self.statusBarBackground.size.height / 2
+        let livesStartX = self.statusBarBackground.size.width * 0.4
+        let spacing: CGFloat = kDeviceTablet ? 35 : 28
         
-        // Redraw the sprites
         for i in 0..<lives {
             let livesSprite = GameTextures.sharedInstance.spriteWithName(name: SpriteName.PlayerLives)
-            offsetX = livesSprite.size.width + livesSprite.size.width * 1.5 * CGFloat(i)
-            livesSprite.position = CGPoint(x: offsetX, y: offsetY)
+            livesSprite.setScale(kDeviceTablet ? 0.5 : 0.4) // Refined size
+            
+            // Add subtle glow to life icons
+            let lifeGlow = GameTextures.sharedInstance.spriteWithName(name: SpriteName.PlayerLives)
+            lifeGlow.setScale((kDeviceTablet ? 0.5 : 0.4) * 1.3)
+            lifeGlow.alpha = 0.3
+            lifeGlow.color = SKColor.green
+            lifeGlow.colorBlendFactor = 0.6
+            lifeGlow.zPosition = -1
+            
+            let xPosition = livesStartX + (spacing * CGFloat(i))
+            livesSprite.position = CGPoint(x: xPosition, y: centerY)
+            lifeGlow.position = CGPoint(x: xPosition, y: centerY)
+            
             livesSprite.name = SpriteName.PlayerLives
+            
+            self.statusBarBackground.addChild(lifeGlow)
             self.statusBarBackground.addChild(livesSprite)
         }
     }
