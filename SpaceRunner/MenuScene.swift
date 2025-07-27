@@ -48,23 +48,74 @@ class MenuScene:SKScene {
         self.addChild(self.gameTitle)
         self.addChild(self.gameTitleShip)
         
-        // Add Author / Copyright Information / Version and Build
+        // Add Author / Copyright Information / Version and Build (moved to bottom)
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
         let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
-        let versionLabel = fonts.createLabel(string: "v\(appVersion).\(buildNumber)", labelType: GameFonts.LabelType.menu)
-        let authorLabel = fonts.createLabel(string: "By Todd Dube", labelType: GameFonts.LabelType.menu)
+        let versionLabel = fonts.createLabel(string: "v\(appVersion).\(buildNumber)", labelType: GameFonts.LabelType.statusBar)
+        let authorLabel = fonts.createLabel(string: "Created by Todd Dube", labelType: GameFonts.LabelType.statusBar)
         
-        // Postion the lables
-        authorLabel.position = CGPoint(x: kViewSize.width * 0.50, y: kViewSize.height * 0.65)
-        versionLabel.position = CGPoint(x: kViewSize.width * 0.50 , y: kViewSize.height * 0.62)
+        // Position labels at bottom with smaller font and safe area consideration
+        authorLabel.position = CGPoint(x: kViewSize.width * 0.50, y: 60)
+        versionLabel.position = CGPoint(x: kViewSize.width * 0.50, y: 30)
+        
+        // Set initial state for animation (fade in from bottom)
+        authorLabel.alpha = 0.0
+        versionLabel.alpha = 0.0
         
         self.addChild(authorLabel)
         self.addChild(versionLabel)
+        
+        // Animate the bottom labels with delay
+        self.animateBottomLabels(authorLabel: authorLabel, versionLabel: versionLabel)
         
         // Rotate the gameTitleShip forever (slower rotation to better show break-apart effect)
         self.gameTitleShip.run(SKAction.repeatForever(SKAction.rotate(byAngle: 15.0, duration: 6.0)), withKey: "mainRotation")
         
 
+    }
+    
+    // MARK: - Animations
+    fileprivate func animateBottomLabels(authorLabel: SKLabelNode, versionLabel: SKLabelNode) {
+        // Author label animation - fade in with slight upward movement
+        let authorDelay = SKAction.wait(forDuration: 2.0)
+        let authorMoveUp = SKAction.moveBy(x: 0, y: 10, duration: 0.8)
+        let authorFadeIn = SKAction.fadeAlpha(to: 0.7, duration: 0.8)
+        let authorBounce = SKAction.sequence([
+            SKAction.scale(to: 1.05, duration: 0.2),
+            SKAction.scale(to: 1.0, duration: 0.2)
+        ])
+        let authorAnimation = SKAction.group([authorMoveUp, authorFadeIn, authorBounce])
+        let authorSequence = SKAction.sequence([authorDelay, authorAnimation])
+        
+        // Version label animation - fade in with slight delay after author
+        let versionDelay = SKAction.wait(forDuration: 2.5)
+        let versionMoveUp = SKAction.moveBy(x: 0, y: 8, duration: 0.6)
+        let versionFadeIn = SKAction.fadeAlpha(to: 0.6, duration: 0.6)
+        let versionBounce = SKAction.sequence([
+            SKAction.scale(to: 1.1, duration: 0.15),
+            SKAction.scale(to: 1.0, duration: 0.15)
+        ])
+        let versionAnimation = SKAction.group([versionMoveUp, versionFadeIn, versionBounce])
+        let versionSequence = SKAction.sequence([versionDelay, versionAnimation])
+        
+        // Add subtle breathing animation to keep labels alive
+        let breathe = SKAction.sequence([
+            SKAction.fadeAlpha(to: 0.4, duration: 3.0),
+            SKAction.fadeAlpha(to: 0.7, duration: 3.0)
+        ])
+        let versionBreathe = SKAction.sequence([
+            SKAction.fadeAlpha(to: 0.3, duration: 4.0),
+            SKAction.fadeAlpha(to: 0.6, duration: 4.0)
+        ])
+        
+        // Run animations
+        authorLabel.run(authorSequence) {
+            authorLabel.run(SKAction.repeatForever(breathe))
+        }
+        
+        versionLabel.run(versionSequence) {
+            versionLabel.run(SKAction.repeatForever(versionBreathe))
+        }
     }
     
     // MARK: - Update
