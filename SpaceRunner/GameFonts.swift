@@ -88,32 +88,10 @@ final class GameFonts {
             } else {
                 logger.error("Failed to register font with unknown error")
             }
-            
-            // Fallback to legacy method for compatibility
-            fallbackRegisterFont(from: url)
+            logger.warning("Font registration failed - falling back to system font")
         }
     }
     
-    private func fallbackRegisterFont(from url: URL) {
-        guard let fontData = NSData(contentsOf: url),
-              let provider = CGDataProvider(data: fontData),
-              let font = CGFont(provider) else {
-            logger.error("Failed to create font data from: \(url)")
-            return
-        }
-        
-        var error: Unmanaged<CFError>?
-        if CTFontManagerRegisterGraphicsFont(font, &error) {
-            logger.info("Successfully registered font using legacy API")
-            isCustomFontAvailable = UIFont(name: fontName, size: 12) != nil
-        } else {
-            if let error = error?.takeRetainedValue() {
-                logger.error("Legacy font registration failed: \(CFErrorCopyDescription(error))")
-            } else {
-                logger.error("Legacy font registration failed with unknown error")
-            }
-        }
-    }
     
     private func observeContentSizeChanges() {
         NotificationCenter.default.addObserver(

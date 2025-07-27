@@ -61,8 +61,8 @@ class MenuScene:SKScene {
         self.addChild(authorLabel)
         self.addChild(versionLabel)
         
-        // Rotate the gameTitleShip forever
-        self.gameTitleShip.run(SKAction.repeatForever(SKAction.rotate(byAngle: 15.0, duration: 4.5)))
+        // Rotate the gameTitleShip forever (slower rotation to better show break-apart effect)
+        self.gameTitleShip.run(SKAction.repeatForever(SKAction.rotate(byAngle: 15.0, duration: 6.0)), withKey: "mainRotation")
         
 
     }

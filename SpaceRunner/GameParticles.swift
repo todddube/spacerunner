@@ -22,6 +22,9 @@ class GameParticles {
         case magic
         case engineGreen
         case engineYellow
+        case engineRed
+        case engineFlameCore
+        case engineFlameOuter
         case player
     }
     
@@ -29,12 +32,16 @@ class GameParticles {
     fileprivate var magicParticles = SKEmitterNode()
     fileprivate var engineParticlesGreen = SKEmitterNode()
     fileprivate var engineParticlesYellow = SKEmitterNode()
+    fileprivate var engineParticlesRed = SKEmitterNode()
+    fileprivate var engineFlameCore = SKEmitterNode()
+    fileprivate var engineFlameOuter = SKEmitterNode()
     fileprivate var playerParticles = SKEmitterNode()
     
     // MARK: - Init
     init() {
         self.setupMagicParticles()
         self.setupEngineParticles()
+        self.setupRocketFlameParticles()
         self.setupPlayerParticles()
     }
     
@@ -151,6 +158,60 @@ class GameParticles {
         
     }
     
+    // MARK: - RocketFlameParticles
+    fileprivate func setupRocketFlameParticles() {
+        // Setup Red Engine Particles (Hottest part of flame)
+        self.engineParticlesRed.particleBirthRate = 35.0
+        self.engineParticlesRed.particleLifetime = 0.2
+        self.engineParticlesRed.particleLifetimeRange = 0.1
+        self.engineParticlesRed.particlePositionRange = CGVector(dx: 2, dy: 0)
+        self.engineParticlesRed.emissionAngle = DegressToRadians(degrees: 90)
+        self.engineParticlesRed.emissionAngleRange = DegressToRadians(degrees: 3.0)
+        self.engineParticlesRed.particleSpeed = -120.0
+        self.engineParticlesRed.particleSpeedRange = 20.0
+        self.engineParticlesRed.particleScale = kDeviceTablet ? 0.6 : 0.2
+        self.engineParticlesRed.particleScaleRange = 0.1
+        self.engineParticlesRed.particleColorBlendFactor = 1.0
+        self.engineParticlesRed.particleColor = Colors.colorFromRGB(rgbvalue: Colors.EngineRed)
+        self.engineParticlesRed.particleTexture = GameTextures.sharedInstance.textureWithName(name: SpriteName.Magic)
+        
+        // Setup Flame Core (Bright yellow/orange center)
+        self.engineFlameCore.particleBirthRate = 45.0
+        self.engineFlameCore.particleLifetime = 0.3
+        self.engineFlameCore.particleLifetimeRange = 0.15
+        self.engineFlameCore.particlePositionRange = CGVector(dx: 4, dy: 0)
+        self.engineFlameCore.emissionAngle = DegressToRadians(degrees: 90)
+        self.engineFlameCore.emissionAngleRange = DegressToRadians(degrees: 8.0)
+        self.engineFlameCore.particleSpeed = -100.0
+        self.engineFlameCore.particleSpeedRange = 30.0
+        self.engineFlameCore.particleScale = kDeviceTablet ? 0.8 : 0.3
+        self.engineFlameCore.particleScaleRange = 0.2
+        self.engineFlameCore.particleScaleSpeed = -0.5
+        self.engineFlameCore.particleColorBlendFactor = 1.0
+        self.engineFlameCore.particleColor = Colors.colorFromRGB(rgbvalue: Colors.EngineYellow)
+        self.engineFlameCore.particleAlpha = 0.9
+        self.engineFlameCore.particleAlphaSpeed = -2.5
+        self.engineFlameCore.particleTexture = GameTextures.sharedInstance.textureWithName(name: SpriteName.Magic)
+        
+        // Setup Flame Outer (Green outer edge for cooler flame)
+        self.engineFlameOuter.particleBirthRate = 25.0
+        self.engineFlameOuter.particleLifetime = 0.4
+        self.engineFlameOuter.particleLifetimeRange = 0.2
+        self.engineFlameOuter.particlePositionRange = CGVector(dx: 6, dy: 0)
+        self.engineFlameOuter.emissionAngle = DegressToRadians(degrees: 90)
+        self.engineFlameOuter.emissionAngleRange = DegressToRadians(degrees: 12.0)
+        self.engineFlameOuter.particleSpeed = -80.0
+        self.engineFlameOuter.particleSpeedRange = 40.0
+        self.engineFlameOuter.particleScale = kDeviceTablet ? 1.0 : 0.4
+        self.engineFlameOuter.particleScaleRange = 0.3
+        self.engineFlameOuter.particleScaleSpeed = -0.3
+        self.engineFlameOuter.particleColorBlendFactor = 1.0
+        self.engineFlameOuter.particleColor = Colors.colorFromRGB(rgbvalue: Colors.EngineGreen)
+        self.engineFlameOuter.particleAlpha = 0.7
+        self.engineFlameOuter.particleAlphaSpeed = -1.5
+        self.engineFlameOuter.particleTexture = GameTextures.sharedInstance.textureWithName(name: SpriteName.Magic)
+    }
+    
     // MARK: - Public Functions
     func createParticle(particles:Particles) -> SKEmitterNode {
         switch particles {
@@ -160,6 +221,12 @@ class GameParticles {
                 return self.engineParticlesGreen.copy() as! SKEmitterNode
             case Particles.engineYellow:
                 return self.engineParticlesYellow.copy() as! SKEmitterNode
+            case Particles.engineRed:
+                return self.engineParticlesRed.copy() as! SKEmitterNode
+            case Particles.engineFlameCore:
+                return self.engineFlameCore.copy() as! SKEmitterNode
+            case Particles.engineFlameOuter:
+                return self.engineFlameOuter.copy() as! SKEmitterNode
             case Particles.player:
                 return self.playerParticles.copy() as! SKEmitterNode
         }

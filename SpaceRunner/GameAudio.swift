@@ -51,6 +51,11 @@ final class GameAudio {
     private var currentMusicBuffer: AVAudioPCMBuffer?
     private var soundEffectBuffers: [SoundEffect: AVAudioPCMBuffer] = [:]
     
+    // Sound effect player pool to avoid dynamic node creation
+    private var effectPlayerNodes: [AVAudioPlayerNode] = []
+    private var availablePlayerNodes: [AVAudioPlayerNode] = []
+    private let maxEffectPlayers = 8
+    
     private let logger = Logger(subsystem: "com.todddube.spacerunner", category: "GameAudio")
     
     // MARK: - Initialization
@@ -80,25 +85,43 @@ final class GameAudio {
     @MainActor
     private func configureAudioSession() async throws {
         let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.playback, mode: .gameChat, options: [.duckOthers])
+        try session.setCategory(.playback, mode: .default, options: [.mixWithOthers])
         try session.setActive(true)
     }
     
     private func setupAudioGraph() {
+        let format = audioEngine.outputNode.inputFormat(forBus: 0)
+        
         audioEngine.attach(musicPlayerNode)
         audioEngine.attach(musicMixer)
         audioEngine.attach(effectsMixer)
         
-        // Connect music path
-        audioEngine.connect(musicPlayerNode, to: musicMixer, format: nil)
-        audioEngine.connect(musicMixer, to: audioEngine.mainMixerNode, format: nil)
+        // Connect music path with consistent format
+        audioEngine.connect(musicPlayerNode, to: musicMixer, format: format)
+        audioEngine.connect(musicMixer, to: audioEngine.mainMixerNode, format: format)
         
-        // Connect effects path
-        audioEngine.connect(effectsMixer, to: audioEngine.mainMixerNode, format: nil)
+        // Connect effects path with consistent format
+        audioEngine.connect(effectsMixer, to: audioEngine.mainMixerNode, format: format)
+        
+        // Create and attach sound effect player pool
+        setupEffectPlayerPool(format: format)
         
         // Set initial volumes
         musicMixer.outputVolume = musicVolume
         effectsMixer.outputVolume = effectsVolume
+    }
+    
+    private func setupEffectPlayerPool(format: AVAudioFormat) {
+        effectPlayerNodes.removeAll()
+        availablePlayerNodes.removeAll()
+        
+        for _ in 0..<maxEffectPlayers {
+            let playerNode = AVAudioPlayerNode()
+            audioEngine.attach(playerNode)
+            audioEngine.connect(playerNode, to: effectsMixer, format: format)
+            effectPlayerNodes.append(playerNode)
+            availablePlayerNodes.append(playerNode)
+        }
     }
     
     private func preloadAudioFiles() async {
@@ -127,19 +150,45 @@ final class GameAudio {
         
         do {
             let file = try AVAudioFile(forReading: url)
-            let format = file.processingFormat
-            let frameCount = UInt32(file.length)
+            let outputFormat = audioEngine.outputNode.inputFormat(forBus: 0)
             
-            guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else {
-                logger.error("Could not create buffer for music file: \(track.fileName)")
+            // Convert to engine's format to prevent static/distortion
+            let converter = AVAudioConverter(from: file.processingFormat, to: outputFormat)
+            guard let converter = converter else {
+                logger.error("Could not create audio converter for: \(track.fileName)")
                 return
             }
             
-            try file.read(into: buffer)
+            let frameCount = UInt32(file.length)
+            let outputFrameCount = UInt32(Double(frameCount) * outputFormat.sampleRate / file.processingFormat.sampleRate)
+            
+            guard let inputBuffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: frameCount),
+                  let outputBuffer = AVAudioPCMBuffer(pcmFormat: outputFormat, frameCapacity: outputFrameCount) else {
+                logger.error("Could not create buffers for music file: \(track.fileName)")
+                return
+            }
+            
+            try file.read(into: inputBuffer)
+            
+            var error: NSError?
+            let status = converter.convert(to: outputBuffer, error: &error) { _, outStatus in
+                outStatus.pointee = .haveData
+                return inputBuffer
+            }
+            
+            if let error = error {
+                logger.error("Audio conversion failed for \(track.fileName): \(error.localizedDescription)")
+                return
+            }
+            
+            guard status == .haveData else {
+                logger.error("Audio conversion returned unexpected status for \(track.fileName)")
+                return
+            }
             
             await MainActor.run {
                 if track == .game {
-                    self.currentMusicBuffer = buffer
+                    self.currentMusicBuffer = outputBuffer
                 }
             }
         } catch {
@@ -155,18 +204,44 @@ final class GameAudio {
         
         do {
             let file = try AVAudioFile(forReading: url)
-            let format = file.processingFormat
-            let frameCount = UInt32(file.length)
+            let outputFormat = audioEngine.outputNode.inputFormat(forBus: 0)
             
-            guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else {
-                logger.error("Could not create buffer for sound effect: \(effect.fileName)")
+            // Convert to engine's format to prevent static/distortion
+            let converter = AVAudioConverter(from: file.processingFormat, to: outputFormat)
+            guard let converter = converter else {
+                logger.error("Could not create audio converter for: \(effect.fileName)")
                 return
             }
             
-            try file.read(into: buffer)
+            let frameCount = UInt32(file.length)
+            let outputFrameCount = UInt32(Double(frameCount) * outputFormat.sampleRate / file.processingFormat.sampleRate)
+            
+            guard let inputBuffer = AVAudioPCMBuffer(pcmFormat: file.processingFormat, frameCapacity: frameCount),
+                  let outputBuffer = AVAudioPCMBuffer(pcmFormat: outputFormat, frameCapacity: outputFrameCount) else {
+                logger.error("Could not create buffers for sound effect: \(effect.fileName)")
+                return
+            }
+            
+            try file.read(into: inputBuffer)
+            
+            var error: NSError?
+            let status = converter.convert(to: outputBuffer, error: &error) { _, outStatus in
+                outStatus.pointee = .haveData
+                return inputBuffer
+            }
+            
+            if let error = error {
+                logger.error("Audio conversion failed for \(effect.fileName): \(error.localizedDescription)")
+                return
+            }
+            
+            guard status == .haveData else {
+                logger.error("Audio conversion returned unexpected status for \(effect.fileName)")
+                return
+            }
             
             await MainActor.run {
-                self.soundEffectBuffers[effect] = buffer
+                self.soundEffectBuffers[effect] = outputBuffer
             }
         } catch {
             logger.error("Failed to load sound effect \(effect.fileName): \(error.localizedDescription)")
@@ -237,17 +312,39 @@ final class GameAudio {
             return
         }
         
-        let playerNode = AVAudioPlayerNode()
-        audioEngine.attach(playerNode)
-        audioEngine.connect(playerNode, to: effectsMixer, format: buffer.format)
+        guard let playerNode = getAvailablePlayerNode() else {
+            logger.warning("No available player nodes for sound effect: \(effect.fileName)")
+            return
+        }
         
         playerNode.scheduleBuffer(buffer, at: nil) { [weak self] in
             Task { @MainActor in
-                self?.audioEngine.detach(playerNode)
+                self?.returnPlayerNode(playerNode)
             }
         }
         
         playerNode.play()
+    }
+    
+    private func getAvailablePlayerNode() -> AVAudioPlayerNode? {
+        if !availablePlayerNodes.isEmpty {
+            return availablePlayerNodes.removeFirst()
+        }
+        
+        // If no nodes available, stop the oldest playing node and reuse it
+        for node in effectPlayerNodes {
+            if node.isPlaying {
+                node.stop()
+                return node
+            }
+        }
+        
+        return effectPlayerNodes.first
+    }
+    
+    private func returnPlayerNode(_ node: AVAudioPlayerNode) {
+        guard !availablePlayerNodes.contains(node) else { return }
+        availablePlayerNodes.append(node)
     }
     
     // MARK: - Volume Control

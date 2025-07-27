@@ -50,14 +50,24 @@ class Player: SKSpriteNode {
     
     // MARK: - Setup
     fileprivate func setupEngineParticles() {
-        let engineParticlesGreen = GameParticles.sharedInstance.createParticle(particles: GameParticles.Particles.engineGreen)
+        // Create realistic rocket flame with layered particles
+        // Layer 1: Outer green flame (coolest)
+        let engineFlameOuter = GameParticles.sharedInstance.createParticle(particles: GameParticles.Particles.engineFlameOuter)
+        engineFlameOuter.position = CGPoint(x: 0, y: -self.size.height * 0.4)
+        engineFlameOuter.zPosition = self.zPosition - 3
+        self.addChild(engineFlameOuter)
         
-        engineParticlesGreen.zPosition = self.zPosition - 1
-        self.addChild(engineParticlesGreen)
+        // Layer 2: Yellow/orange core flame (medium heat)
+        let engineFlameCore = GameParticles.sharedInstance.createParticle(particles: GameParticles.Particles.engineFlameCore)
+        engineFlameCore.position = CGPoint(x: 0, y: -self.size.height * 0.35)
+        engineFlameCore.zPosition = self.zPosition - 2
+        self.addChild(engineFlameCore)
         
-        let engineParticlesYellow = GameParticles.sharedInstance.createParticle(particles: GameParticles.Particles.engineYellow)
-        engineParticlesYellow.zPosition = self.zPosition - 1
-        self.addChild(engineParticlesYellow)
+        // Layer 3: Red hot center (hottest)
+        let engineFlameRed = GameParticles.sharedInstance.createParticle(particles: GameParticles.Particles.engineRed)
+        engineFlameRed.position = CGPoint(x: 0, y: -self.size.height * 0.3)
+        engineFlameRed.zPosition = self.zPosition - 1
+        self.addChild(engineFlameRed)
     }
     
     fileprivate func setupPlayer() {
@@ -252,7 +262,10 @@ class Player: SKSpriteNode {
         alpha = 1.0
         colorBlendFactor = 0.0
         
-        // Re-setup player if needed
+        // Remove existing flame particles
+        children.filter { $0 is SKEmitterNode }.forEach { $0.removeFromParent() }
+        
+        // Re-setup enhanced engine particles
         setupEngineParticles()
     }
 }
