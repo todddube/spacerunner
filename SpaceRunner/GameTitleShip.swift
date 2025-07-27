@@ -56,18 +56,18 @@ class GameTitleShip: SKSpriteNode {
         // Create 5 larger fragments using actual ship texture to represent ship pieces
         let shipTexture = GameTextures.sharedInstance.textureWithName(name: SpriteName.Player)
         
-        // Fragment data: position, size scale, rotation, and tint for variety
+        // Fragment data: position, size scale, rotation, and tint for variety (3x larger)
         let fragmentData: [(offset: CGPoint, scale: CGFloat, rotation: CGFloat, color: UIColor)] = [
             // Nose section (front of ship)
-            (CGPoint(x: 0, y: 15), 0.6, 0.0, Colors.colorFromRGB(rgbvalue: Colors.EngineYellow)),
+            (CGPoint(x: 0, y: 15), 1.8, 0.0, Colors.colorFromRGB(rgbvalue: Colors.EngineYellow)),
             // Left wing section  
-            (CGPoint(x: -18, y: 5), 0.4, -0.3, Colors.colorFromRGB(rgbvalue: Colors.EngineRed)),
+            (CGPoint(x: -18, y: 5), 1.2, -0.3, Colors.colorFromRGB(rgbvalue: Colors.EngineRed)),
             // Right wing section
-            (CGPoint(x: 18, y: 5), 0.4, 0.3, Colors.colorFromRGB(rgbvalue: Colors.EngineRed)),
+            (CGPoint(x: 18, y: 5), 1.2, 0.3, Colors.colorFromRGB(rgbvalue: Colors.EngineRed)),
             // Engine/rear section
-            (CGPoint(x: 0, y: -12), 0.5, 0.0, Colors.colorFromRGB(rgbvalue: Colors.EngineGreen)),
+            (CGPoint(x: 0, y: -12), 1.5, 0.0, Colors.colorFromRGB(rgbvalue: Colors.EngineGreen)),
             // Center body section
-            (CGPoint(x: 0, y: 2), 0.35, 0.0, SKColor.white)
+            (CGPoint(x: 0, y: 2), 1.05, 0.0, SKColor.white)
         ]
         
         for (_, data) in fragmentData.enumerated() {
@@ -96,14 +96,14 @@ class GameTitleShip: SKSpriteNode {
     // MARK: - Break Apart Animation
     fileprivate func startBreakApartCycle() {
         // print("DEBUG: startBreakApartCycle called")
-        // Start immediately for testing, then every 4 seconds
-        let immediateStart = SKAction.run { [weak self] in
+        // Wait for ship fly-in animation (3.0s) plus additional spinning time (4.0s) before first break-apart
+        let waitForFlyInAndSpin = SKAction.wait(forDuration: 7.0)
+        let startBreakApart = SKAction.run { [weak self] in
             // print("DEBUG: About to call performBreakApartCycle")
             self?.performBreakApartCycle()
         }
-        let wait = SKAction.wait(forDuration: 2.0)
         
-        self.run(SKAction.sequence([wait, immediateStart]))
+        self.run(SKAction.sequence([waitForFlyInAndSpin, startBreakApart]))
     }
     
     fileprivate func performBreakApartCycle() {
