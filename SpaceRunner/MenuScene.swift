@@ -54,9 +54,13 @@ class MenuScene:SKScene {
         let versionLabel = fonts.createLabel(string: "v\(appVersion).\(buildNumber)", labelType: GameFonts.LabelType.statusBar)
         let authorLabel = fonts.createLabel(string: "Created by Todd Dube", labelType: GameFonts.LabelType.statusBar)
         
-        // Position labels at bottom with smaller font and safe area consideration
-        authorLabel.position = CGPoint(x: kViewSize.width * 0.50, y: 60)
-        versionLabel.position = CGPoint(x: kViewSize.width * 0.50, y: 30)
+        // Center align the text horizontally
+        authorLabel.horizontalAlignmentMode = .center
+        versionLabel.horizontalAlignmentMode = .center
+        
+        // Position labels at bottom center with proper spacing
+        authorLabel.position = CGPoint(x: kViewSize.width * 0.50, y: 45)
+        versionLabel.position = CGPoint(x: kViewSize.width * 0.50, y: 20)
         
         // Set initial state for animation (fade in from bottom)
         authorLabel.alpha = 0.0
@@ -68,8 +72,8 @@ class MenuScene:SKScene {
         // Animate the bottom labels with delay
         self.animateBottomLabels(authorLabel: authorLabel, versionLabel: versionLabel)
         
-        // Rotate the gameTitleShip forever (slower rotation to better show break-apart effect)
-        self.gameTitleShip.run(SKAction.repeatForever(SKAction.rotate(byAngle: 15.0, duration: 6.0)), withKey: "mainRotation")
+        // Rotate the gameTitleShip forever with smooth continuous rotation
+        self.gameTitleShip.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat.pi * 2, duration: 8.0)), withKey: "mainRotation")
         
 
     }

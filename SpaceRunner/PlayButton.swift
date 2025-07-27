@@ -25,7 +25,12 @@ class PlayButton: SKSpriteNode {
     
     convenience init() {
         let texture = GameTextures.sharedInstance.textureWithName(name: SpriteName.ButtonPlay)
-        self.init(texture: texture, color: SKColor.white, size: texture.size())
+        
+        // Make button 25% bigger
+        let originalSize = texture.size()
+        let scaledSize = CGSize(width: originalSize.width * 1.25, height: originalSize.height * 1.25)
+        
+        self.init(texture: texture, color: SKColor.white, size: scaledSize)
         
         self.setupPlayButton()
         self.setupAnimation()

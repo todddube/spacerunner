@@ -66,9 +66,9 @@ class StatusBar: SKNode {
         // Make the anchorPoint 0,0 so it is positioned using the lower left corner
         self.statusBarBackground.anchorPoint = CGPoint.zero
         
-        // Calculate safe area positioning accounting for notch/Dynamic Island
-        let safeAreaTop = calculateSafeAreaTop(statusBarHeight: statusBarHeight)
-        self.statusBarBackground.position = CGPoint(x: 0, y: safeAreaTop)
+        // Position at bottom of screen just above the edge
+        let bottomPosition = calculateBottomPosition(statusBarHeight: statusBarHeight)
+        self.statusBarBackground.position = CGPoint(x: 0, y: bottomPosition)
         
         // Add modern edge glow effect
         let glowEffect = createEdgeGlow(size: statusBarBackgroundSize)
@@ -78,71 +78,55 @@ class StatusBar: SKNode {
         self.addChild(self.statusBarBackground)
     }
     
-    private func calculateSafeAreaTop(statusBarHeight: CGFloat) -> CGFloat {
+    private func calculateBottomPosition(statusBarHeight: CGFloat) -> CGFloat {
         if kDeviceTablet {
-            // iPad - simple calculation, no notch
-            return kViewSize.height - statusBarHeight - 20
+            // iPad - position just above bottom edge with padding
+            return 10
         } else {
             // Try to get actual safe area from the scene's view
-            var actualSafeAreaTop: CGFloat = 0
+            var actualSafeAreaBottom: CGFloat = 0
             
             if let scene = self.scene,
                let view = scene.view,
                let window = view.window {
                 let safeAreaInsets = window.safeAreaInsets
-                actualSafeAreaTop = safeAreaInsets.top
-                print("📱 StatusBar: Actual safe area top: \(actualSafeAreaTop)")
+                actualSafeAreaBottom = safeAreaInsets.bottom
+                print("📱 StatusBar: Actual safe area bottom: \(actualSafeAreaBottom)")
             }
             
             // If we can't get actual safe area, fall back to device detection
-            if actualSafeAreaTop == 0 {
-                actualSafeAreaTop = detectSafeAreaFromDeviceType()
+            if actualSafeAreaBottom == 0 {
+                actualSafeAreaBottom = detectSafeAreaBottom()
             }
             
-            // Position StatusBar below the safe area with some padding
-            let calculatedTop = kViewSize.height - actualSafeAreaTop - statusBarHeight - 8
+            // Position StatusBar above the safe area with some padding
+            let calculatedBottom = actualSafeAreaBottom + 8
             
             // Debug logging for safe area calculations
-            print("📱 StatusBar: Using safe area top: \(actualSafeAreaTop), calculated position: \(calculatedTop)")
+            print("📱 StatusBar: Using safe area bottom: \(actualSafeAreaBottom), calculated position: \(calculatedBottom)")
             
-            return calculatedTop
+            return calculatedBottom
         }
     }
     
-    private func detectSafeAreaFromDeviceType() -> CGFloat {
+    private func detectSafeAreaBottom() -> CGFloat {
         let screenHeight = kViewSize.height
         let screenWidth = kViewSize.width
         let aspectRatio = screenHeight / screenWidth
         
-        // Safe area top insets for different iPhone models
+        // Safe area bottom insets for different iPhone models
         let safeAreaInset: CGFloat
         
-        // iPhone 14 Pro Max, 15 Pro Max (Dynamic Island)
-        if screenHeight >= 926 {
-            safeAreaInset = 59
+        // iPhone with Face ID (X and newer) - have home indicator
+        if aspectRatio > 2.0 {
+            safeAreaInset = 34 // Standard bottom safe area for Face ID devices
         }
-        // iPhone 14 Pro, 15 Pro (Dynamic Island)
-        else if screenHeight >= 852 {
-            safeAreaInset = 54
-        }
-        // iPhone 12/13/14/15 series (Notch or Dynamic Island)
-        else if aspectRatio > 2.1 {
-            safeAreaInset = 47
-        }
-        // iPhone X/XS/11 Pro series (Notch)
-        else if aspectRatio > 2.0 {
-            safeAreaInset = 44
-        }
-        // iPhone 8 Plus and similar (No notch)
-        else if screenHeight >= 736 {
-            safeAreaInset = 20
-        }
-        // Standard iPhones (No notch)
+        // iPhone with home button (8 and older) - no home indicator
         else {
-            safeAreaInset = 20
+            safeAreaInset = 0 // No bottom safe area
         }
         
-        print("📱 StatusBar: Device detection - Screen: \(screenWidth)x\(screenHeight), ratio: \(aspectRatio), inset: \(safeAreaInset)")
+        print("📱 StatusBar: Device detection - Screen: \(screenWidth)x\(screenHeight), ratio: \(aspectRatio), bottom inset: \(safeAreaInset)")
         
         return safeAreaInset
     }
@@ -191,11 +175,11 @@ class StatusBar: SKNode {
         
         // Collected stars icon with font-matched sizing
         self.starsCollectedIcon = SKSpriteNode(texture: GameTextures.sharedInstance.textureWithName(name: SpriteName.StarIcon))
-        self.starsCollectedIcon.setScale(kDeviceTablet ? 0.3 : 0.25) // Smaller to match font size
+        self.starsCollectedIcon.setScale(kDeviceTablet ? 0.9 : 0.75) // 3x larger (0.25 -> 0.75, 0.3 -> 0.9)
         
         // Add subtle glow to star icon
         let starGlow = SKSpriteNode(texture: GameTextures.sharedInstance.textureWithName(name: SpriteName.StarIcon))
-        starGlow.setScale(kDeviceTablet ? 0.4 : 0.35)
+        starGlow.setScale(kDeviceTablet ? 1.1 : 0.9) // Proportionally larger glow
         starGlow.alpha = 0.3
         starGlow.color = SKColor.cyan
         starGlow.colorBlendFactor = 0.8
@@ -271,23 +255,72 @@ class StatusBar: SKNode {
     }
     
     fileprivate func setupPauseButton() {
-        // Position pause button with modern spacing
-        let buttonPadding: CGFloat = kDeviceTablet ? 15.0 : 12.0
-        self.pauseButton.position = CGPoint(x: buttonPadding + self.pauseButton.size.width / 2, 
-                                          y: self.statusBarBackground.position.y + self.statusBarBackground.size.height / 2)
-        self.pauseButton.zPosition = 1 // Above status bar background
+        // Scale button to fit within status bar height with some padding
+        let statusBarHeight = self.statusBarBackground.size.height
+        let maxButtonHeight = statusBarHeight * 0.7 // 70% of status bar height
+        let originalButtonHeight = self.pauseButton.size.height
+        let buttonScale = maxButtonHeight / originalButtonHeight
+        self.pauseButton.setScale(buttonScale)
         
-        // Add subtle glow to pause button
+        // Position on far left of status bar with padding
+        let buttonPadding: CGFloat = kDeviceTablet ? 15.0 : 10.0
+        let centerY = self.statusBarBackground.size.height / 2
+        self.pauseButton.position = CGPoint(x: buttonPadding + self.pauseButton.size.width / 2, 
+                                          y: centerY)
+        self.pauseButton.zPosition = 10 // Well above everything else
+        
+        // Create 3D effect with multiple shadow layers
+        create3DButtonEffect()
+        
+        // Add pronounced glow effect
         let buttonGlow = SKSpriteNode(texture: self.pauseButton.texture)
-        buttonGlow.size = CGSize(width: self.pauseButton.size.width * 1.2, 
-                               height: self.pauseButton.size.height * 1.2)
-        buttonGlow.alpha = 0.2
-        buttonGlow.color = SKColor.cyan
-        buttonGlow.colorBlendFactor = 0.8
+        buttonGlow.size = CGSize(width: self.pauseButton.size.width * 1.4, 
+                               height: self.pauseButton.size.height * 1.4)
+        buttonGlow.alpha = 0.4
+        buttonGlow.color = SKColor(red: 0.0, green: 0.8, blue: 1.0, alpha: 1.0) // Bright cyan
+        buttonGlow.colorBlendFactor = 0.9
         buttonGlow.zPosition = -1
         self.pauseButton.addChild(buttonGlow)
         
+        // Add pulsing animation to make it more noticeable
+        let pulse = SKAction.sequence([
+            SKAction.scale(to: buttonScale * 1.1, duration: 1.5),
+            SKAction.scale(to: buttonScale, duration: 1.5)
+        ])
+        self.pauseButton.run(SKAction.repeatForever(pulse))
+        
         self.addChild(self.pauseButton)
+    }
+    
+    private func create3DButtonEffect() {
+        // Create 3D depth effect with shadow layers
+        let shadowOffsets: [(x: CGFloat, y: CGFloat, alpha: CGFloat)] = [
+            (-3, -3, 0.3), // Main shadow
+            (-2, -2, 0.2), // Mid shadow  
+            (-1, -1, 0.1)  // Light shadow
+        ]
+        
+        for (index, offset) in shadowOffsets.enumerated() {
+            let shadow = SKSpriteNode(texture: self.pauseButton.texture)
+            shadow.size = self.pauseButton.size
+            shadow.position = CGPoint(x: offset.x, y: offset.y)
+            shadow.alpha = offset.alpha
+            shadow.color = SKColor.black
+            shadow.colorBlendFactor = 1.0
+            shadow.zPosition = -10 - CGFloat(index)
+            self.pauseButton.addChild(shadow)
+        }
+        
+        // Add highlight on top-left for 3D effect
+        let highlight = SKSpriteNode(texture: self.pauseButton.texture)
+        highlight.size = CGSize(width: self.pauseButton.size.width * 0.8, 
+                              height: self.pauseButton.size.height * 0.8)
+        highlight.position = CGPoint(x: 1, y: 1)
+        highlight.alpha = 0.3
+        highlight.color = SKColor.white
+        highlight.colorBlendFactor = 0.6
+        highlight.zPosition = 1
+        self.pauseButton.addChild(highlight)
     }
     
     // MARK: - Public Functions
@@ -323,11 +356,13 @@ class StatusBar: SKNode {
         
         for i in 0..<lives {
             let livesSprite = GameTextures.sharedInstance.spriteWithName(name: SpriteName.PlayerLives)
-            livesSprite.setScale(kDeviceTablet ? 0.5 : 0.4) // Refined size
+            // Scale ships 2x bigger to be more prominent in status bar
+            let shipScale: CGFloat = kDeviceTablet ? 1.4 : 1.2
+            livesSprite.setScale(shipScale)
             
             // Add subtle glow to life icons
             let lifeGlow = GameTextures.sharedInstance.spriteWithName(name: SpriteName.PlayerLives)
-            lifeGlow.setScale((kDeviceTablet ? 0.5 : 0.4) * 1.3)
+            lifeGlow.setScale(shipScale * 1.2) // Slightly larger glow
             lifeGlow.alpha = 0.3
             lifeGlow.color = SKColor.green
             lifeGlow.colorBlendFactor = 0.6

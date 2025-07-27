@@ -22,13 +22,21 @@ class StartButton: SKSpriteNode {
     
     convenience init() {
         let texture = GameTextures.sharedInstance.textureWithName(name: SpriteName.ButtonStart)
-        self.init(texture:texture, color:SKColor.white, size:texture.size())
+        
+        // Calculate size to be 35% of screen width (5x larger than 7%) while maintaining aspect ratio
+        let originalSize = texture.size()
+        let targetWidth = kViewSize.width * 0.35
+        let aspectRatio = originalSize.height / originalSize.width
+        let targetHeight = targetWidth * aspectRatio
+        let scaledSize = CGSize(width: targetWidth, height: targetHeight)
+        
+        self.init(texture:texture, color:SKColor.white, size:scaledSize)
         self.setupStartButton()
     }
     
     // MARK: - Setup
     fileprivate func setupStartButton() {
-        self.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.3)
+        self.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height / 2)
     }
     
     

@@ -320,6 +320,14 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     }
     
     private func handleGameplayTouch(at location: CGPoint) {
+        // Check if pause button was tapped
+        if statusBar.pauseButton.contains(location) {
+            audioManager.playSoundEffect(.buttonTap)
+            setCurrentPhase(.paused)
+            return
+        }
+        
+        // Otherwise, move player
         player.updateTargetLocation(newLocation: location)
     }
     
