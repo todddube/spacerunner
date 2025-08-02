@@ -173,20 +173,26 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     
     // MARK: - Game State Management
     private func setCurrentPhase(_ phase: GameState.Phase) {
+        let previousPhase = gameState.currentPhase
         gameState.currentPhase = phase
         
         switch phase {
         case .tutorial:
             showTutorial()
         case .running:
-            startGame()
+            // Check if we're resuming from pause or starting fresh
+            if previousPhase == .paused {
+                resumeGameplay()
+            } else {
+                startGame()
+            }
         case .paused:
             pauseGameplay()
         case .gameOver:
             endGame()
         }
         
-        logger.info("Game phase changed to: \(String(describing: phase))")
+        logger.info("Game phase changed from \(String(describing: previousPhase)) to: \(String(describing: phase))")
     }
     
     private func showTutorial() {
@@ -221,6 +227,20 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         meteorController.stopSendingMetors()  // No pause method, use stop
         starController.stopSendingStars()     // No pause method, use stop
         audioManager.pauseBackgroundMusic()
+    }
+    
+    private func resumeGameplay() {
+        // Resume physics
+        physicsWorld.speed = 1.0
+        
+        // Resume gameplay systems
+        player.enableMovement()
+        meteorController.startSendingMeteors()
+        starController.startSendingStars()
+        audioManager.playBackgroundMusic()
+        
+        // Update UI
+        updateStatusBar()
     }
     
     private func endGame() {
@@ -307,7 +327,9 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
             handleTutorialTouch(at: location)
         case .running:
             handleGameplayTouch(at: location)
-        case .paused, .gameOver:
+        case .paused:
+            handlePausedTouch(at: location)
+        case .gameOver:
             break
         }
     }
@@ -329,6 +351,13 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         
         // Otherwise, move player
         player.updateTargetLocation(newLocation: location)
+    }
+    
+    private func handlePausedTouch(at location: CGPoint) {
+        // When paused, any tap resumes the game
+        // Could also check for specific pause button or resume area if desired
+        audioManager.playSoundEffect(.buttonTap)
+        setCurrentPhase(.running)
     }
     
     // MARK: - Physics Contact
