@@ -69,6 +69,11 @@ class Contact {
     class var Player:UInt32         {return 1 << 3}
 }
 
+// MARK: - UI Text
+class UIText {
+    class var AuthorLabel:String    {return "(C) 2025 Todd Dube"}
+}
+
 // MARK: - zPosition Drawing
 class GameLayer {
     class var Background:CGFloat    {return 0}

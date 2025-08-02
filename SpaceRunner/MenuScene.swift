@@ -52,7 +52,7 @@ class MenuScene:SKScene {
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
         let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "Unknown"
         let versionLabel = fonts.createLabel(string: "v\(appVersion).\(buildNumber)", labelType: GameFonts.LabelType.statusBar)
-        let authorLabel = fonts.createLabel(string: "Created by Todd Dube", labelType: GameFonts.LabelType.statusBar)
+        let authorLabel = fonts.createLabel(string: UIText.AuthorLabel, labelType: GameFonts.LabelType.statusBar)
         
         // Center align the text horizontally
         authorLabel.horizontalAlignmentMode = .center

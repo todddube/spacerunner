@@ -66,13 +66,52 @@ class Star: SKSpriteNode {
     
     // MARK: - Action functions
     func pickedUpStar() {
-        // pick up star, audio, and then animate it.. remove from parent
+        // Create realistic star explosion effect
         GameAudio.shared.playSoundEffect(.pickup)
-        self.run(SKAction.sequence([]), completion: {
-            self.run(SKAction.repeat(SKAction.rotate(byAngle: 10.0, duration: 2.5), count: 10))
+        
+        // Create particle explosion at star position
+        if let starParticle = SKEmitterNode(fileNamed: SpriteName.ExplodeStar) {
+            starParticle.position = self.position
+            starParticle.zPosition = GameLayer.Star + 1
+            
+            // Configure for fast, realistic explosion
+            starParticle.particleBirthRate = 150  // High burst for immediate effect
+            starParticle.particleLifetime = 0.6   // Short-lived for fast effect
+            starParticle.particleSpeed = 120      // Fast outward velocity
+            starParticle.particleSpeedRange = 60  // Velocity variation
+            starParticle.emissionAngleRange = CGFloat.pi * 2  // 360 degree explosion
+            starParticle.particleScale = kDeviceTablet ? 0.8 : 0.5
+            starParticle.particleScaleRange = 0.3
+            starParticle.particleAlpha = 0.9
+            starParticle.particleAlphaSpeed = -1.5  // Fast fade
+            
+            // Add to parent scene
+            if let parent = self.parent {
+                parent.addChild(starParticle)
                 
+                // Stop emission after brief burst and auto-remove
+                let stopEmission = SKAction.run { starParticle.particleBirthRate = 0 }
+                let wait = SKAction.wait(forDuration: 0.1)  // Very brief emission
+                let removeParticle = SKAction.run { starParticle.removeFromParent() }
+                let waitForFade = SKAction.wait(forDuration: 0.8)  // Wait for particles to fade
+                
+                starParticle.run(SKAction.sequence([wait, stopEmission, waitForFade, removeParticle]))
+            }
+        }
+        
+        // Animate star scaling and rotation for impact
+        let scaleUp = SKAction.scale(to: 1.3, duration: 0.05)  // Quick burst
+        let scaleDown = SKAction.scale(to: 0.0, duration: 0.15)  // Fast shrink
+        let fastSpin = SKAction.rotate(byAngle: CGFloat.pi * 4, duration: 0.2)  // Rapid spin
+        let fadeOut = SKAction.fadeOut(withDuration: 0.15)
+        
+        // Run animations in parallel
+        let scaleSequence = SKAction.sequence([scaleUp, scaleDown])
+        let animationGroup = SKAction.group([scaleSequence, fastSpin, fadeOut])
+        
+        self.run(animationGroup) {
             self.removeFromParent()
-        })
+        }
     }
     
     func gameOver() {

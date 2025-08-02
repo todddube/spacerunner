@@ -133,12 +133,12 @@ class StatusBar: SKNode {
     
     // MARK: - Modern Visual Effects
     private func createGradientBackground(size: CGSize) -> SKSpriteNode {
-        // Create a dark space-themed background with subtle transparency
-        let primaryColor = SKColor(red: 0.05, green: 0.05, blue: 0.15, alpha: 0.92) // Deep space blue
+        // Create modern grayscale background with elegant transparency
+        let primaryColor = SKColor(white: 0.12, alpha: 0.95) // Dark charcoal gray
         let background = SKSpriteNode(color: primaryColor, size: size)
         
-        // Add subtle texture overlay for depth
-        let textureOverlay = SKSpriteNode(color: SKColor(white: 1.0, alpha: 0.03), size: size)
+        // Add subtle texture overlay for depth using light gray
+        let textureOverlay = SKSpriteNode(color: SKColor(white: 0.85, alpha: 0.04), size: size)
         textureOverlay.anchorPoint = CGPoint.zero
         textureOverlay.blendMode = .add
         background.addChild(textureOverlay)
@@ -149,15 +149,15 @@ class StatusBar: SKNode {
     private func createEdgeGlow(size: CGSize) -> SKNode {
         let glowContainer = SKNode()
         
-        // Top edge glow - cyan accent
-        let topGlow = SKSpriteNode(color: SKColor(red: 0.0, green: 0.8, blue: 1.0, alpha: 0.6), 
+        // Top edge glow - bright white accent
+        let topGlow = SKSpriteNode(color: SKColor(white: 0.9, alpha: 0.7), 
                                  size: CGSize(width: size.width, height: 1.5))
         topGlow.anchorPoint = CGPoint(x: 0, y: 0)
         topGlow.position = CGPoint(x: 0, y: size.height - 1.5)
         topGlow.blendMode = .add
         
-        // Bottom edge glow - softer blue
-        let bottomGlow = SKSpriteNode(color: SKColor(red: 0.2, green: 0.4, blue: 1.0, alpha: 0.4), 
+        // Bottom edge glow - soft gray
+        let bottomGlow = SKSpriteNode(color: SKColor(white: 0.6, alpha: 0.4), 
                                     size: CGSize(width: size.width, height: 1.0))
         bottomGlow.anchorPoint = CGPoint(x: 0, y: 0)
         bottomGlow.position = CGPoint(x: 0, y: 0)
@@ -173,20 +173,22 @@ class StatusBar: SKNode {
         // Create sleek star display section
         let starContainer = SKNode()
         
-        // Collected stars icon with font-matched sizing
+        // Collected stars icon with compact sizing to fit with number
         self.starsCollectedIcon = SKSpriteNode(texture: GameTextures.sharedInstance.textureWithName(name: SpriteName.StarIcon))
-        self.starsCollectedIcon.setScale(kDeviceTablet ? 0.9 : 0.75) // 3x larger (0.25 -> 0.75, 0.3 -> 0.9)
+        self.starsCollectedIcon.setScale(kDeviceTablet ? 0.4 : 0.35) // Smaller size to accommodate star count number
         
-        // Add subtle glow to star icon
+        // Add subtle glow to star icon using grayscale
         let starGlow = SKSpriteNode(texture: GameTextures.sharedInstance.textureWithName(name: SpriteName.StarIcon))
-        starGlow.setScale(kDeviceTablet ? 1.1 : 0.9) // Proportionally larger glow
+        starGlow.setScale(kDeviceTablet ? 0.5 : 0.45) // Proportionally adjusted glow for compact size
         starGlow.alpha = 0.3
-        starGlow.color = SKColor.cyan
+        starGlow.color = SKColor(white: 0.8, alpha: 1.0) // Light gray glow
         starGlow.colorBlendFactor = 0.8
         starGlow.zPosition = -1
         
-        // Position star elements
-        let starSectionX = self.statusBarBackground.size.width * 0.15
+        // Position star elements as close to left border as possible
+        let starIconRadius = self.starsCollectedIcon.size.width * 0.5 // Half width for radius
+        let leftPadding: CGFloat = kDeviceTablet ? 8.0 : 6.0 // Minimal padding to avoid cutoff
+        let starSectionX = leftPadding + starIconRadius
         let centerY = self.statusBarBackground.size.height / 2
         
         starGlow.position = CGPoint(x: starSectionX, y: centerY)
@@ -195,12 +197,12 @@ class StatusBar: SKNode {
         // Collected stars label with modern typography
         self.starsCollectedLabel = GameFonts.shared.createLabel(string: String(collected), labelType: GameFonts.LabelType.statusBar)
         
-        // Sleek text styling
-        self.starsCollectedLabel.fontColor = SKColor(red: 0.9, green: 0.95, blue: 1.0, alpha: 1.0) // Cool white
+        // Sleek text styling with modern grayscale
+        self.starsCollectedLabel.fontColor = SKColor(white: 0.95, alpha: 1.0) // Pure white
         self.starsCollectedLabel.fontSize = kDeviceTablet ? 18 : 14
         self.starsCollectedLabel.horizontalAlignmentMode = .left
         
-        let labelOffsetX = starSectionX + self.starsCollectedIcon.size.width * 0.7
+        let labelOffsetX = starSectionX + self.starsCollectedIcon.size.width * 1.5 + (kDeviceTablet ? 12.0 : 8.0) + (self.statusBarBackground.size.width * 0.1)
         self.starsCollectedLabel.position = CGPoint(x: labelOffsetX, y: centerY)
         
         // Add elements to container
@@ -210,10 +212,10 @@ class StatusBar: SKNode {
         
         self.statusBarBackground.addChild(starContainer)
         
-        // Subtle rotation animation
+        // Smooth rotation animation with optimized timing
         self.starsCollectedIcon.run(
             SKAction.repeatForever(
-                SKAction.rotate(byAngle: CGFloat.pi * 2, duration: 4.0)))
+                SKAction.rotate(byAngle: CGFloat.pi * 2, duration: 6.0))) // Slower, more elegant rotation
     }
     
     fileprivate func setupStatusBarScore(score: Int) {
@@ -221,9 +223,9 @@ class StatusBar: SKNode {
         let scoreContainer = SKNode()
         let centerY = self.statusBarBackground.size.height / 2
         
-        // Score value with prominent styling
+        // Score value with prominent styling using grayscale
         self.scoreLabel = GameFonts.shared.createLabel(string: formatScore(score), labelType: GameFonts.LabelType.statusBar)
-        self.scoreLabel.fontColor = SKColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 1.0) // Bright cyan
+        self.scoreLabel.fontColor = SKColor(white: 1.0, alpha: 1.0) // Pure white for prominence
         self.scoreLabel.fontSize = kDeviceTablet ? 20 : 16
         self.scoreLabel.horizontalAlignmentMode = .right
         
@@ -231,9 +233,9 @@ class StatusBar: SKNode {
         let scoreX = self.statusBarBackground.size.width - (kDeviceTablet ? 25 : 20)
         self.scoreLabel.position = CGPoint(x: scoreX, y: centerY)
         
-        // Add subtle glow effect to score
+        // Add subtle glow effect to score using grayscale
         let scoreGlow = GameFonts.shared.createLabel(string: formatScore(score), labelType: GameFonts.LabelType.statusBar)
-        scoreGlow.fontColor = SKColor(red: 0.0, green: 0.6, blue: 0.8, alpha: 0.4)
+        scoreGlow.fontColor = SKColor(white: 0.7, alpha: 0.4) // Medium gray glow
         scoreGlow.fontSize = self.scoreLabel.fontSize
         scoreGlow.horizontalAlignmentMode = .right
         scoreGlow.position = self.scoreLabel.position
@@ -262,22 +264,21 @@ class StatusBar: SKNode {
         let buttonScale = maxButtonHeight / originalButtonHeight
         self.pauseButton.setScale(buttonScale)
         
-        // Position on far left of status bar with padding
-        let buttonPadding: CGFloat = kDeviceTablet ? 15.0 : 10.0
+        // Position between player lives and score sections
         let centerY = self.statusBarBackground.size.height / 2
-        self.pauseButton.position = CGPoint(x: buttonPadding + self.pauseButton.size.width / 2, 
-                                          y: centerY)
+        let pauseButtonX = self.statusBarBackground.size.width * 0.75 // Between lives (0.4-0.65) and score (0.85+)
+        self.pauseButton.position = CGPoint(x: pauseButtonX, y: centerY)
         self.pauseButton.zPosition = 10 // Well above everything else
         
         // Create 3D effect with multiple shadow layers
         create3DButtonEffect()
         
-        // Add pronounced glow effect
+        // Add pronounced glow effect using grayscale
         let buttonGlow = SKSpriteNode(texture: self.pauseButton.texture)
         buttonGlow.size = CGSize(width: self.pauseButton.size.width * 1.4, 
                                height: self.pauseButton.size.height * 1.4)
         buttonGlow.alpha = 0.4
-        buttonGlow.color = SKColor(red: 0.0, green: 0.8, blue: 1.0, alpha: 1.0) // Bright cyan
+        buttonGlow.color = SKColor(white: 0.8, alpha: 1.0) // Light gray glow
         buttonGlow.colorBlendFactor = 0.9
         buttonGlow.zPosition = -1
         self.pauseButton.addChild(buttonGlow)
@@ -311,14 +312,14 @@ class StatusBar: SKNode {
             self.pauseButton.addChild(shadow)
         }
         
-        // Add highlight on top-left for 3D effect
+        // Add highlight on top-left for 3D effect using refined grayscale
         let highlight = SKSpriteNode(texture: self.pauseButton.texture)
         highlight.size = CGSize(width: self.pauseButton.size.width * 0.8, 
                               height: self.pauseButton.size.height * 0.8)
         highlight.position = CGPoint(x: 1, y: 1)
-        highlight.alpha = 0.3
-        highlight.color = SKColor.white
-        highlight.colorBlendFactor = 0.6
+        highlight.alpha = 0.4
+        highlight.color = SKColor(white: 1.0, alpha: 1.0) // Pure white highlight
+        highlight.colorBlendFactor = 0.7
         highlight.zPosition = 1
         self.pauseButton.addChild(highlight)
     }
@@ -360,11 +361,11 @@ class StatusBar: SKNode {
             let shipScale: CGFloat = kDeviceTablet ? 1.4 : 1.2
             livesSprite.setScale(shipScale)
             
-            // Add subtle glow to life icons
+            // Add subtle glow to life icons using grayscale
             let lifeGlow = GameTextures.sharedInstance.spriteWithName(name: SpriteName.PlayerLives)
             lifeGlow.setScale(shipScale * 1.2) // Slightly larger glow
             lifeGlow.alpha = 0.3
-            lifeGlow.color = SKColor.green
+            lifeGlow.color = SKColor(white: 0.9, alpha: 1.0) // Light gray glow
             lifeGlow.colorBlendFactor = 0.6
             lifeGlow.zPosition = -1
             
@@ -413,8 +414,8 @@ class StatusBar: SKNode {
         statusBarBackground.removeAllActions()
         statusBarBackground.alpha = 1.0
         
-        // Ensure white text colors are maintained
-        scoreLabel.fontColor = SKColor.white
-        starsCollectedLabel.fontColor = SKColor.white
+        // Ensure grayscale text colors are maintained
+        scoreLabel.fontColor = SKColor(white: 1.0, alpha: 1.0)
+        starsCollectedLabel.fontColor = SKColor(white: 0.95, alpha: 1.0)
     }
 }

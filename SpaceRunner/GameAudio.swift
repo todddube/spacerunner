@@ -54,7 +54,7 @@ final class GameAudio {
     // Sound effect player pool to avoid dynamic node creation
     private var effectPlayerNodes: [AVAudioPlayerNode] = []
     private var availablePlayerNodes: [AVAudioPlayerNode] = []
-    private let maxEffectPlayers = 8
+    private let maxEffectPlayers = 4 // Reduced to prevent audio overload
     
     private let logger = Logger(subsystem: "com.todddube.spacerunner", category: "GameAudio")
     
@@ -85,8 +85,19 @@ final class GameAudio {
     @MainActor
     private func configureAudioSession() async throws {
         let session = AVAudioSession.sharedInstance()
-        try session.setCategory(.playback, mode: .default, options: [.mixWithOthers])
+        try session.setCategory(.playback, mode: .gameChat, options: [.mixWithOthers])
+        try session.setPreferredIOBufferDuration(0.005) // 5ms buffer for lower latency
+        try session.setPreferredSampleRate(44100) // Standard sample rate
         try session.setActive(true)
+        
+        // Monitor for audio interruptions
+        NotificationCenter.default.addObserver(
+            forName: AVAudioSession.interruptionNotification,
+            object: session,
+            queue: .main
+        ) { _ in
+            self.logger.warning("Audio session interrupted - may cause HALC warnings")
+        }
     }
     
     private func setupAudioGraph() {

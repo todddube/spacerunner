@@ -54,9 +54,10 @@ class GameOverScene: SKScene {
         
         
         // Add Author / Copyright Information
-        let authorLabel = fonts.createLabel(string: "Copyright 2020 - Todd Dube", labelType: fontType)
+        let authorLabel = fonts.createLabel(string: UIText.AuthorLabel, labelType: fontType)
         
-        authorLabel.position = CGPoint(x: kViewSize.width * 0.05, y: kViewSize.height * 0.05)
+        authorLabel.horizontalAlignmentMode = .center
+        authorLabel.position = CGPoint(x: kViewSize.width * 0.5, y: kViewSize.height * 0.05)
 
         
         self.addChild(authorLabel)
