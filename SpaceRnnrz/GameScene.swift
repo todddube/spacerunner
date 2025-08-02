@@ -248,6 +248,7 @@ final class GameScene: SKScene, SKPhysicsContactDelegate, Sendable {
     // MARK: - Modern Game State Management
     @MainActor
     private func setCurrentPhase(_ phase: GameState.Phase) {
+<<<<<<< HEAD:SpaceRnnrz/GameScene.swift
         let previousPhase = gameState.currentPhase
         
         // Validate state transition
@@ -256,6 +257,8 @@ final class GameScene: SKScene, SKPhysicsContactDelegate, Sendable {
             return
         }
         
+=======
+>>>>>>> parent of 7a06f40 (Add resume functionality after pause in GameScene):SpaceRunner/GameScene.swift
         gameState.currentPhase = phase
         
         // Handle state transition with structured concurrency
@@ -284,16 +287,25 @@ final class GameScene: SKScene, SKPhysicsContactDelegate, Sendable {
         case .tutorial:
             showTutorial()
         case .running:
+<<<<<<< HEAD:SpaceRnnrz/GameScene.swift
             if previousPhase == .paused {
                 resumeGameplay()
             } else {
                 startGame()
             }
+=======
+            startGame()
+>>>>>>> parent of 7a06f40 (Add resume functionality after pause in GameScene):SpaceRunner/GameScene.swift
         case .paused:
             pauseGameplay()
         case .gameOver:
             await endGame()
         }
+<<<<<<< HEAD:SpaceRnnrz/GameScene.swift
+=======
+        
+        logger.info("Game phase changed to: \(String(describing: phase))")
+>>>>>>> parent of 7a06f40 (Add resume functionality after pause in GameScene):SpaceRunner/GameScene.swift
     }
     
     private func showTutorial() {
@@ -330,6 +342,7 @@ final class GameScene: SKScene, SKPhysicsContactDelegate, Sendable {
         audioManager.pauseBackgroundMusic()
     }
     
+<<<<<<< HEAD:SpaceRnnrz/GameScene.swift
     private func resumeGameplay() {
         // Resume physics
         physicsWorld.speed = 1.0
@@ -346,6 +359,9 @@ final class GameScene: SKScene, SKPhysicsContactDelegate, Sendable {
     
     @MainActor
     private func endGame() async {
+=======
+    private func endGame() {
+>>>>>>> parent of 7a06f40 (Add resume functionality after pause in GameScene):SpaceRunner/GameScene.swift
         physicsWorld.speed = 0.0
         meteorController.stopSendingMetors()
         starController.stopSendingStars()
@@ -446,9 +462,7 @@ final class GameScene: SKScene, SKPhysicsContactDelegate, Sendable {
             handleTutorialTouch(at: location)
         case .running:
             handleGameplayTouch(at: location)
-        case .paused:
-            handlePausedTouch(at: location)
-        case .gameOver:
+        case .paused, .gameOver:
             break
         }
     }
@@ -472,6 +486,7 @@ final class GameScene: SKScene, SKPhysicsContactDelegate, Sendable {
         player.updateTargetLocation(newLocation: location)
     }
     
+<<<<<<< HEAD:SpaceRnnrz/GameScene.swift
     private func handlePausedTouch(at location: CGPoint) {
         // When paused, any tap resumes the game
         // Could also check for specific pause button or resume area if desired
@@ -484,6 +499,23 @@ final class GameScene: SKScene, SKPhysicsContactDelegate, Sendable {
         Task { @MainActor [weak self] in
             guard let self = self else { return }
             await self.handlePhysicsContact(contact)
+=======
+    // MARK: - Physics Contact
+    func didBegin(_ contact: SKPhysicsContact) {
+        let contactA = contact.bodyA.categoryBitMask
+        let contactB = contact.bodyB.categoryBitMask
+        
+        // Player collision with meteor
+        if (contactA == Contact.Player && contactB == Contact.Meteor) ||
+           (contactA == Contact.Meteor && contactB == Contact.Player) {
+            handlePlayerMeteorCollision(contact)
+        }
+        
+        // Player collection of star
+        if (contactA == Contact.Player && contactB == Contact.Star) ||
+           (contactA == Contact.Star && contactB == Contact.Player) {
+            handlePlayerStarCollection(contact)
+>>>>>>> parent of 7a06f40 (Add resume functionality after pause in GameScene):SpaceRunner/GameScene.swift
         }
     }
     

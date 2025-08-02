@@ -290,7 +290,7 @@ class StatusBar: SKNode {
         ])
         self.pauseButton.run(SKAction.repeatForever(pulse))
         
-        self.statusBarBackground.addChild(self.pauseButton)
+        self.addChild(self.pauseButton)
     }
     
     private func create3DButtonEffect() {
