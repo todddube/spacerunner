@@ -28,7 +28,7 @@ final class AccessibilityManager {
     private let selectionFeedback = UISelectionFeedbackGenerator()
     private let notificationFeedback = UINotificationFeedbackGenerator()
     
-    private let logger = Logger(subsystem: "com.todddube.spacerunner", category: "AccessibilityManager")
+    private let logger = Logger(subsystem: "com.todddube.spacernnrz", category: "AccessibilityManager")
     
     // MARK: - Initialization
     private init() {

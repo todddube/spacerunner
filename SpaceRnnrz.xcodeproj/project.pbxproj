@@ -72,26 +72,26 @@
 			containerPortal = 2706E4131C9E1AC20068CDAD /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 2706E41A1C9E1AC20068CDAD;
-			remoteInfo = SpaceRunner;
+			remoteInfo = SpaceRnnrz;
 		};
 		2706E43F1C9E1AC20068CDAD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2706E4131C9E1AC20068CDAD /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 2706E41A1C9E1AC20068CDAD;
-			remoteInfo = SpaceRunner;
+			remoteInfo = SpaceRnnrz;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		2706E41B1C9E1AC20068CDAD /* SpaceRunner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpaceRunner.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2706E41B1C9E1AC20068CDAD /* SpaceRnnrz.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpaceRnnrz.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2706E41E1C9E1AC20068CDAD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2706E4221C9E1AC20068CDAD /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		2706E4241C9E1AC20068CDAD /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		2706E4291C9E1AC20068CDAD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2706E42E1C9E1AC20068CDAD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		2706E4331C9E1AC20068CDAD /* SpaceRunner.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpaceRunner.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		2706E43E1C9E1AC20068CDAD /* SpaceRunner.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpaceRunner.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2706E4331C9E1AC20068CDAD /* SpaceRnnrz.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpaceRnnrz.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		2706E43E1C9E1AC20068CDAD /* SpaceRnnrz.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SpaceRnnrz.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2706E45A1C9EE5080068CDAD /* CGFloat+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGFloat+Extensions.swift"; sourceTree = "<group>"; };
 		2706E45B1C9EE5080068CDAD /* CGPoint+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGPoint+Extensions.swift"; sourceTree = "<group>"; };
 		2706E45C1C9EE5080068CDAD /* CGVector+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "CGVector+Extensions.swift"; sourceTree = "<group>"; };
@@ -178,7 +178,7 @@
 			isa = PBXGroup;
 			children = (
 				2754039424685ACA001C5B2A /* Main.storyboard */,
-				2706E41D1C9E1AC20068CDAD /* SpaceRunner */,
+				2706E41D1C9E1AC20068CDAD /* SpaceRnnrz */,
 				2706E41C1C9E1AC20068CDAD /* Products */,
 			);
 			sourceTree = "<group>";
@@ -186,14 +186,14 @@
 		2706E41C1C9E1AC20068CDAD /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				2706E41B1C9E1AC20068CDAD /* SpaceRunner.app */,
-				2706E4331C9E1AC20068CDAD /* SpaceRunner.xctest */,
-				2706E43E1C9E1AC20068CDAD /* SpaceRunner.xctest */,
+				2706E41B1C9E1AC20068CDAD /* SpaceRnnrz.app */,
+				2706E4331C9E1AC20068CDAD /* SpaceRnnrz.xctest */,
+				2706E43E1C9E1AC20068CDAD /* SpaceRnnrz.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		2706E41D1C9E1AC20068CDAD /* SpaceRunner */ = {
+		2706E41D1C9E1AC20068CDAD /* SpaceRnnrz */ = {
 			isa = PBXGroup;
 			children = (
 				277ADDF52E2C19260066E326 /* Scripts */,
@@ -203,7 +203,7 @@
 				2706E4291C9E1AC20068CDAD /* Assets.xcassets */,
 				2706E42E1C9E1AC20068CDAD /* Info.plist */,
 			);
-			path = SpaceRunner;
+			path = SpaceRnnrz;
 			sourceTree = "<group>";
 		};
 		2706E4541C9E1E620068CDAD /* Classes */ = {
@@ -439,9 +439,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		2706E41A1C9E1AC20068CDAD /* SpaceRunner */ = {
+		2706E41A1C9E1AC20068CDAD /* SpaceRnnrz */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2706E4471C9E1AC20068CDAD /* Build configuration list for PBXNativeTarget "SpaceRunner" */;
+			buildConfigurationList = 2706E4471C9E1AC20068CDAD /* Build configuration list for PBXNativeTarget "SpaceRnnrz" */;
 			buildPhases = (
 				2706E4171C9E1AC20068CDAD /* Sources */,
 				2706E4181C9E1AC20068CDAD /* Frameworks */,
@@ -451,14 +451,14 @@
 			);
 			dependencies = (
 			);
-			name = SpaceRunner;
-			productName = SpaceRunner;
-			productReference = 2706E41B1C9E1AC20068CDAD /* SpaceRunner.app */;
+			name = SpaceRnnrz;
+			productName = SpaceRnnrz;
+			productReference = 2706E41B1C9E1AC20068CDAD /* SpaceRnnrz.app */;
 			productType = "com.apple.product-type.application";
 		};
-		2706E4321C9E1AC20068CDAD /* SpaceRunnerTests */ = {
+		2706E4321C9E1AC20068CDAD /* SpaceRnnrzTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2706E44A1C9E1AC20068CDAD /* Build configuration list for PBXNativeTarget "SpaceRunnerTests" */;
+			buildConfigurationList = 2706E44A1C9E1AC20068CDAD /* Build configuration list for PBXNativeTarget "SpaceRnnrzTests" */;
 			buildPhases = (
 				2706E42F1C9E1AC20068CDAD /* Sources */,
 				2706E4301C9E1AC20068CDAD /* Frameworks */,
@@ -469,14 +469,14 @@
 			dependencies = (
 				2706E4351C9E1AC20068CDAD /* PBXTargetDependency */,
 			);
-			name = SpaceRunnerTests;
-			productName = SpaceRunnerTests;
-			productReference = 2706E4331C9E1AC20068CDAD /* SpaceRunner.xctest */;
+			name = SpaceRnnrzTests;
+			productName = SpaceRnnrzTests;
+			productReference = 2706E4331C9E1AC20068CDAD /* SpaceRnnrz.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		2706E43D1C9E1AC20068CDAD /* SpaceRunnerUITests */ = {
+		2706E43D1C9E1AC20068CDAD /* SpaceRnnrzUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2706E44D1C9E1AC20068CDAD /* Build configuration list for PBXNativeTarget "SpaceRunnerUITests" */;
+			buildConfigurationList = 2706E44D1C9E1AC20068CDAD /* Build configuration list for PBXNativeTarget "SpaceRnnrzUITests" */;
 			buildPhases = (
 				2706E43A1C9E1AC20068CDAD /* Sources */,
 				2706E43B1C9E1AC20068CDAD /* Frameworks */,
@@ -487,9 +487,9 @@
 			dependencies = (
 				2706E4401C9E1AC20068CDAD /* PBXTargetDependency */,
 			);
-			name = SpaceRunnerUITests;
-			productName = SpaceRunnerUITests;
-			productReference = 2706E43E1C9E1AC20068CDAD /* SpaceRunner.xctest */;
+			name = SpaceRnnrzUITests;
+			productName = SpaceRnnrzUITests;
+			productReference = 2706E43E1C9E1AC20068CDAD /* SpaceRnnrz.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -519,7 +519,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 2706E4161C9E1AC20068CDAD /* Build configuration list for PBXProject "SpaceRunner" */;
+			buildConfigurationList = 2706E4161C9E1AC20068CDAD /* Build configuration list for PBXProject "SpaceRnnrz" */;
 			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -532,9 +532,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				2706E41A1C9E1AC20068CDAD /* SpaceRunner */,
-				2706E4321C9E1AC20068CDAD /* SpaceRunnerTests */,
-				2706E43D1C9E1AC20068CDAD /* SpaceRunnerUITests */,
+				2706E41A1C9E1AC20068CDAD /* SpaceRnnrz */,
+				2706E4321C9E1AC20068CDAD /* SpaceRnnrzTests */,
+				2706E43D1C9E1AC20068CDAD /* SpaceRnnrzUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -647,12 +647,12 @@
 /* Begin PBXTargetDependency section */
 		2706E4351C9E1AC20068CDAD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2706E41A1C9E1AC20068CDAD /* SpaceRunner */;
+			target = 2706E41A1C9E1AC20068CDAD /* SpaceRnnrz */;
 			targetProxy = 2706E4341C9E1AC20068CDAD /* PBXContainerItemProxy */;
 		};
 		2706E4401C9E1AC20068CDAD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2706E41A1C9E1AC20068CDAD /* SpaceRunner */;
+			target = 2706E41A1C9E1AC20068CDAD /* SpaceRnnrz */;
 			targetProxy = 2706E43F1C9E1AC20068CDAD /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -793,16 +793,16 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = YT8HJFH9K8;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INFOPLIST_FILE = SpaceRunner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = SpaceRunner;
+				INFOPLIST_FILE = SpaceRnnrz/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SpaceRnnrz;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.thedubes.SpaceRunnerWorld;
-				PRODUCT_NAME = SpaceRunner;
+				PRODUCT_BUNDLE_IDENTIFIER = com.thedubes.SpaceRnnrz;
+				PRODUCT_NAME = SpaceRnnrz;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -816,16 +816,16 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = YT8HJFH9K8;
-				INFOPLIST_FILE = SpaceRunner/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = SpaceRunner;
+				INFOPLIST_FILE = SpaceRnnrz/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SpaceRnnrz;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.thedubes.SpaceRunnerWorld;
-				PRODUCT_NAME = SpaceRunner;
+				PRODUCT_BUNDLE_IDENTIFIER = com.thedubes.SpaceRnnrz;
+				PRODUCT_NAME = SpaceRnnrz;
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
@@ -836,17 +836,17 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INFOPLIST_FILE = SpaceRunnerTests/Info.plist;
+				INFOPLIST_FILE = SpaceRnnrzTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.todddube.SpaceRunnerTests;
-				PRODUCT_NAME = SpaceRunner;
+				PRODUCT_BUNDLE_IDENTIFIER = com.todddube.SpaceRnnrzTests;
+				PRODUCT_NAME = SpaceRnnrz;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SpaceRunner.app/SpaceRunner";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SpaceRnnrz.app/SpaceRnnrz";
 			};
 			name = Debug;
 		};
@@ -854,17 +854,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				INFOPLIST_FILE = SpaceRunnerTests/Info.plist;
+				INFOPLIST_FILE = SpaceRnnrzTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.todddube.SpaceRunnerTests;
-				PRODUCT_NAME = SpaceRunner;
+				PRODUCT_BUNDLE_IDENTIFIER = com.todddube.SpaceRnnrzTests;
+				PRODUCT_NAME = SpaceRnnrz;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SpaceRunner.app/SpaceRunner";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/SpaceRnnrz.app/SpaceRnnrz";
 			};
 			name = Release;
 		};
@@ -873,17 +873,17 @@
 			buildSettings = {
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INFOPLIST_FILE = SpaceRunnerUITests/Info.plist;
+				INFOPLIST_FILE = SpaceRnnrzUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.todddube.SpaceRunnerUITests;
-				PRODUCT_NAME = SpaceRunner;
+				PRODUCT_BUNDLE_IDENTIFIER = com.todddube.SpaceRnnrzUITests;
+				PRODUCT_NAME = SpaceRnnrz;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
-				TEST_TARGET_NAME = SpaceRunner;
+				TEST_TARGET_NAME = SpaceRnnrz;
 				USES_XCTRUNNER = YES;
 			};
 			name = Debug;
@@ -891,17 +891,17 @@
 		2706E44F1C9E1AC20068CDAD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				INFOPLIST_FILE = SpaceRunnerUITests/Info.plist;
+				INFOPLIST_FILE = SpaceRnnrzUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.todddube.SpaceRunnerUITests;
-				PRODUCT_NAME = SpaceRunner;
+				PRODUCT_BUNDLE_IDENTIFIER = com.todddube.SpaceRnnrzUITests;
+				PRODUCT_NAME = SpaceRnnrz;
 				SWIFT_SWIFT3_OBJC_INFERENCE = Default;
 				SWIFT_VERSION = 4.0;
-				TEST_TARGET_NAME = SpaceRunner;
+				TEST_TARGET_NAME = SpaceRnnrz;
 				USES_XCTRUNNER = YES;
 			};
 			name = Release;
@@ -909,7 +909,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		2706E4161C9E1AC20068CDAD /* Build configuration list for PBXProject "SpaceRunner" */ = {
+		2706E4161C9E1AC20068CDAD /* Build configuration list for PBXProject "SpaceRnnrz" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2706E4451C9E1AC20068CDAD /* Debug */,
@@ -918,7 +918,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2706E4471C9E1AC20068CDAD /* Build configuration list for PBXNativeTarget "SpaceRunner" */ = {
+		2706E4471C9E1AC20068CDAD /* Build configuration list for PBXNativeTarget "SpaceRnnrz" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2706E4481C9E1AC20068CDAD /* Debug */,
@@ -927,7 +927,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2706E44A1C9E1AC20068CDAD /* Build configuration list for PBXNativeTarget "SpaceRunnerTests" */ = {
+		2706E44A1C9E1AC20068CDAD /* Build configuration list for PBXNativeTarget "SpaceRnnrzTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2706E44B1C9E1AC20068CDAD /* Debug */,
@@ -936,7 +936,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2706E44D1C9E1AC20068CDAD /* Build configuration list for PBXNativeTarget "SpaceRunnerUITests" */ = {
+		2706E44D1C9E1AC20068CDAD /* Build configuration list for PBXNativeTarget "SpaceRnnrzUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2706E44E1C9E1AC20068CDAD /* Debug */,

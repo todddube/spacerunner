@@ -1,10 +1,10 @@
-# SpaceRunner
+# SpaceRnnrz
 
 An iOS space-themed endless runner game built with SpriteKit targeting iOS 18+.
 
 ## Overview
 
-SpaceRunner is a fast-paced endless runner where players control a spaceship, dodge meteors, and collect stars while surviving as long as possible in the depths of space.
+SpaceRnnrz is a fast-paced endless runner where players control a spaceship, dodge meteors, and collect stars while surviving as long as possible in the depths of space.
 
 ## Features
 
@@ -31,7 +31,7 @@ SpaceRunner is a fast-paced endless runner where players control a spaceship, do
 
 ## Getting Started
 
-1. Open `SpaceRunner.xcodeproj` in Xcode
+1. Open `SpaceRnnrz.xcodeproj` in Xcode
 2. Select your target device/simulator
 3. Build and run (⌘R)
 

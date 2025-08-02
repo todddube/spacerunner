@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2706E41A1C9E1AC20068CDAD"
-               BuildableName = "SpaceRunner.app"
-               BlueprintName = "SpaceRunner"
-               ReferencedContainer = "container:SpaceRunner.xcodeproj">
+               BuildableName = "SpaceRnnrz.app"
+               BlueprintName = "SpaceRnnrz"
+               ReferencedContainer = "container:SpaceRnnrz.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -34,9 +34,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2706E4321C9E1AC20068CDAD"
-               BuildableName = "SpaceRunner.xctest"
-               BlueprintName = "SpaceRunnerTests"
-               ReferencedContainer = "container:SpaceRunner.xcodeproj">
+               BuildableName = "SpaceRnnrz.xctest"
+               BlueprintName = "SpaceRnnrzTests"
+               ReferencedContainer = "container:SpaceRnnrz.xcodeproj">
             </BuildableReference>
          </TestableReference>
          <TestableReference
@@ -44,9 +44,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "2706E43D1C9E1AC20068CDAD"
-               BuildableName = "SpaceRunner.xctest"
-               BlueprintName = "SpaceRunnerUITests"
-               ReferencedContainer = "container:SpaceRunner.xcodeproj">
+               BuildableName = "SpaceRnnrz.xctest"
+               BlueprintName = "SpaceRnnrzUITests"
+               ReferencedContainer = "container:SpaceRnnrz.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -54,9 +54,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2706E41A1C9E1AC20068CDAD"
-            BuildableName = "SpaceRunner.app"
-            BlueprintName = "SpaceRunner"
-            ReferencedContainer = "container:SpaceRunner.xcodeproj">
+            BuildableName = "SpaceRnnrz.app"
+            BlueprintName = "SpaceRnnrz"
+            ReferencedContainer = "container:SpaceRnnrz.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -78,9 +78,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2706E41A1C9E1AC20068CDAD"
-            BuildableName = "SpaceRunner.app"
-            BlueprintName = "SpaceRunner"
-            ReferencedContainer = "container:SpaceRunner.xcodeproj">
+            BuildableName = "SpaceRnnrz.app"
+            BlueprintName = "SpaceRnnrz"
+            ReferencedContainer = "container:SpaceRnnrz.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -97,9 +97,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "2706E41A1C9E1AC20068CDAD"
-            BuildableName = "SpaceRunner.app"
-            BlueprintName = "SpaceRunner"
-            ReferencedContainer = "container:SpaceRunner.xcodeproj">
+            BuildableName = "SpaceRnnrz.app"
+            BlueprintName = "SpaceRnnrz"
+            ReferencedContainer = "container:SpaceRnnrz.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

@@ -56,7 +56,7 @@ final class GameAudio {
     private var availablePlayerNodes: [AVAudioPlayerNode] = []
     private let maxEffectPlayers = 4 // Reduced to prevent audio overload
     
-    private let logger = Logger(subsystem: "com.todddube.spacerunner", category: "GameAudio")
+    private let logger = Logger(subsystem: "com.todddube.spacernnrz", category: "GameAudio")
     
     // MARK: - Initialization
     private init() {

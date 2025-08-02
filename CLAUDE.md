@@ -4,24 +4,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SpaceRunner is an iOS game built with SpriteKit/Swift targeting iOS 18+. It's a space-themed endless runner where the player controls a ship, avoids meteors, and collects stars. The project includes modern iOS 18 features like SwiftUI overlays, accessibility enhancements, and advanced audio management.
+SpaceRnnrz is an iOS game built with SpriteKit/Swift targeting iOS 18+. It's a space-themed endless runner where the player controls a ship, avoids meteors, and collects stars. The project includes modern iOS 18 features like SwiftUI overlays, accessibility enhancements, and advanced audio management.
 
 ## Build System and Commands
 
 This is an Xcode project that uses the standard iOS development workflow:
 
 ### GUI Commands (Xcode)
-- **Build**: Open `SpaceRunner.xcodeproj` in Xcode and use Cmd+B to build
+- **Build**: Open `SpaceRnnrz.xcodeproj` in Xcode and use Cmd+B to build
 - **Run**: Use Cmd+R to run on simulator or connected device
-- **Test**: Use Cmd+U to run unit tests (located in `SpaceRunnerTests/`)
-- **UI Tests**: UI tests are available in `SpaceRunnerUITests/`
+- **Test**: Use Cmd+U to run unit tests (located in `SpaceRnnrzTests/`)
+- **UI Tests**: UI tests are available in `SpaceRnnrzUITests/`
 
 ### Command Line Commands (for Claude Code)
-- **List schemes**: `xcodebuild -list -project SpaceRunner.xcodeproj`
-- **Build for simulator**: `xcodebuild -project SpaceRunner.xcodeproj -scheme SpaceRunner -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build`
-- **Build for any simulator**: `xcodebuild -project SpaceRunner.xcodeproj -scheme SpaceRunner -configuration Debug -destination 'platform=iOS Simulator' build`
-- **Run tests**: `xcodebuild -project SpaceRunner.xcodeproj -scheme SpaceRunner -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' test`
-- **Clean**: `xcodebuild -project SpaceRunner.xcodeproj -scheme SpaceRunner clean`
+- **List schemes**: `xcodebuild -list -project SpaceRnnrz.xcodeproj`
+- **Build for simulator**: `xcodebuild -project SpaceRnnrz.xcodeproj -scheme SpaceRnnrz -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' build`
+- **Build for any simulator**: `xcodebuild -project SpaceRnnrz.xcodeproj -scheme SpaceRnnrz -configuration Debug -destination 'platform=iOS Simulator' build`
+- **Run tests**: `xcodebuild -project SpaceRnnrz.xcodeproj -scheme SpaceRnnrz -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 16' test`
+- **Clean**: `xcodebuild -project SpaceRnnrz.xcodeproj -scheme SpaceRnnrz clean`
 - **Extract errors only**: `xcodebuild ... build 2>&1 | grep -E "(error:|warning:)" | head -20`
 
 **Note**: The project targets iOS 18+ and supports portrait orientation only. Building for physical devices requires proper provisioning profiles.
@@ -103,8 +103,8 @@ Button classes for game interaction:
 
 ### Missing Project References
 Some files exist in the filesystem but are not properly included in the Xcode project:
-- `SpaceRunner/SwiftUI/` folder contents
-- `SpaceRunner/Accessibility/` folder contents
+- `SpaceRnnrz/SwiftUI/` folder contents
+- `SpaceRnnrz/Accessibility/` folder contents
 
 To fix: Add these files to the Xcode project manually via "Add Files to Project".
 

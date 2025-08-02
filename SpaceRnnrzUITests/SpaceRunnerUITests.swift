@@ -1,6 +1,6 @@
 //
-//  SpaceRunnerUITests.swift
-//  SpaceRunnerUITests
+//  SpaceRnnrzUITests.swift
+//  SpaceRnnrzUITests
 //
 //  Created by Todd Dube : 2025
 //  Purpose: UI test suite for testing user interface interactions and game flow.
@@ -8,7 +8,7 @@
 
 import XCTest
 
-class SpaceRunnerUITests: XCTestCase {
+class SpaceRnnrzUITests: XCTestCase {
         
     override func setUp() {
         super.setUp()

@@ -1,15 +1,15 @@
 //
-//  SpaceRunnerTests.swift
-//  SpaceRunnerTests
+//  SpaceRnnrzTests.swift
+//  SpaceRnnrzTests
 //
 //  Created by Todd Dube : 2025
 //  Purpose: Unit test suite for testing game logic and functionality.
 //
 
 import XCTest
-// @testable import SpaceRunner
+// @testable import SpaceRnnrz
 
-class SpaceRunnerTests: XCTestCase {
+class SpaceRnnrzTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
