@@ -23,7 +23,7 @@ final class GameViewController: UIViewController {
     // iOS 18+ specific properties
     private var isSetupComplete = false
     
-    private let logger = Logger(subsystem: "com.todddube.spacernnrz", category: "GameViewController")
+    private let logger = Logger(subsystem: "com.todddube.spacerunner", category: "GameViewController")
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -186,9 +186,7 @@ final class GameViewController: UIViewController {
     // MARK: - App Lifecycle Handlers
     @objc private func handleAppWillResignActive() {
         // Pause game if active
-        Task { @MainActor in
-            await currentGameScene?.handleAppBackground()
-        }
+        currentGameScene?.handleAppBackground()
         GameAudio.shared.handleAppBackground()
         
         logger.info("App will resign active - paused game")
@@ -196,9 +194,6 @@ final class GameViewController: UIViewController {
     
     @objc private func handleAppDidBecomeActive() {
         // Resume game if it was active
-        Task { @MainActor in
-            await currentGameScene?.handleAppForeground()
-        }
         GameAudio.shared.handleAppForeground()
         
         logger.info("App became active - resumed audio")

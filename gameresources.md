@@ -1,11 +1,11 @@
 # GameResources Review - iOS 18 Standards Compliance
 
 ## Overview
-This document provides a comprehensive review of all GameResources files in the SpaceRnnrz project and their compliance with iOS 18 standards.
+This document provides a comprehensive review of all GameResources files in the SpaceRunner project and their compliance with iOS 18 standards.
 
 ## Directory Structure
 ```
-SpaceRnnrz/GameResources/
+SpaceRunner/GameResources/
 ├── Assets.xcassets/
 │   └── Particle Sprite Atlas.spriteatlas/
 │       ├── bokeh.imageset/

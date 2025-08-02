@@ -30,7 +30,15 @@ class PauseButton:SKSpriteNode {
     convenience init() {
         let texture = GameTextures.sharedInstance.textureWithName(name: SpriteName.ButtonPause)
         self.init(texture: texture, color: SKColor.white, size: texture.size())
-        self.setupPauseButton()
+        // Don't auto-setup positioning - let parent handle positioning
+    }
+    
+    convenience init(standalone: Bool) {
+        let texture = GameTextures.sharedInstance.textureWithName(name: SpriteName.ButtonPause)
+        self.init(texture: texture, color: SKColor.white, size: texture.size())
+        if standalone {
+            self.setupPauseButton()
+        }
     }
     
     // MARK: - Setup

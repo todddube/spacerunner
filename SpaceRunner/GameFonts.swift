@@ -44,7 +44,7 @@ final class GameFonts {
         .menu: (phone: 24.0, pad: 48.0)
     ]
     
-    private let logger = Logger(subsystem: "com.todddube.spacernnrz", category: "GameFonts")
+    private let logger = Logger(subsystem: "com.todddube.spacerunner", category: "GameFonts")
     
     // MARK: - Initialization
     private init() {
