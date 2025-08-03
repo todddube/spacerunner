@@ -343,8 +343,17 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     
     private func handleGameplayTouch(at location: CGPoint) {
         // Check if pause button was tapped
-        if statusBar.pauseButton.contains(location) {
-            audioManager.playSoundEffect(.buttonTap)
+        // Get pause button position in scene coordinates
+        let pauseButtonScenePosition = convert(statusBar.pauseButton.position, from: statusBar)
+        let pauseButtonFrame = CGRect(
+            x: pauseButtonScenePosition.x - statusBar.pauseButton.size.width / 2,
+            y: pauseButtonScenePosition.y - statusBar.pauseButton.size.height / 2,
+            width: statusBar.pauseButton.size.width,
+            height: statusBar.pauseButton.size.height
+        )
+        
+        if pauseButtonFrame.contains(location) {
+            statusBar.pauseButton.tapped()
             setCurrentPhase(.paused)
             return
         }
