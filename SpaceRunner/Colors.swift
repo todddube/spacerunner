@@ -2,8 +2,17 @@
 //  Colors.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Color definitions and RGB-to-SKColor conversion utilities for consistent game theming.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Central palette for all game colours. Use the named constants rather than
+//  raw hex values to keep the look consistent and allow theme updates in one place.
+//
+//  CONTENTS
+//  - Colors class               — hex colour constants (Background, Border, Font variants…)
+//  - colorFromRGB(rgbvalue:)    — converts a packed 0xRRGGBB integer to SKColor
+//  - All colours defined as UInt properties so they can be tuned without touching
+//      individual scene or node files
 //
 
 import Foundation

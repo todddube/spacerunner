@@ -2,8 +2,21 @@
 //  Star.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Collectible star sprites that provide points and bonuses when collected by the player.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  A collectible pickup that falls down the screen alongside meteors. When the
+//  player ship overlaps a Star its physics contact fires, awarding points and
+//  triggering a burst particle effect.
+//
+//  RESPONSIBILITIES
+//  - init()          — load Star texture, attach a circular physics body with the
+//      Star contact bitmask, begin a continuous rotation action
+//  - update(delta:)  — advance vertical position each frame; remove self when
+//      scrolled past the bottom of the screen
+//  - collected()     — scale-spin-fade animation before removing node; called by
+//      GameScene on star-player contact
+//  - gameOver()      — freeze the star in place and remove actions
 //
 
 import Foundation

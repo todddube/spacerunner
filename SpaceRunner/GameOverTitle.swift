@@ -2,8 +2,16 @@
 //  GameOverTitle.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Animated game over title sprite that appears when the player loses.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  "GAME OVER" logo sprite displayed at the top of the Game Over scene.
+//  Flies in with a short bounce animation to draw the player's eye before
+//  the scoreboard slides in below it.
+//
+//  RESPONSIBILITIES
+//  - Load the GameOverTitle texture and position it at y ≈ 70 % of screen height
+//  - Animate entrance from off-screen top with a scale-bounce landing
 //
 
 import Foundation

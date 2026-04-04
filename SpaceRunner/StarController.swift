@@ -2,8 +2,20 @@
 //  StarController.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Manages spawning, movement, and lifecycle of collectible star objects during gameplay.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Spawns and manages all active Star pickup nodes. Stars appear at randomised
+//  horizontal positions above the screen and scroll downward at the same speed
+//  as meteors so they feel like part of the same hazard field.
+//
+//  RESPONSIBILITIES
+//  - startSendingStars()   — begin the repeating spawn timer
+//  - stopSendingStars()    — halt spawning (pause / game-over)
+//  - update(delta:)        — forward delta time to every active Star child node
+//  - gameOver()            — stop spawning and freeze all active stars in place
+//  - spawnStar()           — create a new Star at a random X above the top edge
+//      and attach it as a child node
 //
 
 import Foundation

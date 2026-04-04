@@ -2,8 +2,17 @@
 //  StartButton.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Start button sprite that appears during the tutorial phase to begin gameplay.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Legacy start button sprite shown during the tutorial phase. Scales to a
+//  percentage of screen width for device-adaptive sizing, then triggers game start.
+//
+//  RESPONSIBILITIES
+//  - Load and size the StartButton texture relative to screen width
+//  - Position at screen center for easy first-touch access
+//  - Expose tapped() action consumed by GameScene touch handler
+//  NOTE: For new code prefer ModernStartButton which uses a responsive glass design.
 //
 
 import Foundation

@@ -38,11 +38,14 @@ public extension SKAction {
   /**
    * Creates an action to perform a parabolic jump.
    */
-func jumpToHeight(_ height: CGFloat, duration: TimeInterval, originalPosition: CGPoint) -> SKAction {
-    return SKAction.customAction(withDuration: duration) {(node, elapsedTime) in
-      let fraction = elapsedTime / CGFloat(duration)
-      let yOffset = height * 4 * fraction * (1 - fraction)
-      node.position = CGPoint(x: originalPosition.x, y: originalPosition.y + yOffset)
+  @MainActor
+  func jumpToHeight(_ height: CGFloat, duration: TimeInterval, originalPosition: CGPoint) -> SKAction {
+    return SKAction.customAction(withDuration: duration) { (node, elapsedTime) in
+      MainActor.assumeIsolated {
+        let fraction = elapsedTime / CGFloat(duration)
+        let yOffset = height * 4 * fraction * (1 - fraction)
+        node.position = CGPoint(x: originalPosition.x, y: originalPosition.y + yOffset)
+      }
     }
   }
 

@@ -2,8 +2,21 @@
 //  MeteorController.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Manages spawning, movement, and lifecycle of meteor obstacles during gameplay.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Spawns and manages all active Meteor nodes. Uses a repeating SKAction timer
+//  to add new meteors at randomised horizontal positions and escalating frequency
+//  as the game progresses.
+//
+//  RESPONSIBILITIES
+//  - startSendingMeteors()    — begin the spawn timer with initial difficulty settings
+//  - stopSendingMetors()      — halt spawning (pause / game-over)
+//  - update(delta:)           — forward delta time to every active Meteor child node
+//  - gameOver()               — stop spawning and freeze all active meteors
+//  - spawnMeteor()            — pick a random Meteor size variant, position it above
+//      the top of the screen at a random X, and add it as a child node
+//  - Difficulty ramps by shortening the spawn interval over time
 //
 
 import Foundation

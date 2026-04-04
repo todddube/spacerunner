@@ -2,8 +2,17 @@
 //  RetryButton.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Retry button sprite that allows players to restart the game after game over.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Retry button displayed on the Game Over screen, giving the player a one-tap
+//  path back into a fresh game session.
+//
+//  RESPONSIBILITIES
+//  - Load and display the RetryButton texture asset
+//  - Animate entrance (slide in) and tap feedback (scale bounce)
+//  - Provide blink idle animation to prompt re-engagement
+//  - Expose tapped() action consumed by GameOverScene touch handler
 //
 
 import Foundation

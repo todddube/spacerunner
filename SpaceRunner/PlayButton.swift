@@ -2,8 +2,17 @@
 //  PlayButton.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Animated play button sprite for starting the game from the main menu.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Animated play button sprite displayed on the main menu. Animates in from
+//  off-screen, scales on tap, and triggers the transition to GameScene.
+//
+//  RESPONSIBILITIES
+//  - Load and display the PlayButton texture asset
+//  - Animate entrance (slide down from top) and tap feedback (scale bounce)
+//  - Provide blink idle animation to attract player attention
+//  - Expose tapped() action consumed by MenuScene touch handler
 //
 
 import Foundation

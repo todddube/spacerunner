@@ -2,8 +2,17 @@
 //  GameTitleShip.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Rotating ship sprite that accompanies the main title on the menu screen.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Decorative player-ship sprite on the main menu that spins continuously,
+//  giving the title screen energy and hinting at the gameplay theme.
+//
+//  RESPONSIBILITIES
+//  - Load the GameTitleShip texture at native size
+//  - Animate entrance: slide in from off-screen corner, then bounce-settle
+//  - Run a continuous 360° rotation (8-second period) as an idle effect
+//  - MenuScene drives the rotation via a named SKAction key "mainRotation"
 //
 
 import Foundation

@@ -1,9 +1,20 @@
 //
-//  GameMenuScene
+//  GameMenuScene.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Alternative game menu scene implementation with score display functionality.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Secondary menu scene that can display current score information alongside
+//  the standard menu layout. Serves as an alternative entry point or as a
+//  mid-session return-to-menu screen.
+//
+//  RESPONSIBILITIES
+//  - setupScene()         — configure background, title, and score display
+//  - setupScoreDisplay()  — render a compact score board from passed-in values
+//  - loadGameScene()      — transition to a fresh GameScene
+//  NOTE: This scene is not currently wired into the primary game flow.
+//      Use MenuScene or EnhancedMenuScene for the main entry point.
 //
 
 import Foundation

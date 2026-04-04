@@ -2,8 +2,24 @@
 //  GameViewController.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Modern hybrid view controller supporting SpriteKit with SwiftUI overlays for iOS 18+.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Root view controller that hosts the SKView and wires it to the initial
+//  scene. Supports optional SwiftUI overlay layers for settings and pause
+//  menus using UIHostingController composition, following iOS 18+ patterns.
+//
+//  RESPONSIBILITIES
+//  - viewDidLoad()              — configure SKView (frame rate, debug flags) and
+//      present the initial scene (MenuScene or EnhancedMenuScene)
+//  - setupSKView()              — disable unnecessary render statistics in release,
+//      enable physics debug outlines when kDebug is true
+//  - presentInitialScene()      — choose starting scene and apply entry transition
+//  - orientationSupport         — lock to portrait via supportedInterfaceOrientations
+//  - addSwiftUIOverlay(_:)      — utility to layer a SwiftUI view over the SpriteKit
+//      canvas without disturbing the scene graph
+//
+//  REQUIRES iOS 18.0+  — uses @MainActor and UIHostingController SwiftUI bridging
 //
 
 import UIKit
@@ -34,12 +50,24 @@ final class GameViewController: UIViewController {
     }
     
     private func setupViewController() async {
+        // iOS 26: Set screen constants from window scene (UIScreen.main is deprecated).
+        // UIDevice.current is @MainActor in iOS 26 — safe here since we're on MainActor.
+        kDeviceTablet = UIDevice.current.userInterfaceIdiom == .pad
+        if let windowScene = view.window?.windowScene ?? UIApplication.shared.connectedScenes
+            .compactMap({ $0 as? UIWindowScene }).first {
+            let screenBounds = windowScene.screen.bounds
+            kViewSize = screenBounds.size
+            kScreenCenter = CGPoint(x: screenBounds.midX, y: screenBounds.midY)
+        } else {
+            kViewSize = view.bounds.size
+            kScreenCenter = CGPoint(x: view.bounds.midX, y: view.bounds.midY)
+        }
         setupSpriteKitView()
         setupAccessibility()
         setupModernFeatures()
         presentMenuScene()
         isSetupComplete = true
-        logger.info("GameViewController loaded and configured for iOS 18+")
+        logger.info("GameViewController loaded and configured for iOS 26")
     }
     
     private func setupModernFeatures() {
@@ -101,11 +129,11 @@ final class GameViewController: UIViewController {
     
     // MARK: - Scene Management
     private func presentMenuScene() {
-        let menuScene = MenuScene(size: kViewSize)
+        let menuScene = EnhancedMenuScene(size: kViewSize)
         let transition = SKTransition.fade(with: .black, duration: 0.75)
         skView.presentScene(menuScene, transition: transition)
-        
-        logger.info("Presented menu scene")
+
+        logger.info("Presented enhanced menu scene")
     }
     
     func presentGameScene() {

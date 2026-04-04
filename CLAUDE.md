@@ -31,7 +31,8 @@ This is an Xcode project that uses the standard iOS development workflow:
 ### Scene Management
 The game follows a scene-based architecture using SpriteKit:
 - `GameViewController.swift` - Modern iOS 18+ view controller with SwiftUI overlay support
-- `MenuScene.swift` - Main menu with play button and title
+- `MenuScene.swift` - Original main menu with play button and title
+- `EnhancedMenuScene.swift` - Modern enhanced menu with liquid glass effects, dynamic lighting, and advanced animations
 - `GameScene.swift` - Primary gameplay scene with game state management
 - `GameOverScene.swift` - End game scene with retry functionality
 - `GameMenuScene.swift` - Additional menu scene functionality
@@ -52,12 +53,24 @@ The game follows a scene-based architecture using SpriteKit:
 ### UI Components
 Button classes for game interaction:
 - `PlayButton.swift`, `StartButton.swift`, `RetryButton.swift`, `PauseButton.swift`
+- `ModernStartButton.swift` - iOS 18+ style button with liquid glass effects and animations
 - `ScoreBoard.swift` - Score display and high score tracking
 - `StatusBar.swift` - Game UI elements during play
+- `StatusBar+GlassEffect.swift` - Glass-styled UI elements with blurred backgrounds and animations
+
+### Enhanced Visual Systems
+- `ParallaxBackground.swift` - Multi-layer parallax scrolling with depth perception
+- `NebulaSystem.swift` - Animated space nebulae with floating effects
+- `DynamicLighting.swift` - Real-time lighting system with ambient and explosive effects
+- `EnhancedParticleManager.swift` - Advanced particle systems for explosions and effects
+- `CameraEffects.swift` - Cinematic camera system with shake, zoom, and slow motion
+- `AnimationController.swift` - Centralized animation management with spring animations
+- `Player+EnhancedEffects.swift` - Enhanced ship effects with multi-layered engine trails
 
 ### Resource Management
 - `GameTextures.swift` - Centralized texture loading and management
 - `GameAudio.swift` - Modern AVAudioEngine-based audio system with spatial audio support
+- `GameAudio+SpatialEffects.swift` - 3D audio positioning with distance and panning
 - `GameFonts.swift` - Font loading and text styling
 - `GameParticles.swift` - Particle effect definitions
 - `GameSettings.swift` - Game configuration and user preferences
@@ -69,6 +82,7 @@ Button classes for game interaction:
 - `Math.swift` - Mathematical helper functions
 - `Colors.swift` - Color definitions
 - `GameShaders.swift` - Custom shader effects
+- `CGPoint+Extensions.swift` - Core Graphics extensions for vector operations
 - `SKTUtils/` library - Extended SpriteKit utilities for animations and effects
 
 ### Assets Structure
@@ -76,6 +90,9 @@ Button classes for game interaction:
 - Audio files in `GameResources/Sounds/` and `GameResources/Music/`
 - Custom font (`editundo.ttf`) for game text
 - Particle effect files (`.sks`) for explosions and visual effects
+
+### Documentation
+- `ENHANCED_GRAPHICS_README.md` - Comprehensive documentation of the enhanced graphics and animation system
 
 ## Development Notes
 
@@ -86,6 +103,33 @@ Button classes for game interaction:
 - Game uses z-position layers defined in `GameLayer` class for proper rendering order
 - The project uses `@MainActor` and `@Observable` for modern Swift concurrency
 - All view controllers are marked `@available(iOS 18.0, *)` for modern iOS features
+
+## Enhanced Graphics System
+
+The game now features a comprehensive enhanced graphics system with:
+- **Multi-layer parallax backgrounds** with three depth layers for convincing 3D depth
+- **Dynamic lighting system** with ambient lighting, player-following light sources, and explosion flashes
+- **Advanced particle systems** with multi-intensity explosion effects and debris simulation
+- **Liquid glass UI effects** matching iOS 18+ design trends with shimmer and glow effects
+- **Cinematic camera effects** including screen shake, zoom pulse, and slow motion
+- **Spatial audio integration** with 3D positioning and environmental effects
+- **Modern animation system** with spring animations and micro-interactions
+
+### Enhanced Menu System
+
+The new `EnhancedMenuScene` provides a modern iOS 18+ menu experience featuring:
+- **Liquid glass button effects** with shimmer animations and interactive feedback
+- **Dynamic lighting and ambience** creating atmospheric depth
+- **Multi-layer parallax backgrounds** with animated nebula systems
+- **Staggered entrance animations** with spring-based transitions
+- **Touch sparkle effects** providing visual feedback on interaction
+- **Author and version information** prominently displayed with breathing animations
+- **Camera shake integration** for dramatic intro and transition effects
+- **Modern typography and styling** matching iOS 18+ design language
+
+The enhanced menu uses all the same visual systems as the game for a cohesive experience.
+
+Note: The enhanced graphics system includes both original and duplicate versions of some files (with " 2" suffix) from development iterations.
 
 ## Modern iOS 18+ Features
 
@@ -114,6 +158,10 @@ To fix: Add these files to the Xcode project manually via "Add Files to Project"
 3. **"GameAudio has no member 'sharedInstance'"** - Use `GameAudio.shared` instead
 4. **Audio method errors** - Use `playSoundEffect(.buttonTap)` instead of property access
 5. **Main actor isolation warnings** - Expected with Swift 6, usually safe to ignore
+6. **Duplicate filename errors** - Remove duplicate files with " 2" suffix from development iterations
+7. **CGPoint+Extensions.swift conflict** - Remove root-level duplicate, use SKTUtils version
+8. **Type conversion errors** - Ensure proper Float/CGFloat conversions for physics and animation properties
+9. **Missing sound effects** - Check GameAudio.SoundEffect enum for available audio files before referencing
 
 ### Common Runtime Errors
 6. **"GSFont: file doesn't exist"** - Custom font path issue in Info.plist

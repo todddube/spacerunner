@@ -2,8 +2,20 @@
 //  Meteor.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Individual meteor obstacle sprites with physics and collision properties.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  A single meteor obstacle that falls down the screen. Four size variants
+//  (Huge, Large, Medium, Small) are randomly selected by MeteorController.
+//  Circular physics bodies drive collision detection against the player.
+//
+//  RESPONSIBILITIES
+//  - init(type:)      — load the appropriate texture variant and configure
+//      a circular SKPhysicsBody with the Meteor contact bitmask
+//  - update(delta:)   — advance vertical position each frame at a speed scaled
+//      by delta time; remove self when scrolled off the bottom of the screen
+//  - hitMeteor()      — trigger the explosion particle effect and remove the node
+//  - gameOver()       — stop movement and remove all actions on game-over
 //
 
 import Foundation

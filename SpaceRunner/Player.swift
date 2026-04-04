@@ -1,10 +1,25 @@
 //
 //  Player.swift
-//  Player controller `
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Player ship sprite with movement controls, collision detection, and scoring system.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  The player-controlled spaceship. Moves smoothly toward the last touch
+//  location using linear interpolation, maintains lives and score state,
+//  and responds to meteor collisions and star pickups.
+//
+//  RESPONSIBILITIES
+//  - init()                         — load Player texture, configure circular physics body
+//  - update()                       — lerp position toward targetLocation each frame
+//  - updateTargetLocation(newLocation:) — set the destination from a touch event
+//  - enableMovement() / disableMovement() — toggle touch-following (tutorial vs gameplay)
+//  - hitMeteor()                    — decrement lives, trigger invincibility flash
+//  - collectStar()                  — increment score; used by GameScene on star contact
+//  - gameOver()                     — freeze the ship and remove physics body
+//  - startEnhancedEngineEffects() / stopEnhancedEngineEffects() — delegate to
+//      Player+EnhancedEffects extension for multi-layer engine trail particles
+//  - lives / score properties accessed by GameScene for state tracking
 //
 
 import Foundation

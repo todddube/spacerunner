@@ -2,8 +2,26 @@
 //  StatusBar.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: In-game status bar displaying score, lives, collected stars, and pause button.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Persistent heads-up display rendered at the bottom of the gameplay screen.
+//  Shows the player's current score, remaining lives, stars collected, and the
+//  pause/resume toggle button in a compact dark glass strip.
+//
+//  RESPONSIBILITIES
+//  - setupStatusBarBackground()     — create the dark glass background bar sized to
+//      kViewSize.width, respecting device safe-area bottom insets
+//  - setupStatusBarScore(score:)    — render score label at the right edge of the bar
+//  - setupStatusBarStarsCollected() — render rotating star icon + count at left edge
+//  - updateLives(lives:)            — rebuild life-icon row in the centre of the bar;
+//      icons are sized proportionally to bar height (60 %) for any device
+//  - setupPauseButton()             — embed and scale the PauseButton to 62 % of bar height
+//  - updateScore(score:)            — refresh score label text in real time
+//  - updateStarsCollected(…)        — refresh star count + animate bounce
+//  - reset()                        — restore all displays to initial game values
+//  - calculateBottomPosition()      — uses window.safeAreaInsets for precise placement
+//  - Glass/animation extensions in StatusBar+GlassEffect.swift
 //
 
 import Foundation
@@ -13,7 +31,7 @@ import UIKit
 class StatusBar: SKNode {
     
     // MARK: - Private class variables
-    fileprivate var statusBarBackground = SKSpriteNode()
+    var statusBarBackground = SKSpriteNode()
     fileprivate var scoreLabel = SKLabelNode()
     fileprivate var starsCollectedIcon = SKSpriteNode()
     fileprivate var starsCollectedLabel = SKLabelNode()
@@ -170,78 +188,76 @@ class StatusBar: SKNode {
     }
     
     fileprivate func setupStatusBarStarsCollected(collected: Int) {
-        // Create sleek star display section
         let starContainer = SKNode()
+        let barHeight = self.statusBarBackground.size.height
+        let centerY = barHeight / 2
         
-        // Collected stars icon with compact sizing to fit with number
+        // Icon scaled to 55% of bar height so it fits comfortably inside the bar
+        let iconHeight = barHeight * 0.55
         self.starsCollectedIcon = SKSpriteNode(texture: GameTextures.sharedInstance.textureWithName(name: SpriteName.StarIcon))
-        self.starsCollectedIcon.setScale(kDeviceTablet ? 0.4 : 0.35) // Smaller size to accommodate star count number
+        let iconScale = iconHeight / self.starsCollectedIcon.size.height
+        self.starsCollectedIcon.setScale(iconScale)
         
-        // Add subtle glow to star icon using grayscale
+        // Subtle glow slightly larger than icon
         let starGlow = SKSpriteNode(texture: GameTextures.sharedInstance.textureWithName(name: SpriteName.StarIcon))
-        starGlow.setScale(kDeviceTablet ? 0.5 : 0.45) // Proportionally adjusted glow for compact size
-        starGlow.alpha = 0.3
-        starGlow.color = SKColor(white: 0.8, alpha: 1.0) // Light gray glow
-        starGlow.colorBlendFactor = 0.8
+        starGlow.setScale(iconScale * 1.25)
+        starGlow.alpha = 0.25
+        starGlow.color = SKColor(white: 0.85, alpha: 1.0)
+        starGlow.colorBlendFactor = 0.7
         starGlow.zPosition = -1
         
-        // Position star elements as close to left border as possible
-        let starIconRadius = self.starsCollectedIcon.size.width * 0.5 // Half width for radius
-        let leftPadding: CGFloat = kDeviceTablet ? 8.0 : 6.0 // Minimal padding to avoid cutoff
-        let starSectionX = leftPadding + starIconRadius
-        let centerY = self.statusBarBackground.size.height / 2
+        let leftPadding: CGFloat = kDeviceTablet ? 10.0 : 8.0
+        let iconRadius = self.starsCollectedIcon.size.width * 0.5
+        let starSectionX = leftPadding + iconRadius
         
         starGlow.position = CGPoint(x: starSectionX, y: centerY)
         self.starsCollectedIcon.position = CGPoint(x: starSectionX, y: centerY)
         
-        // Collected stars label with modern typography
+        // Stars count label
         self.starsCollectedLabel = GameFonts.shared.createLabel(string: String(collected), labelType: GameFonts.LabelType.statusBar)
-        
-        // Sleek text styling with modern grayscale
-        self.starsCollectedLabel.fontColor = SKColor(white: 0.95, alpha: 1.0) // Pure white
-        self.starsCollectedLabel.fontSize = kDeviceTablet ? 18 : 14
+        self.starsCollectedLabel.fontColor = SKColor(white: 0.95, alpha: 1.0)
+        self.starsCollectedLabel.fontSize = kDeviceTablet ? 16 : 13
         self.starsCollectedLabel.horizontalAlignmentMode = .left
         
-        let labelOffsetX = starSectionX + self.starsCollectedIcon.size.width * 1.5 + (kDeviceTablet ? 12.0 : 8.0) + (self.statusBarBackground.size.width * 0.1)
-        self.starsCollectedLabel.position = CGPoint(x: labelOffsetX, y: centerY)
+        // Place label immediately right of icon with a small gap
+        let labelX = starSectionX + iconRadius + (kDeviceTablet ? 6.0 : 4.0)
+        self.starsCollectedLabel.position = CGPoint(x: labelX, y: centerY)
         
-        // Add elements to container
         starContainer.addChild(starGlow)
         starContainer.addChild(self.starsCollectedIcon)
         starContainer.addChild(self.starsCollectedLabel)
         
         self.statusBarBackground.addChild(starContainer)
         
-        // Smooth rotation animation with optimized timing
+        // Slow, elegant rotation
         self.starsCollectedIcon.run(
             SKAction.repeatForever(
-                SKAction.rotate(byAngle: CGFloat.pi * 2, duration: 6.0))) // Slower, more elegant rotation
+                SKAction.rotate(byAngle: CGFloat.pi * 2, duration: 6.0)))
     }
     
     fileprivate func setupStatusBarScore(score: Int) {
-        // Create modern score section
         let scoreContainer = SKNode()
         let centerY = self.statusBarBackground.size.height / 2
         
-        // Score value with prominent styling using grayscale
+        // Score label — size tied to bar height for consistent proportions
+        let fontSize: CGFloat = kDeviceTablet ? 18 : 14
         self.scoreLabel = GameFonts.shared.createLabel(string: formatScore(score), labelType: GameFonts.LabelType.statusBar)
-        self.scoreLabel.fontColor = SKColor(white: 1.0, alpha: 1.0) // Pure white for prominence
-        self.scoreLabel.fontSize = kDeviceTablet ? 20 : 16
+        self.scoreLabel.fontColor = SKColor(white: 1.0, alpha: 1.0)
+        self.scoreLabel.fontSize = fontSize
         self.scoreLabel.horizontalAlignmentMode = .right
         
-        // Position score at right edge with padding
-        let scoreX = self.statusBarBackground.size.width - (kDeviceTablet ? 25 : 20)
+        let rightPadding: CGFloat = kDeviceTablet ? 18 : 14
+        let scoreX = self.statusBarBackground.size.width - rightPadding
         self.scoreLabel.position = CGPoint(x: scoreX, y: centerY)
         
-        // Add subtle glow effect to score using grayscale
+        // Subtle glow copy
         let scoreGlow = GameFonts.shared.createLabel(string: formatScore(score), labelType: GameFonts.LabelType.statusBar)
-        scoreGlow.fontColor = SKColor(white: 0.7, alpha: 0.4) // Medium gray glow
-        scoreGlow.fontSize = self.scoreLabel.fontSize
+        scoreGlow.fontColor = SKColor(white: 0.7, alpha: 0.35)
+        scoreGlow.fontSize = fontSize
         scoreGlow.horizontalAlignmentMode = .right
         scoreGlow.position = self.scoreLabel.position
         scoreGlow.zPosition = -1
         
-        // Add elements to container
         scoreContainer.addChild(scoreGlow)
         scoreContainer.addChild(self.scoreLabel)
         
@@ -257,71 +273,39 @@ class StatusBar: SKNode {
     }
     
     fileprivate func setupPauseButton() {
-        // Scale button to fit within status bar height with some padding
-        let statusBarHeight = self.statusBarBackground.size.height
-        let maxButtonHeight = statusBarHeight * 0.7 // 70% of status bar height
-        let originalButtonHeight = self.pauseButton.size.height
-        let buttonScale = maxButtonHeight / originalButtonHeight
+        let barHeight = self.statusBarBackground.size.height
+        // Scale to 62% of bar height — readable without being oversized
+        let desiredHeight = barHeight * 0.62
+        let buttonScale = desiredHeight / self.pauseButton.size.height
         self.pauseButton.setScale(buttonScale)
         
-        // Position between player lives and score sections
-        let centerY = self.statusBarBackground.size.height / 2
-        let pauseButtonX = self.statusBarBackground.size.width * 0.75 // Between lives (0.4-0.65) and score (0.85+)
+        let centerY = barHeight / 2
+        // Place in the right quarter of the bar, clear of lives and score
+        let pauseButtonX = self.statusBarBackground.size.width * 0.76
         self.pauseButton.position = CGPoint(x: pauseButtonX, y: centerY)
-        self.pauseButton.zPosition = 10 // Well above everything else
+        self.pauseButton.zPosition = 10
         
-        // Create 3D effect with multiple shadow layers
-        create3DButtonEffect()
+        // Single drop-shadow for depth without visual clutter
+        let shadow = SKSpriteNode(texture: self.pauseButton.texture)
+        shadow.size = self.pauseButton.size
+        shadow.position = CGPoint(x: -1.5, y: -1.5)
+        shadow.alpha = 0.25
+        shadow.color = SKColor.black
+        shadow.colorBlendFactor = 1.0
+        shadow.zPosition = -1
+        self.pauseButton.addChild(shadow)
         
-        // Add pronounced glow effect using grayscale
+        // Subtle ambient glow
         let buttonGlow = SKSpriteNode(texture: self.pauseButton.texture)
-        buttonGlow.size = CGSize(width: self.pauseButton.size.width * 1.4, 
-                               height: self.pauseButton.size.height * 1.4)
-        buttonGlow.alpha = 0.4
-        buttonGlow.color = SKColor(white: 0.8, alpha: 1.0) // Light gray glow
-        buttonGlow.colorBlendFactor = 0.9
-        buttonGlow.zPosition = -1
+        buttonGlow.size = CGSize(width: self.pauseButton.size.width * 1.25,
+                                 height: self.pauseButton.size.height * 1.25)
+        buttonGlow.alpha = 0.18
+        buttonGlow.color = SKColor(white: 0.9, alpha: 1.0)
+        buttonGlow.colorBlendFactor = 0.8
+        buttonGlow.zPosition = -2
         self.pauseButton.addChild(buttonGlow)
         
-        // Add pulsing animation to make it more noticeable
-        let pulse = SKAction.sequence([
-            SKAction.scale(to: buttonScale * 1.1, duration: 1.5),
-            SKAction.scale(to: buttonScale, duration: 1.5)
-        ])
-        self.pauseButton.run(SKAction.repeatForever(pulse))
-        
         self.statusBarBackground.addChild(self.pauseButton)
-    }
-    
-    private func create3DButtonEffect() {
-        // Create 3D depth effect with shadow layers
-        let shadowOffsets: [(x: CGFloat, y: CGFloat, alpha: CGFloat)] = [
-            (-3, -3, 0.3), // Main shadow
-            (-2, -2, 0.2), // Mid shadow  
-            (-1, -1, 0.1)  // Light shadow
-        ]
-        
-        for (index, offset) in shadowOffsets.enumerated() {
-            let shadow = SKSpriteNode(texture: self.pauseButton.texture)
-            shadow.size = self.pauseButton.size
-            shadow.position = CGPoint(x: offset.x, y: offset.y)
-            shadow.alpha = offset.alpha
-            shadow.color = SKColor.black
-            shadow.colorBlendFactor = 1.0
-            shadow.zPosition = -10 - CGFloat(index)
-            self.pauseButton.addChild(shadow)
-        }
-        
-        // Add highlight on top-left for 3D effect using refined grayscale
-        let highlight = SKSpriteNode(texture: self.pauseButton.texture)
-        highlight.size = CGSize(width: self.pauseButton.size.width * 0.8, 
-                              height: self.pauseButton.size.height * 0.8)
-        highlight.position = CGPoint(x: 1, y: 1)
-        highlight.alpha = 0.4
-        highlight.color = SKColor(white: 1.0, alpha: 1.0) // Pure white highlight
-        highlight.colorBlendFactor = 0.7
-        highlight.zPosition = 1
-        self.pauseButton.addChild(highlight)
     }
     
     // MARK: - Public Functions
@@ -350,29 +334,34 @@ class StatusBar: SKNode {
             }
         }
         
-        // Create modern lives display in center area
-        let centerY = self.statusBarBackground.size.height / 2
-        let livesStartX = self.statusBarBackground.size.width * 0.4
-        let spacing: CGFloat = kDeviceTablet ? 35 : 28
+        // Lives displayed centered in the middle third of the bar
+        let barHeight = self.statusBarBackground.size.height
+        let centerY = barHeight / 2
+        
+        // Scale each life icon to 60% of the bar height
+        let sampleSprite = GameTextures.sharedInstance.spriteWithName(name: SpriteName.PlayerLives)
+        let desiredIconHeight = barHeight * 0.60
+        let shipScale = desiredIconHeight / sampleSprite.size.height
+        let iconWidth = sampleSprite.size.width * shipScale
+        
+        let spacing: CGFloat = iconWidth * 1.3
+        let livesStartX = self.statusBarBackground.size.width * 0.42
         
         for i in 0..<lives {
             let livesSprite = GameTextures.sharedInstance.spriteWithName(name: SpriteName.PlayerLives)
-            // Scale ships 2x bigger to be more prominent in status bar
-            let shipScale: CGFloat = kDeviceTablet ? 1.4 : 1.2
             livesSprite.setScale(shipScale)
             
-            // Add subtle glow to life icons using grayscale
+            // Subtle glow layer
             let lifeGlow = GameTextures.sharedInstance.spriteWithName(name: SpriteName.PlayerLives)
-            lifeGlow.setScale(shipScale * 1.2) // Slightly larger glow
-            lifeGlow.alpha = 0.3
-            lifeGlow.color = SKColor(white: 0.9, alpha: 1.0) // Light gray glow
-            lifeGlow.colorBlendFactor = 0.6
+            lifeGlow.setScale(shipScale * 1.2)
+            lifeGlow.alpha = 0.25
+            lifeGlow.color = SKColor(white: 0.9, alpha: 1.0)
+            lifeGlow.colorBlendFactor = 0.5
             lifeGlow.zPosition = -1
             
             let xPosition = livesStartX + (spacing * CGFloat(i))
             livesSprite.position = CGPoint(x: xPosition, y: centerY)
             lifeGlow.position = CGPoint(x: xPosition, y: centerY)
-            
             livesSprite.name = SpriteName.PlayerLives
             
             self.statusBarBackground.addChild(lifeGlow)

@@ -2,71 +2,90 @@
 //  AppDelegate.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Handles iOS application lifecycle events and manages game state during app transitions.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  iOS application entry point and lifecycle coordinator. Initialises shared
+//  services on launch and forwards foreground / background transitions to
+//  GameAudio so music resumes and pauses correctly.
+//
+//  LIFECYCLE HOOKS
+//  - application(_:didFinishLaunchingWithOptions:)
+//      — async-initialise GameAudio so buffers are ready before gameplay
+//  - applicationDidEnterBackground(_:)
+//      — notify GameAudio.shared.handleAppBackground()
+//  - applicationWillEnterForeground(_:)
+//      — notify GameAudio.shared.handleAppForeground()
+//  - applicationWillTerminate(_:)
+//      — any final clean-up before process exit
 //
 
 import UIKit
 import SpriteKit
 import AVFoundation
 
-@UIApplicationMain
+// iOS 26 / Swift 6: Use @main on a struct instead of @UIApplicationMain on AppDelegate.
+// The @UIApplicationMain attribute is deprecated in iOS 26.
+@main
+struct SpaceRunnerApp {
+    static func main() {
+        UIApplicationMain(
+            CommandLine.argc,
+            CommandLine.unsafeArgv,
+            nil,
+            NSStringFromClass(AppDelegate.self)
+        )
+    }
+}
+
+@MainActor
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Initialize audio system early
-        Task {
+        Task { @MainActor in
             await GameAudio.shared.initializeAudio()
         }
         return true
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
-        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-        // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-        
-        // Post message to Pause the game
+        // Post message to pause the game
         NotificationCenter.default.post(name: Notification.Name(rawValue: "PauseGame"), object: nil)
-        
-        // pause the music 
+
+        // Pause the music
         GameAudio.shared.pauseBackgroundMusic()
-        
-        // Pause the view
-        let view = self.window?.rootViewController?.view as! SKView
-        view.isPaused = true
-        
+
+        // Pause the SpriteKit view
+        if let skView = window?.rootViewController?.view as? SKView {
+            skView.isPaused = true
+        }
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+        GameAudio.shared.handleAppBackground()
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
-        // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
+        // Audio session will be re-activated in applicationDidBecomeActive
     }
 
     func applicationDidBecomeActive(_ application: UIApplication) {
-        // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-        
-        // resume the view
-        let view = self.window?.rootViewController?.view as! SKView
-        view.isPaused = false
-        
-        // post message to resume the game
+        // Resume the SpriteKit view
+        if let skView = window?.rootViewController?.view as? SKView {
+            skView.isPaused = false
+        }
+
+        // Post message to resume the game
         NotificationCenter.default.post(name: Notification.Name(rawValue: "ResumeGame"), object: nil)
-        
-        // resume music
-        GameAudio.shared.resumeBackgroundMusic()
+
+        // Resume music
+        GameAudio.shared.handleAppForeground()
     }
 
     func applicationWillTerminate(_ application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        // No cleanup needed; GameAudio deallocation handles engine teardown.
     }
-
-
 }
-

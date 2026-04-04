@@ -2,8 +2,18 @@
 //  PauseButton.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Toggle button that pauses and resumes gameplay with appropriate visual feedback.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Toggle button embedded in the StatusBar that switches the game between the
+//  running and paused states with matching texture feedback.
+//
+//  RESPONSIBILITIES
+//  - Render PauseButton / ResumeButton textures and swap on each tap
+//  - Track internal paused state (gamePaused flag)
+//  - Play button-tap sound effect via GameAudio on interaction
+//  - Expose tapped() and getPauseState() for GameScene state management
+//  - Support both standalone positioning and StatusBar-managed placement
 //
 
 import Foundation

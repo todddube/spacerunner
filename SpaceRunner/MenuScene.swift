@@ -2,8 +2,20 @@
 //  MenuScene.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Main menu scene with title, play button, and author information.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Original main menu scene. Displays the animated GameTitle logo, the rotating
+//  GameTitleShip, a PlayButton, and fading author / version labels at the bottom.
+//  Tapping the PlayButton transitions to GameScene.
+//
+//  RESPONSIBILITIES
+//  - setupMenuScene()            — add all child nodes and start background music
+//  - animateBottomLabels(…)      — staggered fade-in with breathing loop for
+//      the author and version labels; positions respect device safe-area insets
+//  - touchesBegan(…)             — detect PlayButton tap and call loadGameScene()
+//  - loadGameScene()             — push GameScene with a black fade transition
+//  NOTE: EnhancedMenuScene is the modern replacement offering richer visuals.
 //
 
 import Foundation
@@ -58,9 +70,19 @@ class MenuScene:SKScene {
         authorLabel.horizontalAlignmentMode = .center
         versionLabel.horizontalAlignmentMode = .center
         
-        // Position labels at bottom center with proper spacing
-        authorLabel.position = CGPoint(x: kViewSize.width * 0.50, y: 45)
-        versionLabel.position = CGPoint(x: kViewSize.width * 0.50, y: 20)
+        // Position labels above the home indicator / safe area using the window inset
+        let safeBottom: CGFloat = {
+            if let window = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .flatMap({ $0.windows })
+                .first(where: { $0.isKeyWindow }) {
+                return window.safeAreaInsets.bottom
+            }
+            return kDeviceTablet ? 10 : 20
+        }()
+        let baseY = safeBottom + 8
+        authorLabel.position = CGPoint(x: kViewSize.width * 0.50, y: baseY + 22)
+        versionLabel.position = CGPoint(x: kViewSize.width * 0.50, y: baseY + 4)
         
         // Set initial state for animation (fade in from bottom)
         authorLabel.alpha = 0.0

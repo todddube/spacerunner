@@ -2,43 +2,55 @@
 //  Math.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Mathematical utility functions for smoothing, random generation, and angle calculations.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Lightweight math helpers used throughout the game. Uses GameplayKit's
+//  seeded random sources for reproducible, high-quality randomness — a
+//  best practice for iOS 26 / Swift 6 game development.
+//
+//  CONTENTS
+//  - Smooth(_:_:filter:)           — linear interpolation (lerp) between two CGFloat values
+//  - RandomIntegerBetween(min:max:) — uniform random Int in [min, max] via GameplayKit
+//  - RandomFloatRange(min:max:)    — uniform random CGFloat in [min, max] via GameplayKit
+//  - DegressToRadians(degrees:)   — convert degrees → radians
+//  - AngleToRotate(…)             — heading angle between two CGPoints
 //
 
 import Foundation
 import SpriteKit
+import GameplayKit
 
-func Smooth(startPoint:CGFloat, endPoint: CGFloat, filter: CGFloat)->CGFloat {
+// MARK: - Shared random source (arc4random-seeded, cryptographic quality)
+nonisolated(unsafe) let sharedRandom = GKARC4RandomSource()
+
+// MARK: - Interpolation
+func Smooth(startPoint: CGFloat, endPoint: CGFloat, filter: CGFloat) -> CGFloat {
     return (startPoint * (1 - filter)) + endPoint * filter
 }
 
-func RandomIntegerBetween(min:Int, max: Int) -> Int {
-    return Int(UInt32(min) + arc4random_uniform(UInt32(max - min + 1)))
+// MARK: - Integer random [min, max] inclusive
+func RandomIntegerBetween(min: Int, max: Int) -> Int {
+    guard max >= min else { return min }
+    let distribution = GKRandomDistribution(randomSource: sharedRandom, lowestValue: min, highestValue: max)
+    return distribution.nextInt()
 }
 
-//func RandomFloatRange(min:CGFloat, max:CGFloat) -> CGFloat {
-//    return CGFloat(Float(arc4random()) / 0xFFFFFF) * (max - min) + min
-//}
+// MARK: - Float random [min, max]
+func RandomFloatRange(min: CGFloat, max: CGFloat) -> CGFloat {
+    guard max > min else { return min }
+    let t = CGFloat(sharedRandom.nextUniform())
+    return min + t * (max - min)
+}
 
-// New random float May 2020
-// Article: https://stackoverflow.com/questions/25050309/swift-random-float-between-0-and-1/33078096
-func RandomFloatRange(min:CGFloat, max:CGFloat) -> CGFloat {
-    // return CGFloat(arc4random() / 0xFFFFFFFF) * (max - min) + min
-    return CGFloat.random() * (max - min) + min
- }
-
+// MARK: - Angle conversions
 func DegressToRadians(degrees: CGFloat) -> CGFloat {
-    // return degrees * CGFloat(M_PI) / 180.0  // Deprecated Swift 4 09.27.17
     return degrees * CGFloat(Double.pi) / 180.0
 }
 
 func AngleToRotate(firstPostion firstPositon: CGPoint, secondPositon: CGPoint) -> CGFloat {
     let deltaX = Float(firstPositon.x - secondPositon.x)
     let deltaY = Float(firstPositon.y - secondPositon.y)
-    
     let angle = atan2f(deltaX, deltaY)
-    
     return CGFloat(angle) - DegressToRadians(degrees: 90.0)
-    
 }

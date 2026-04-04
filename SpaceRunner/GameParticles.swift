@@ -2,15 +2,29 @@
 //  GameParticles.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Particle effect system for engine trails, explosions, and background visual effects.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Factory and configuration layer for all SKEmitterNode particle effects.
+//  Centralises particle tuning so visual artists can adjust effects in one
+//  place without touching scene or game-object files.
+//
+//  CONTENTS
+//  - engineTrailOuter / engineTrailCore / engineTrailInner — three-layer
+//      player engine flame effects with distinct colours and intensities
+//  - explosion(at:)         — meteor hit burst (ExplosionParticle.sks)
+//  - starPickup(at:)        — star collection sparkle (StarParticle.sks)
+//  - backgroundStarfield()  — ambient deep-space particle field
+//  - Each factory method configures birth rate, lifetime, speed, and scale
+//      relative to kViewSize for device-adaptive appearance
 //
 
 import Foundation
 import SpriteKit
 
-let GameParticlesSharedInstance = GameParticles()
+@MainActor let GameParticlesSharedInstance = GameParticles()
 
+@MainActor
 class GameParticles {
     
     class var sharedInstance:GameParticles{

@@ -2,12 +2,38 @@
 //  GameAudio.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Modern audio engine with AVAudioEngine, spatial audio support, and proper session management for iOS 18+.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Full-featured audio manager built on AVAudioEngine. Pre-loads all music
+//  and sound-effect buffers at startup, converts them to the engine's native
+//  format to prevent static, and plays them through a pooled node system so
+//  multiple effects can overlap without dynamic node creation.
+//
+//  AUDIO GRAPH
+//  musicPlayerNode → musicMixer ─┐
+//                                 ├─→ mainMixerNode → outputNode
+//  effectsPlayerPool → effectsMixer ┘
+//
+//  PUBLIC API
+//  - initializeAudio()            — async setup; call once from AppDelegate
+//  - playBackgroundMusic(_:)      — loop GameMusic.mp3 through music path
+//  - pauseBackgroundMusic()       — pause without discarding buffer position
+//  - resumeBackgroundMusic()      — continue from paused position
+//  - stopBackgroundMusic()        — stop and reset music player
+//  - playSoundEffect(_:)          — fire-and-forget from the player node pool
+//  - setMusicVolume(_:)           — 0.0 – 1.0 master music volume
+//  - setEffectsVolume(_:)         — 0.0 – 1.0 master effects volume
+//  - handleAppBackground()        — pause music when app backgrounds
+//  - handleAppForeground()        — reconfigure session and resume music
+//
+//  SPATIAL EXTENSIONS  → see GameAudio+SpatialEffects.swift
+//
+//  REQUIRES iOS 18.0+  — @Observable, @MainActor, @preconcurrency AVFoundation
 //
 
 import Foundation
-import AVFoundation
+@preconcurrency import AVFoundation
 import OSLog
 import Observation
 
@@ -182,10 +208,12 @@ final class GameAudio {
             try file.read(into: inputBuffer)
             
             var error: NSError?
-            let status = converter.convert(to: outputBuffer, error: &error) { _, outStatus in
+            // Use explicit input handler without Sendable closure
+            let inputBlock: AVAudioConverterInputBlock = { _, outStatus in
                 outStatus.pointee = .haveData
                 return inputBuffer
             }
+            let status = converter.convert(to: outputBuffer, error: &error, withInputFrom: inputBlock)
             
             if let error = error {
                 logger.error("Audio conversion failed for \(track.fileName): \(error.localizedDescription)")
@@ -236,10 +264,12 @@ final class GameAudio {
             try file.read(into: inputBuffer)
             
             var error: NSError?
-            let status = converter.convert(to: outputBuffer, error: &error) { _, outStatus in
+            // Use explicit input handler without Sendable closure
+            let inputBlock: AVAudioConverterInputBlock = { _, outStatus in
                 outStatus.pointee = .haveData
                 return inputBuffer
             }
+            let status = converter.convert(to: outputBuffer, error: &error, withInputFrom: inputBlock)
             
             if let error = error {
                 logger.error("Audio conversion failed for \(effect.fileName): \(error.localizedDescription)")
@@ -328,9 +358,11 @@ final class GameAudio {
             return
         }
         
+        // Store reference to avoid Sendable closure capture
+        let nodeToReturn = playerNode
         playerNode.scheduleBuffer(buffer, at: nil) { [weak self] in
-            Task { @MainActor in
-                self?.returnPlayerNode(playerNode)
+            Task { @MainActor [weak self, nodeToReturn] in
+                self?.returnPlayerNode(nodeToReturn)
             }
         }
         

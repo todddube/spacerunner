@@ -2,8 +2,16 @@
 //  TouchCircle.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Visual feedback sprite that shows where the player has touched the screen.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Transient visual indicator that renders briefly at the touch point when the
+//  player taps or drags. Fades out automatically so it never clutters the HUD.
+//
+//  RESPONSIBILITIES
+//  - init()       — create a semi-transparent circle shape node at the touch location
+//  - show(at:)    — position the node and run a short fade-in + fade-out sequence
+//  - The circle is sized relative to kViewSize so it reads clearly on all devices
 //
 
 import Foundation

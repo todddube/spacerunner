@@ -2,8 +2,24 @@
 //  GameSettings.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Modern observable settings manager for high scores, streaks, and game statistics with reactive updates.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Observable singleton that persists and exposes the player's all-time records.
+//  Uses UserDefaults for durable storage and @Observable so SwiftUI / SpriteKit
+//  views can react to changes without explicit binding glue.
+//
+//  PERSISTED VALUES
+//  - bestScore   — highest single-run score ever achieved
+//  - bestStars   — most stars collected in a single run
+//  - bestStreak  — longest consecutive meteor-dodge streak
+//
+//  RESPONSIBILITIES
+//  - updateBestScore(_:)  / updateBestStars(_:) / updateBestStreak(_:)
+//      — compare new value against stored best and persist if higher
+//  - resetAllStats()      — wipe all persisted records (debug / test use)
+//
+//  REQUIRES iOS 18.0+  — uses @Observable and @MainActor
 //
 
 import Foundation

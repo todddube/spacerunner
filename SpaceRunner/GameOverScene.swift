@@ -2,8 +2,21 @@
 //  GameOverScene.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Game over scene displaying final scores and providing retry functionality.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  End-of-run screen shown after the player's ship is destroyed. Presents the
+//  animated GameOverTitle, a ScoreBoard with current-vs-best stats, the
+//  RetryButton, and a copyright label positioned above the safe-area bottom.
+//
+//  RESPONSIBILITIES
+//  - setupGameOverScene()    — add background, title, retry button, author label
+//  - setupScoreBoard(…)      — fetch best values from GameSettings and build the
+//      ScoreBoard node with current run data
+//  - touchesBegan(…)         — detect RetryButton tap and call loadGameScene()
+//  - loadGameScene()         — push a fresh GameScene with a short fade transition
+//  - loadMenuScene()         — return to MenuScene (currently unused, available
+//      for a future "back to menu" button)
 //
 
 import Foundation
@@ -53,11 +66,20 @@ class GameOverScene: SKScene {
         self.addChild(self.gameOverTitle)
         
         
-        // Add Author / Copyright Information
+        // Add Author / Copyright Information above safe area
         let authorLabel = fonts.createLabel(string: UIText.AuthorLabel, labelType: fontType)
         
         authorLabel.horizontalAlignmentMode = .center
-        authorLabel.position = CGPoint(x: kViewSize.width * 0.5, y: kViewSize.height * 0.05)
+        let safeBottom: CGFloat = {
+            if let window = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .flatMap({ $0.windows })
+                .first(where: { $0.isKeyWindow }) {
+                return window.safeAreaInsets.bottom
+            }
+            return kDeviceTablet ? 10 : 20
+        }()
+        authorLabel.position = CGPoint(x: kViewSize.width * 0.5, y: safeBottom + 20)
 
         
         self.addChild(authorLabel)

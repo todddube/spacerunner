@@ -2,8 +2,16 @@
 //  Background.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Animated scrolling background using particle effects to create the space environment.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Base scrolling space background rendered using a SpriteKit particle emitter.
+//  Serves as the deepest visual layer beneath ParallaxBackground and NebulaSystem.
+//
+//  RESPONSIBILITIES
+//  - Load and display the starfield particle emitter (.sks)
+//  - Position the emitter to fill the full screen at GameLayer.Background z-depth
+//  - Provide a solid deep-space colour fill behind the particle layer
 //
 
 import Foundation

@@ -2,8 +2,17 @@
 //  GameShaders.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Shader management system for visual effects like grayscale transitions.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Thin wrapper that loads and caches custom GLSL fragment shaders from the
+//  bundle, providing them as ready-to-use SKShader instances.
+//
+//  CONTENTS
+//  - grayscaleShader  — applies a luminance-weighted desaturation (Grayscale.fsh)
+//      used during game-over to drain the scene of colour
+//  - shaderNamed(_:)  — internal cache-and-load helper; returns nil if the
+//      shader source file is missing from the bundle
 //
 
 import Foundation
@@ -13,8 +22,9 @@ private class ShaderNames {
     class var GrayScale:String     {return "Grayscale.fsh"}
 }
 
-let GameShadersSharedInstance = GameShaders()
+@MainActor let GameShadersSharedInstance = GameShaders()
 
+@MainActor
 class GameShaders {
     
     class var sharedInstance:GameShaders {

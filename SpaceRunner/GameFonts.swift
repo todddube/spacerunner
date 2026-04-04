@@ -2,8 +2,27 @@
 //  GameFonts.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Modern font loading and text label creation system with iOS 18+ features including Dynamic Type support.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  Shared font manager and SKLabelNode factory. Registers the custom "editundo"
+//  typeface at launch and falls back to Helvetica-Bold if unavailable. All label
+//  sizes honour the user's Dynamic Type preference via UIContentSizeCategory.
+//
+//  LABEL TYPES
+//  .statusBar  — compact HUD text (score, stars, lives counter)
+//  .bonus      — floating score pop-ups and pickup indicators
+//  .message    — mid-game notification text
+//  .menu       — title screen and menu labels
+//
+//  RESPONSIBILITIES
+//  - createLabel(string:labelType:)      — build and return a configured SKLabelNode
+//  - scaledFontSize(for:)                — apply Dynamic Type scale factor to base size
+//  - observeContentSizeChanges()         — refresh cached scale on system font-size change
+//  - animateFloatingLabel(node:)         — return an SKAction sequence for score pop-ups
+//  - updateFontSizesForAccessibility()   — manual refresh trigger for accessibility events
+//
+//  REQUIRES iOS 18.0+  — uses @Observable, @MainActor, and modern concurrency
 //
 
 import Foundation
@@ -38,10 +57,10 @@ final class GameFonts {
     
     // Base font sizes (will be scaled based on Dynamic Type)
     private let baseFontSizes: [LabelType: (phone: CGFloat, pad: CGFloat)] = [
-        .statusBar: (phone: 16.0, pad: 24.0),
-        .bonus: (phone: 36.0, pad: 72.0),
-        .message: (phone: 24.0, pad: 48.0),
-        .menu: (phone: 24.0, pad: 48.0)
+        .statusBar: (phone: 14.0, pad: 18.0),   // status bar is compact — keep it tight
+        .bonus:     (phone: 22.0, pad: 32.0),   // floating score pop — readable but not giant
+        .message:   (phone: 18.0, pad: 26.0),   // in-game messages
+        .menu:      (phone: 20.0, pad: 28.0)    // menu labels
     ]
     
     private let logger = Logger(subsystem: "com.todddube.spacerunner", category: "GameFonts")

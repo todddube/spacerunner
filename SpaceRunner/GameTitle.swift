@@ -2,8 +2,16 @@
 //  GameTitle.swift
 //  SpaceRunner
 //
-//  Created by Todd Dube : 2025
-//  Purpose: Animated main title sprite that appears on the menu screen.
+//  © 2026 Todd Dube. All rights reserved.
+//
+//  PURPOSE
+//  "SPACE RUNNER" logo sprite that animates onto the main menu screen and
+//  provides a continuous scale-breathing effect to keep the scene lively.
+//
+//  RESPONSIBILITIES
+//  - Load the GameTitle texture scaled to 80 % of screen width
+//  - Animate entrance: fly in from above screen, then bounce-settle
+//  - Run a subtle continuous scale-pulse after arriving
 //
 
 import Foundation
