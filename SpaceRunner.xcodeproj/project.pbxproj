@@ -57,6 +57,7 @@
 		276F58FD2E80495A000A7D20 /* ModernStartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276F58FC2E80495A000A7D20 /* ModernStartButton.swift */; };
 		276F58FF2E80497B000A7D20 /* Player+EnhancedEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276F58FE2E80497B000A7D20 /* Player+EnhancedEffects.swift */; };
 		276F59012E804997000A7D20 /* StatusBar+GlassEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276F59002E804997000A7D20 /* StatusBar+GlassEffect.swift */; };
+		AA1MC0012EA000000001MC01 /* MotionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1MC0002EA000000001MC00 /* MotionController.swift */; };
 		276F59032E8049A6000A7D20 /* GameAudio+SpatialEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276F59022E8049A6000A7D20 /* GameAudio+SpatialEffects.swift */; };
 		276F59072E8049EC000A7D20 /* ENHANCED_GRAPHICS_README.md in Resources */ = {isa = PBXBuildFile; fileRef = 276F59062E8049EC000A7D20 /* ENHANCED_GRAPHICS_README.md */; };
 		277ADDF62E2C19260066E326 /* auto_increment_version.sh in Resources */ = {isa = PBXBuildFile; fileRef = 277ADDF42E2C19260066E326 /* auto_increment_version.sh */; };
@@ -149,6 +150,7 @@
 		276F58F22E8048DD000A7D20 /* NebulaSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NebulaSystem.swift; sourceTree = "<group>"; };
 		276F58F42E8048EF000A7D20 /* DynamicLighting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DynamicLighting.swift; sourceTree = "<group>"; };
 		276F58F62E8048FE000A7D20 /* CameraEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraEffects.swift; sourceTree = "<group>"; };
+		AA1MC0002EA000000001MC00 /* MotionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MotionController.swift; sourceTree = "<group>"; };
 		276F58F82E804920000A7D20 /* EnhancedParticleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhancedParticleManager.swift; sourceTree = "<group>"; };
 		276F58FA2E80493C000A7D20 /* AnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationController.swift; sourceTree = "<group>"; };
 		276F58FC2E80495A000A7D20 /* ModernStartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernStartButton.swift; sourceTree = "<group>"; };
@@ -242,6 +244,7 @@
 				276F58FE2E80497B000A7D20 /* Player+EnhancedEffects.swift */,
 				276F59002E804997000A7D20 /* StatusBar+GlassEffect.swift */,
 				276F59022E8049A6000A7D20 /* GameAudio+SpatialEffects.swift */,
+			AA1MC0002EA000000001MC00 /* MotionController.swift */,
 				276F59062E8049EC000A7D20 /* ENHANCED_GRAPHICS_README.md */,
 			);
 			path = SpaceRunner;
@@ -694,6 +697,7 @@
 				275F8ABE1CAED3C30081543A /* PauseButton.swift in Sources */,
 				2706E41F1C9E1AC20068CDAD /* AppDelegate.swift in Sources */,
 				276F59032E8049A6000A7D20 /* GameAudio+SpatialEffects.swift in Sources */,
+				AA1MC0012EA000000001MC01 /* MotionController.swift in Sources */,
 				27A12E7A248D2B7A00D23AAA /* GameMenuScene.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

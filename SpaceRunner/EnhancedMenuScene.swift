@@ -57,6 +57,9 @@ public class EnhancedMenuScene: SKScene {
     // MARK: - Constants
     private let fonts = GameFonts.shared
 
+    // MARK: - Delta Time Tracking
+    private var lastUpdateTime: TimeInterval = 0
+
     // MARK: - Init
     public required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -178,6 +181,26 @@ public class EnhancedMenuScene: SKScene {
         authorLabel.alpha = 0.0
         addChild(authorLabel)
 
+        // Control hint — TAP or TILT
+        let controlHint = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        controlHint.text = "Tap or tilt to navigate"
+        controlHint.fontSize = 16
+        controlHint.fontColor = SKColor.cyan.withAlphaComponent(0.75)
+        controlHint.horizontalAlignmentMode = .center
+        controlHint.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.18)
+        controlHint.alpha = 0.0
+        controlHint.name = "controlHint"
+        addChild(controlHint)
+
+        // Animate hint in after button appears and pulse it
+        let hintDelay = SKAction.wait(forDuration: 2.2)
+        let hintFadeIn = SKAction.fadeAlpha(to: 0.75, duration: 0.8)
+        let hintPulse = SKAction.repeatForever(SKAction.sequence([
+            SKAction.fadeAlpha(to: 0.4, duration: 1.8),
+            SKAction.fadeAlpha(to: 0.75, duration: 1.8)
+        ]))
+        controlHint.run(SKAction.sequence([hintDelay, hintFadeIn, hintPulse]))
+
         // Add subtle breathing animation to info labels
         setupInfoLabelAnimations()
     }
@@ -245,11 +268,15 @@ public class EnhancedMenuScene: SKScene {
 
     // MARK: - Update
     public override func update(_ currentTime: TimeInterval) {
-        // Update enhanced visual systems
-        parallaxBackground.update(deltaTime: 1.0/60.0, gameSpeed: 0.3)
-        nebulae.update(deltaTime: 1.0/60.0)
+        let deltaTime: TimeInterval = lastUpdateTime > 0
+            ? min(currentTime - lastUpdateTime, 1.0 / 30.0) // cap at 30 FPS floor
+            : 1.0 / 60.0
+        lastUpdateTime = currentTime
+
+        parallaxBackground.update(deltaTime: deltaTime, gameSpeed: 0.3)
+        nebulae.update(deltaTime: deltaTime)
         dynamicLighting.update(playerPosition: CGPoint(x: kViewSize.width / 2, y: kViewSize.height / 2))
-        cameraEffects.update(deltaTime: 1.0/60.0)
+        cameraEffects.update(deltaTime: deltaTime)
     }
 
     // MARK: - Touch Events

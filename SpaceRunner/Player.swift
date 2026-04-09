@@ -123,11 +123,30 @@ class Player: SKSpriteNode {
     func enableMovement() {
         self.canMove = true
     }
-    
+
     func disableMovement() {
         self.canMove = false
     }
-    
+
+    // MARK: - Tilt Navigation
+    /// Applies gyroscope tilt deltas to the target position each frame.
+    /// Works alongside touch input: touch sets an absolute target; tilt nudges it
+    /// continuously. Both inputs feed into the same lerp-smoothed movement system.
+    ///
+    /// - Parameters:
+    ///   - tiltX: Normalised roll tilt in [-1, 1]. Positive = phone tilted right.
+    ///   - tiltY: Normalised pitch tilt in [-1, 1]. Positive = phone tilted back.
+    ///   - deltaTime: Seconds elapsed since last frame.
+    ///   - sensitivity: Points per second at full tilt. Defaults to 320.
+    func applyTilt(tiltX: CGFloat, tiltY: CGFloat, deltaTime: TimeInterval, sensitivity: CGFloat = 320.0) {
+        guard canMove else { return }
+        let dx = tiltX * sensitivity * CGFloat(deltaTime)
+        let dy = tiltY * sensitivity * CGFloat(deltaTime)
+        let margin = size.width * 0.5
+        targetPosition.x = min(max(targetPosition.x + dx, margin), kViewSize.width - margin)
+        targetPosition.y = min(max(targetPosition.y + dy, touchOffset), kViewSize.height - margin)
+    }
+
     fileprivate func move() {
         let newX = Smooth(startPoint: self.position.x, endPoint: self.targetPosition.x, filter: self.filter)
         let newY = Smooth(startPoint: self.position.y, endPoint: self.targetPosition.y, filter: self.filter)

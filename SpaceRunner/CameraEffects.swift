@@ -75,15 +75,18 @@ class CameraEffects: NSObject {
     
     func performIntroTransition() async {
         guard let scene = gameScene else { return }
-        
-        // Start zoomed out and zoom in
-        scene.setScale(0.5)
-        
+
+        // Start slightly zoomed out for a subtle "zoom-in and settle" feel.
+        // Using 0.85 → 1.0 over 0.7 s keeps the intro snappy without feeling jarring.
+        scene.setScale(0.85)
+        scene.alpha = 0.0
+
         await withCheckedContinuation { continuation in
-            let zoomIn = SKAction.scale(to: 1.0, duration: 2.0)
+            let zoomIn = SKAction.scale(to: 1.0, duration: 0.7)
             zoomIn.timingMode = .easeOut
-            
-            scene.run(zoomIn) {
+            let fadeIn = SKAction.fadeIn(withDuration: 0.4)
+
+            scene.run(SKAction.group([zoomIn, fadeIn])) {
                 continuation.resume()
             }
         }

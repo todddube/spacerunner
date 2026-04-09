@@ -89,6 +89,9 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     // Animation Controllers
     private let animationController = AnimationController()
     private let particleManager = EnhancedParticleManager()
+
+    // Motion / tilt navigation
+    private let motionController = MotionController.shared
     
     private var lastUpdateTime: TimeInterval = 0.0
     private var frameCount: TimeInterval = 0.0
@@ -331,26 +334,63 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     
     private func createTutorialHint() -> SKNode {
         let container = SKNode()
-        
-        // Hand tap icon — scale to ~10% of screen width for consistent sizing across devices
-        let handTap = SKSpriteNode(imageNamed: SpriteName.HandTap)
-        let targetWidth = kViewSize.width * 0.10
-        let iconScale = targetWidth / max(handTap.size.width, 1)
-        handTap.setScale(iconScale)
+
+        // Hand tap icon — emoji label, no image asset required
+        let handTap = SKLabelNode(text: "👆")
+        handTap.fontSize = kViewSize.width * 0.10
+        handTap.horizontalAlignmentMode = .center
+        handTap.verticalAlignmentMode = .center
         handTap.alpha = 0.8
+        handTap.position = CGPoint(x: 0, y: 30)
         container.addChild(handTap)
-        
-        // Add subtle glow
-        let glow = handTap.copy() as! SKSpriteNode
+
+        // Glow behind icon
+        let glow = SKLabelNode(text: "👆")
+        glow.fontSize = handTap.fontSize * 1.2
+        glow.horizontalAlignmentMode = .center
+        glow.verticalAlignmentMode = .center
         glow.alpha = 0.3
-        glow.setScale(1.2)
         glow.zPosition = -1
         glow.run(SKAction.repeatForever(SKAction.sequence([
             SKAction.fadeAlpha(to: 0.5, duration: 1.0),
             SKAction.fadeAlpha(to: 0.1, duration: 1.0)
         ])))
         container.addChild(glow)
-        
+
+        // "TAP to steer" label
+        let tapLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        tapLabel.text = "TAP to steer"
+        tapLabel.fontSize = 18
+        tapLabel.fontColor = SKColor.white.withAlphaComponent(0.85)
+        tapLabel.horizontalAlignmentMode = .center
+        tapLabel.position = CGPoint(x: 0, y: -5)
+        container.addChild(tapLabel)
+
+        // Divider
+        let divider = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        divider.text = "— or —"
+        divider.fontSize = 14
+        divider.fontColor = SKColor.cyan.withAlphaComponent(0.6)
+        divider.horizontalAlignmentMode = .center
+        divider.position = CGPoint(x: 0, y: -26)
+        container.addChild(divider)
+
+        // "TILT phone to navigate" label
+        let tiltLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        tiltLabel.text = "TILT phone to navigate"
+        tiltLabel.fontSize = 18
+        tiltLabel.fontColor = SKColor.cyan.withAlphaComponent(0.85)
+        tiltLabel.horizontalAlignmentMode = .center
+        tiltLabel.position = CGPoint(x: 0, y: -48)
+        container.addChild(tiltLabel)
+
+        // Animate the tilt label with a subtle horizontal sway hint
+        let swayRight = SKAction.moveBy(x: 6, y: 0, duration: 0.9)
+        swayRight.timingMode = .easeInEaseOut
+        let swayLeft = SKAction.moveBy(x: -6, y: 0, duration: 0.9)
+        swayLeft.timingMode = .easeInEaseOut
+        tiltLabel.run(SKAction.repeatForever(SKAction.sequence([swayRight, swayLeft])))
+
         return container
     }
     
@@ -379,6 +419,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         player.startEnhancedEngineEffects()
         meteorController.startSendingMeteors()
         starController.startSendingStars()
+        motionController.startMotionUpdates()
         
         // Update dynamic lighting
         dynamicLighting.transitionToGameplay()
@@ -395,19 +436,21 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     
     private func pauseGameplay() {
         physicsWorld.speed = 0.0
-        meteorController.stopSendingMetors()  // No pause method, use stop
-        starController.stopSendingStars()     // No pause method, use stop
+        meteorController.stopSendingMetors()
+        starController.stopSendingStars()
+        motionController.stopMotionUpdates()
         audioManager.pauseBackgroundMusic()
     }
     
     private func resumeGameplay() {
         // Resume physics
         physicsWorld.speed = 1.0
-        
+
         // Resume gameplay systems
         player.enableMovement()
         meteorController.startSendingMeteors()
         starController.startSendingStars()
+        motionController.startMotionUpdates()
         audioManager.playBackgroundMusic()
         
         // Update UI
@@ -432,9 +475,12 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         meteorController.gameOver()
         starController.gameOver()
         
+        // Stop tilt controls
+        motionController.stopMotionUpdates()
+
         // Stop background animations
         parallaxBackground.stopScrolling()
-        
+
         // Dim lighting for dramatic effect
         dynamicLighting.transitionToGameOver()
         
@@ -487,6 +533,17 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         cameraEffects.update(deltaTime: deltaTime)
         particleManager.update(deltaTime: deltaTime)
         
+        // Apply tilt navigation (runs alongside touch — both feed targetPosition)
+        if motionController.isActive {
+            motionController.update()
+            player.applyTilt(
+                tiltX: motionController.tiltX,
+                tiltY: motionController.tiltY,
+                deltaTime: deltaTime,
+                sensitivity: motionController.sensitivity
+            )
+        }
+
         // Update game objects
         player.update()
         meteorController.update(delta: deltaTime)
