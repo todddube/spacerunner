@@ -35,10 +35,10 @@ class ModernStartButton: SKNode {
     private let glowNode = SKShapeNode()
     private let shimmerNode = SKSpriteNode()   // moving sweep highlight
     
-    // Responsive sizing: 42% of screen width, capped to reasonable bounds
+    // Responsive sizing: 34 % of screen width — more compact and fresh
     private var buttonSize: CGSize {
-        let width = min(max(kViewSize.width * 0.42, 180), 280)
-        let height = kDeviceTablet ? 64.0 : 52.0
+        let width = min(max(kViewSize.width * 0.34, 140), 210)
+        let height = kDeviceTablet ? 50.0 : 40.0
         return CGSize(width: width, height: height)
     }
     
@@ -58,20 +58,20 @@ class ModernStartButton: SKNode {
         let rect = CGRect(x: -size.width / 2, y: -size.height / 2,
                           width: size.width, height: size.height)
         
-        // Outer glow (drawn behind background)
+        // Outer glow ring — uses the game's cyan (Colors.Magic) palette
         glowNode.path = UIBezierPath(roundedRect: rect.insetBy(dx: -3, dy: -3),
                                      cornerRadius: cornerRadius + 3).cgPath
         glowNode.fillColor = .clear
-        glowNode.strokeColor = SKColor(red: 0.3, green: 0.6, blue: 1.0, alpha: 0.45)
-        glowNode.lineWidth = 4
+        glowNode.strokeColor = SKColor(red: 0.02, green: 0.95, blue: 0.87, alpha: 0.42)
+        glowNode.lineWidth = 3
         glowNode.zPosition = -1
         addChild(glowNode)
-        
-        // Glass background pill shape
+
+        // Slim pill background — dark teal tint, very translucent
         backgroundNode.path = UIBezierPath(roundedRect: rect, cornerRadius: cornerRadius).cgPath
-        backgroundNode.fillColor = SKColor(red: 0.1, green: 0.25, blue: 0.75, alpha: 0.78)
-        backgroundNode.strokeColor = SKColor(white: 1.0, alpha: 0.35)
-        backgroundNode.lineWidth = 1.5
+        backgroundNode.fillColor = SKColor(red: 0.0, green: 0.18, blue: 0.22, alpha: 0.68)
+        backgroundNode.strokeColor = SKColor(red: 0.02, green: 0.95, blue: 0.87, alpha: 0.28)
+        backgroundNode.lineWidth = 1.0
         backgroundNode.zPosition = 0
         addChild(backgroundNode)
         
@@ -87,11 +87,11 @@ class ModernStartButton: SKNode {
         shimmerNode.zPosition = 3   // above label so it reads as a surface reflection
         addChild(shimmerNode)
         
-        // Title label
-        titleLabel.text = "TAP TO START"
+        // Title label — small, spaced, cyan-tinted to match game palette
+        titleLabel.text = "TAP  TO  START"
         titleLabel.fontName = "AvenirNext-Bold"
-        titleLabel.fontSize = kDeviceTablet ? 22.0 : 17.0
-        titleLabel.fontColor = .white
+        titleLabel.fontSize = kDeviceTablet ? 16.0 : 12.0
+        titleLabel.fontColor = SKColor(red: 0.02, green: 0.95, blue: 0.87, alpha: 1.0)
         titleLabel.verticalAlignmentMode = .center
         titleLabel.horizontalAlignmentMode = .center
         titleLabel.zPosition = 2

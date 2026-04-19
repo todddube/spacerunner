@@ -55,6 +55,8 @@
 		276F58F92E804920000A7D20 /* EnhancedParticleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276F58F82E804920000A7D20 /* EnhancedParticleManager.swift */; };
 		276F58FB2E80493C000A7D20 /* AnimationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276F58FA2E80493C000A7D20 /* AnimationController.swift */; };
 		276F58FD2E80495A000A7D20 /* ModernStartButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276F58FC2E80495A000A7D20 /* ModernStartButton.swift */; };
+		C3216A47210C4A55BAE73735 /* ShipAssemblyAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AACC9DB9BF54E73B10CC6CD /* ShipAssemblyAnimation.swift */; };
+		6BACD46B47B141C3A5D682BC /* ShipBreakEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01861BA986194BD99B8E07E8 /* ShipBreakEffect.swift */; };
 		276F58FF2E80497B000A7D20 /* Player+EnhancedEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276F58FE2E80497B000A7D20 /* Player+EnhancedEffects.swift */; };
 		276F59012E804997000A7D20 /* StatusBar+GlassEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276F59002E804997000A7D20 /* StatusBar+GlassEffect.swift */; };
 		AA1MC0012EA000000001MC01 /* MotionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1MC0002EA000000001MC00 /* MotionController.swift */; };
@@ -154,6 +156,8 @@
 		276F58F82E804920000A7D20 /* EnhancedParticleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhancedParticleManager.swift; sourceTree = "<group>"; };
 		276F58FA2E80493C000A7D20 /* AnimationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnimationController.swift; sourceTree = "<group>"; };
 		276F58FC2E80495A000A7D20 /* ModernStartButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModernStartButton.swift; sourceTree = "<group>"; };
+		7AACC9DB9BF54E73B10CC6CD /* ShipAssemblyAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShipAssemblyAnimation.swift; sourceTree = "<group>"; };
+		01861BA986194BD99B8E07E8 /* ShipBreakEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShipBreakEffect.swift; sourceTree = "<group>"; };
 		276F58FE2E80497B000A7D20 /* Player+EnhancedEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Player+EnhancedEffects.swift"; sourceTree = "<group>"; };
 		276F59002E804997000A7D20 /* StatusBar+GlassEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusBar+GlassEffect.swift"; sourceTree = "<group>"; };
 		276F59022E8049A6000A7D20 /* GameAudio+SpatialEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameAudio+SpatialEffects.swift"; sourceTree = "<group>"; };
@@ -241,6 +245,8 @@
 				276F58F82E804920000A7D20 /* EnhancedParticleManager.swift */,
 				276F58FA2E80493C000A7D20 /* AnimationController.swift */,
 				276F58FC2E80495A000A7D20 /* ModernStartButton.swift */,
+				7AACC9DB9BF54E73B10CC6CD /* ShipAssemblyAnimation.swift */,
+				01861BA986194BD99B8E07E8 /* ShipBreakEffect.swift */,
 				276F58FE2E80497B000A7D20 /* Player+EnhancedEffects.swift */,
 				276F59002E804997000A7D20 /* StatusBar+GlassEffect.swift */,
 				276F59022E8049A6000A7D20 /* GameAudio+SpatialEffects.swift */,
@@ -665,6 +671,8 @@
 				274BFB2A1C9F5355001A6852 /* Background.swift in Sources */,
 				27B9C8E51CA59F30001CF0A0 /* GameSettings.swift in Sources */,
 				276F58FD2E80495A000A7D20 /* ModernStartButton.swift in Sources */,
+				C3216A47210C4A55BAE73735 /* ShipAssemblyAnimation.swift in Sources */,
+				6BACD46B47B141C3A5D682BC /* ShipBreakEffect.swift in Sources */,
 				2723BDB31CA18B57002F6EBC /* GameOverScene.swift in Sources */,
 				2792AD9C1CA1EF51001C4393 /* Player.swift in Sources */,
 				2706E4831C9EE6820068CDAD /* Constants.swift in Sources */,

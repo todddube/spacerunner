@@ -45,7 +45,8 @@ public class EnhancedMenuScene: SKScene {
     // MARK: - UI Components
     private var modernPlayButton: ModernStartButton!
     private var gameTitle: GameTitle!
-    private var gameTitleShip: GameTitleShip!
+    private var gameTitleShip: GameTitleShip?
+    private var shipAssembly: ShipAssemblyAnimation?
 
     // MARK: - Info Labels
     private var authorLabel: SKLabelNode!
@@ -120,14 +121,8 @@ public class EnhancedMenuScene: SKScene {
         gameTitle = GameTitle()
         addChild(gameTitle)
 
-        // Animated title ship
-        gameTitleShip = GameTitleShip()
-        addChild(gameTitleShip)
-
-        // Start ship rotation
-        gameTitleShip.run(SKAction.repeatForever(
-            SKAction.rotate(byAngle: CGFloat.pi * 2, duration: 12.0)
-        ), withKey: "menuRotation")
+        // Ship assembly animation — added to scene inside animateSceneIntro()
+        shipAssembly = ShipAssemblyAnimation()
     }
 
     private func setupGlassEffects() {
@@ -231,6 +226,13 @@ public class EnhancedMenuScene: SKScene {
     private func animateSceneIntro() {
         // Camera intro effect - using available shake for dramatic intro
         cameraEffects.performGameStartShake()
+
+        // Ship assembly — parts fly in from the four corners ~0.7 s after the
+        // camera shake fires, landing at 57 % screen height (between title and button).
+        let assemblyPos = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.57)
+        run(SKAction.wait(forDuration: 0.7)) {
+            self.shipAssembly?.runAssembly(in: self, at: assemblyPos)
+        }
 
         // Glass container animation
         let glassDelay = SKAction.wait(forDuration: 1.5)

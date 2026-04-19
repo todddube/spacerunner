@@ -662,17 +662,28 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
             performExplosionEffect(at: meteorNode.position)
             performScreenFlash()
             cameraEffects.performImpactShake()
-            
+
+            // Ship break effect — only fires on a real (non-immune) hit.
+            if !player.immune && player.lives > 0 {
+                if player.lives == 1 {
+                    // Last life: permanent disassembly explosion
+                    ShipBreakEffect.playDestroyEffect(for: player, in: self)
+                } else {
+                    // Surviving hit: quick scatter and snap back
+                    ShipBreakEffect.playHitEffect(for: player, in: self)
+                }
+            }
+
             // Update game state
             player.hitMeteor()
             meteorNode.hitMeteor()
-            
+
             // Enhanced audio with spatial effects
             audioManager.playSoundEffect(.explosion, at: meteorNode.position)
-            
+
             // Dynamic lighting effect
             dynamicLighting.flashAt(meteorNode.position, color: .red, intensity: 2.0)
-            
+
             logger.info("Player hit by meteor with enhanced effects")
         }
     }
