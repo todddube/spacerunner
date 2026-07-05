@@ -119,6 +119,9 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     // Double-tap tracking for dash
     private var lastTapTime: TimeInterval = 0
     private var lastTapLocation: CGPoint = .zero
+
+    // Touch-circle toggle — tap rect in scene coordinates, active during tutorial
+    private var touchToggleRect: CGRect = .zero
     
     private let logger = Logger(subsystem: "com.todddube.spacerunner", category: "GameScene")
     
@@ -326,13 +329,87 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         hint.position = CGPoint(x: size.width / 2, y: size.height * 0.3)
         hint.name = "tutorialHint"
         interfaceNode.addChild(hint)
-        
-        // Animate the hint
+
         let pulse = SKAction.sequence([
             SKAction.scale(to: 1.1, duration: 0.8),
             SKAction.scale(to: 0.9, duration: 0.8)
         ])
         hint.run(SKAction.repeatForever(pulse))
+
+        // Touch-circle toggle pill — bottom of screen
+        addTouchToggle()
+    }
+
+    // MARK: - Touch-Circle Toggle
+
+    private func addTouchToggle() {
+        let pill = buildTouchTogglePill()
+        let pillY = kViewSize.height * 0.10
+        pill.position = CGPoint(x: kViewSize.width / 2, y: pillY)
+        pill.name = "touchToggle"
+        pill.zPosition = GameLayer.Interface
+        pill.alpha = 0
+        interfaceNode.addChild(pill)
+        pill.run(SKAction.fadeIn(withDuration: 0.35))
+
+        let pillW: CGFloat = 210, pillH: CGFloat = 40
+        touchToggleRect = CGRect(
+            x: kViewSize.width / 2 - pillW / 2,
+            y: pillY - pillH / 2,
+            width: pillW, height: pillH
+        )
+    }
+
+    private func buildTouchTogglePill() -> SKNode {
+        let isOn = gameSettings.showTouchCircles
+        let w: CGFloat = 210, h: CGFloat = 40, r: CGFloat = h / 2
+
+        let container = SKNode()
+
+        // Background capsule
+        let bg = SKShapeNode(rect: CGRect(x: -w / 2, y: -h / 2, width: w, height: h),
+                             cornerRadius: r)
+        bg.fillColor = isOn
+            ? SKColor(red: 0.00, green: 0.90, blue: 1.00, alpha: 0.15)
+            : SKColor(white: 1.0, alpha: 0.06)
+        bg.strokeColor = isOn
+            ? SKColor(red: 0.00, green: 0.90, blue: 1.00, alpha: 0.75)
+            : SKColor(white: 1.0, alpha: 0.20)
+        bg.lineWidth = 1.2
+        container.addChild(bg)
+
+        // Icon dot + label
+        let dot   = isOn ? "●" : "○"
+        let label = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        label.text = "\(dot)  TOUCH CIRCLES"
+        label.fontSize = 14
+        label.fontColor = isOn
+            ? SKColor(red: 0.00, green: 0.90, blue: 1.00, alpha: 1.0)
+            : SKColor(white: 0.55, alpha: 1.0)
+        label.verticalAlignmentMode   = .center
+        label.horizontalAlignmentMode = .center
+        container.addChild(label)
+
+        return container
+    }
+
+    private func refreshTouchToggle() {
+        guard let old = interfaceNode.childNode(withName: "touchToggle") else { return }
+        let pos = old.position
+        old.removeFromParent()
+
+        let pill = buildTouchTogglePill()
+        pill.position = pos
+        pill.name = "touchToggle"
+        pill.zPosition = GameLayer.Interface
+        interfaceNode.addChild(pill)
+
+        // Quick bounce
+        pill.setScale(0.88)
+        pill.run(SKAction.sequence([
+            SKAction.scale(to: 1.10, duration: 0.10),
+            SKAction.scale(to: 1.00, duration: 0.08)
+        ]))
     }
     
     private func createTutorialHint() -> SKNode {
@@ -402,13 +479,16 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         startButton.hide(with: .scaleDown)
         statusBar.show(with: .slideFromTop)
         
-        // Remove tutorial hints
-        interfaceNode.children.filter { $0.name == "tutorialHint" }.forEach { node in
-            node.run(SKAction.sequence([
-                SKAction.fadeOut(withDuration: 0.3),
-                SKAction.removeFromParent()
-            ]))
-        }
+        // Remove tutorial hints and toggle
+        interfaceNode.children
+            .filter { $0.name == "tutorialHint" || $0.name == "touchToggle" }
+            .forEach { node in
+                node.run(SKAction.sequence([
+                    SKAction.fadeOut(withDuration: 0.3),
+                    SKAction.removeFromParent()
+                ]))
+            }
+        touchToggleRect = .zero
         
         // Resume physics with smooth acceleration
         let accelerate = SKAction.customAction(withDuration: 1.0) { [weak self] _, elapsedTime in
@@ -751,7 +831,14 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     }
     
     private func handleTutorialTouch(at location: CGPoint) {
-        // Use the button's own responsive tap rect (accounts for dynamic sizing)
+        // Touch-circle toggle — check before start button so small pill is reliably tappable
+        if touchToggleRect.contains(location) {
+            gameSettings.toggleTouchCircles()
+            refreshTouchToggle()
+            audioManager.playSoundEffect(.buttonTap)
+            return
+        }
+
         if startButton.tapRect.contains(location) {
             audioManager.playSoundEffect(.buttonTap)
             setCurrentPhase(.running)

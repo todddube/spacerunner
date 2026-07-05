@@ -121,13 +121,13 @@ class Player: SKSpriteNode {
     
     // MARK: - Movement
     func updateTargetLocation(newLocation: CGPoint) {
-        // set the targetLocation to the newLocation with the Y position adjusted by touchOffset
         self.targetPosition = CGPoint(x: newLocation.x, y: newLocation.y + self.touchOffset)
-        
-        // Draw the touch circle
-        let touchCircle = TouchCircle()
-        self.parent?.addChild(touchCircle)
-        touchCircle.animateTouchCircle(atPosition: self.targetPosition)
+
+        if GameSettings.shared.showTouchCircles {
+            let touchCircle = TouchCircle()
+            self.parent?.addChild(touchCircle)
+            touchCircle.animateTouchCircle(atPosition: self.targetPosition)
+        }
     }
     
     // MARK: - Enable/Disable Movement
