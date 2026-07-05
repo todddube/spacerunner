@@ -8,6 +8,12 @@ A fast-paced iOS space endless runner built with SpriteKit, targeting iOS 18+.
 
 ---
 
+## Screenshots
+
+| Main Menu | Gameplay |
+|:---:|:---:|
+| [<img src="screenshots/menu.png" width="220" alt="Main Menu">](screenshots/menu.png) | [<img src="screenshots/gameplay.jpeg" width="220" alt="Gameplay">](screenshots/gameplay.jpeg) |
+
 ## Overview
 
 SpaceRunner is an arcade endless runner where you pilot a spaceship through an ever-thickening field of meteors, collect stars, and chase high scores. The game features a cinematic ship-assembly intro, a top-of-screen glass HUD, a dash mechanic, power-ups, and a full enhanced-graphics pipeline built on top of SpriteKit.

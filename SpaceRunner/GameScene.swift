@@ -94,6 +94,11 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     private let powerUpController = PowerUpController()
     private var statusBar: StatusBar!
 
+    // Pause overlay
+    private var pauseOverlay: SKNode?
+    private var pauseResumeRect: CGRect = .zero
+    private var pauseMenuRect:   CGRect = .zero
+
     // Progression & boss wave
     private var currentTier: Int = 1
     private var bossWaveActive: Bool = false
@@ -528,24 +533,114 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         powerUpController.stopSpawning()
         motionController.stopMotionUpdates()
         audioManager.pauseBackgroundMusic()
+        showPauseOverlay()
     }
 
     private func resumeGameplay() {
-        // Resume physics
-        physicsWorld.speed = 1.0
+        hidePauseOverlay()
 
-        // Resume gameplay systems
+        physicsWorld.speed = 1.0
         player.enableMovement()
         meteorController.startSendingMeteors()
         starController.startSendingStars()
         powerUpController.startSpawning()
         motionController.startMotionUpdates()
         audioManager.playBackgroundMusic()
-        
-        // Update UI
         updateStatusBar()
     }
     
+    // MARK: - Pause Overlay
+
+    private func showPauseOverlay() {
+        let overlay = SKNode()
+        overlay.zPosition = GameLayer.Interface + 10
+        overlay.name = "pauseOverlay"
+
+        // Dimmed backdrop
+        let backdrop = SKSpriteNode(color: UIColor.black.withAlphaComponent(0.62), size: kViewSize)
+        backdrop.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height / 2)
+        overlay.addChild(backdrop)
+
+        let cx = kViewSize.width / 2
+        let cy = kViewSize.height / 2
+
+        // "PAUSED" label
+        let titleLbl = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        titleLbl.text      = "⏸  PAUSED"
+        titleLbl.fontSize  = 26
+        titleLbl.fontColor = UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 1.0)
+        titleLbl.horizontalAlignmentMode = .center
+        titleLbl.verticalAlignmentMode   = .center
+        titleLbl.position = CGPoint(x: cx, y: cy + 68)
+        overlay.addChild(titleLbl)
+
+        // Shared button geometry
+        let btnW: CGFloat = 210
+        let btnH: CGFloat = 52
+        let cornerR: CGFloat = btnH / 2
+
+        // — RESUME button —
+        let resumeY = cy + 10
+        let resumeBg = SKShapeNode(
+            rect: CGRect(x: cx - btnW/2, y: resumeY - btnH/2, width: btnW, height: btnH),
+            cornerRadius: cornerR)
+        resumeBg.fillColor   = UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 0.18)
+        resumeBg.strokeColor = UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 0.80)
+        resumeBg.lineWidth   = 1.5
+        overlay.addChild(resumeBg)
+
+        let resumeLbl = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        resumeLbl.text      = "▶   RESUME"
+        resumeLbl.fontSize  = 18
+        resumeLbl.fontColor = UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 1.0)
+        resumeLbl.horizontalAlignmentMode = .center
+        resumeLbl.verticalAlignmentMode   = .center
+        resumeLbl.position = CGPoint(x: cx, y: resumeY)
+        overlay.addChild(resumeLbl)
+
+        pauseResumeRect = CGRect(x: cx - btnW/2, y: resumeY - btnH/2, width: btnW, height: btnH)
+
+        // — MENU button —
+        let menuY = cy - 58
+        let menuBg = SKShapeNode(
+            rect: CGRect(x: cx - btnW/2, y: menuY - btnH/2, width: btnW, height: btnH),
+            cornerRadius: cornerR)
+        menuBg.fillColor   = UIColor.white.withAlphaComponent(0.06)
+        menuBg.strokeColor = UIColor.white.withAlphaComponent(0.35)
+        menuBg.lineWidth   = 1.5
+        overlay.addChild(menuBg)
+
+        let menuLbl = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        menuLbl.text      = "⌂   MAIN MENU"
+        menuLbl.fontSize  = 18
+        menuLbl.fontColor = UIColor.white.withAlphaComponent(0.85)
+        menuLbl.horizontalAlignmentMode = .center
+        menuLbl.verticalAlignmentMode   = .center
+        menuLbl.position = CGPoint(x: cx, y: menuY)
+        overlay.addChild(menuLbl)
+
+        pauseMenuRect = CGRect(x: cx - btnW/2, y: menuY - btnH/2, width: btnW, height: btnH)
+
+        // Fade in
+        overlay.alpha = 0
+        addChild(overlay)
+        pauseOverlay = overlay
+        overlay.run(.fadeIn(withDuration: 0.20))
+    }
+
+    private func hidePauseOverlay() {
+        pauseOverlay?.removeFromParent()
+        pauseOverlay    = nil
+        pauseResumeRect = .zero
+        pauseMenuRect   = .zero
+    }
+
+    private func returnToMenu() {
+        hidePauseOverlay()
+        let menu = EnhancedMenuScene(size: kViewSize)
+        view?.presentScene(menu, transition: SKTransition.fade(with: .black, duration: 0.5))
+    }
+
     private func endGame() {
         physicsWorld.speed = 0.0
         meteorController.stopSendingMetors()
@@ -587,6 +682,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     }
     
     private func performGameOverEffects() {
+        hidePauseOverlay()
         // Dramatic death flash
         performScreenFlash(color: .white, intensity: 0.6)
 
@@ -881,15 +977,18 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     }
     
     private func handlePausedTouch(at location: CGPoint) {
-        // Pause button tap: use tapped() so it plays sound + swaps texture back to pause icon
-        if statusBar.pauseButtonTapRect.contains(location) {
-            statusBar.pauseButton.tapped()
-        } else {
-            // Tap anywhere else to resume — reset icon silently
-            statusBar.pauseButton.resetToPlayIcon()
+        if pauseMenuRect.contains(location) {
+            // MENU button — go back to main menu
             audioManager.playSoundEffect(.buttonTap)
+            statusBar.pauseButton.resetToPlayIcon()
+            returnToMenu()
+        } else if pauseResumeRect.contains(location) || statusBar.pauseButtonTapRect.contains(location) {
+            // RESUME button or pause-button tap — resume game
+            audioManager.playSoundEffect(.buttonTap)
+            statusBar.pauseButton.resetToPlayIcon()
+            setCurrentPhase(.running)
         }
-        setCurrentPhase(.running)
+        // Taps on the dark backdrop do nothing — user must choose a button
     }
     
     // MARK: - Physics Contact
