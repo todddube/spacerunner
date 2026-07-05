@@ -249,11 +249,11 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         startButton.setupGlassEffect()
         interfaceNode.addChild(startButton)
         
-        // Setup status bar with enhanced visuals
-        statusBar = StatusBar(lives: gameState.lives, score: gameState.score, stars: gameState.starsCollected)
+        // Setup status bar — top-of-screen glass HUD
+        let safeAreaTop = self.view?.safeAreaInsets.top ?? 44
+        statusBar = StatusBar(lives: gameState.lives, score: gameState.score, stars: gameState.starsCollected, safeAreaTop: safeAreaTop)
         statusBar.position = CGPoint.zero
         statusBar.zPosition = GameLayer.Interface
-        statusBar.applyGlassEffect()
         interfaceNode.addChild(statusBar)
         
         // Add ambient UI animations
@@ -847,14 +847,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     
     private func handleGameplayTouch(at location: CGPoint) {
         // Check if pause button was tapped
-        let pauseButtonScenePosition = convert(statusBar.pauseButton.position, from: statusBar)
-        let pauseButtonFrame = CGRect(
-            x: pauseButtonScenePosition.x - statusBar.pauseButton.size.width / 2,
-            y: pauseButtonScenePosition.y - statusBar.pauseButton.size.height / 2,
-            width: statusBar.pauseButton.size.width,
-            height: statusBar.pauseButton.size.height
-        )
-        if pauseButtonFrame.contains(location) {
+        if statusBar.pauseButtonTapRect.contains(location) {
             statusBar.pauseButton.tapped()
             setCurrentPhase(.paused)
             return

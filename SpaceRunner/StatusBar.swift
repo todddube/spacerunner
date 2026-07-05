@@ -5,23 +5,26 @@
 //  © 2026 Todd Dube. All rights reserved.
 //
 //  PURPOSE
-//  Persistent heads-up display rendered at the bottom of the gameplay screen.
-//  Shows the player's current score, remaining lives, stars collected, and the
-//  pause/resume toggle button in a compact dark glass strip.
+//  Compact top-of-screen HUD that shows game state in a dark glass strip pinned
+//  below the device safe area (Dynamic Island / notch / status bar).
 //
-//  RESPONSIBILITIES
-//  - setupStatusBarBackground()     — create the dark glass background bar sized to
-//      kViewSize.width, respecting device safe-area bottom insets
-//  - setupStatusBarScore(score:)    — render score label at the right edge of the bar
-//  - setupStatusBarStarsCollected() — render rotating star icon + count at left edge
-//  - updateLives(lives:)            — rebuild life-icon row in the centre of the bar;
-//      icons are sized proportionally to bar height (60 %) for any device
-//  - setupPauseButton()             — embed and scale the PauseButton to 62 % of bar height
-//  - updateScore(score:)            — refresh score label text in real time
-//  - updateStarsCollected(…)        — refresh star count + animate bounce
-//  - reset()                        — restore all displays to initial game values
-//  - calculateBottomPosition()      — uses window.safeAreaInsets for precise placement
-//  - Glass/animation extensions in StatusBar+GlassEffect.swift
+//  LAYOUT  (left → right)
+//  [❚❚ pause] [♥♥♥ lives] [   score   ] [★ stars] [T1] [●]
+//
+//  The glass background extends from the top of the safe area down to the
+//  bottom edge of the content strip, so it merges with the system status bar
+//  area and leaves gameplay space clear below.
+//
+//  PUBLIC API
+//  - init(lives:score:stars:safeAreaTop:)  — build and lay out the HUD
+//  - updateScore(_:)                       — refresh score label
+//  - updateLives(_:)                       — rebuild life icons
+//  - updateStarsCollected(_:)              — refresh star count + bounce
+//  - updateTier(_:)                        — color-coded tier badge
+//  - updatePowerUpStatus(shield:magnet:slowMo:) — pulsing power-up dot
+//  - pauseButtonTapRect                    — CGRect in statusBar's coordinate space
+//  - show(with:) / hide(with:)             — entrance/exit animations (extension)
+//  - reset()                               — restore to run-start values
 //
 
 import Foundation
@@ -29,465 +32,292 @@ import SpriteKit
 import UIKit
 
 class StatusBar: SKNode {
-    
-    // MARK: - Private class variables
-    var statusBarBackground = SKSpriteNode()
-    fileprivate var scoreLabel = SKLabelNode()
-    fileprivate var starsCollectedIcon = SKSpriteNode()
-    fileprivate var starsCollectedLabel = SKLabelNode()
-    
-    // MARK: Public class constants
-    internal let pauseButton = PauseButton()
-    
-    // MARK: - Init
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-    
-    override init() {
-        super.init()
-    }
-    
-    convenience init(lives: Int, score: Int, stars: Int) {
-        self.init()
-        
-        // print("🔥 StatusBar: Initializing with lives: \(lives), score: \(score), stars: \(stars)")
-        
-        self.setupStatusBar()
-        self.setupStatusBarBackground()
-        self.setupStatusBarScore(score: score)
-        self.updateLives(lives: lives)
-        self.setupStatusBarStarsCollected(collected: stars)
-        self.setupPauseButton()
-        self.setupTierAndPowerUpIndicators()
 
-        // Ensure StatusBar appears above game elements
-        self.zPosition = 100
-        
-        // print("🔥 StatusBar: Initialization complete! Position: \(self.position), zPosition: \(self.zPosition)")
-        // print("🔥 StatusBar: Background size: \(self.statusBarBackground.size), alpha: \(self.statusBarBackground.alpha)")
-    }
-    
-    // MARK: - Setup
-    fileprivate func setupStatusBar() {
-        
-    }
-    
-    fileprivate func setupStatusBarBackground() {
-        // Calculate sleek status bar height - optimized for modern devices
-        let statusBarHeight: CGFloat = kDeviceTablet ? 50.0 : 40.0
-        let statusBarBackgroundSize = CGSize(width: kViewSize.width, height: statusBarHeight)
-    
-        // Create sleek space-themed gradient background
-        let backgroundNode = createGradientBackground(size: statusBarBackgroundSize)
-        self.statusBarBackground = backgroundNode
-        
-        // Make the anchorPoint 0,0 so it is positioned using the lower left corner
-        self.statusBarBackground.anchorPoint = CGPoint.zero
-        
-        // Position at bottom of screen just above the edge
-        let bottomPosition = calculateBottomPosition(statusBarHeight: statusBarHeight)
-        self.statusBarBackground.position = CGPoint(x: 0, y: bottomPosition)
-        
-        // Add modern edge glow effect
-        let glowEffect = createEdgeGlow(size: statusBarBackgroundSize)
-        self.statusBarBackground.addChild(glowEffect)
+    // MARK: - Layout constants (set during init)
+    private var barY: CGFloat = 0           // statusBar-space Y of bar bottom edge
+    private var contentCenterY: CGFloat = 0 // Y of element center row
+    private var contentHeight: CGFloat = 38 // visual strip below safe area
 
-        // Add statusBarBackground to the StatusBar node
-        self.addChild(self.statusBarBackground)
-    }
-    
-    private func calculateBottomPosition(statusBarHeight: CGFloat) -> CGFloat {
-        if kDeviceTablet {
-            // iPad - position just above bottom edge with padding
-            return 10
-        } else {
-            // Try to get actual safe area from the scene's view
-            var actualSafeAreaBottom: CGFloat = 0
-            
-            if let scene = self.scene,
-               let view = scene.view,
-               let window = view.window {
-                let safeAreaInsets = window.safeAreaInsets
-                actualSafeAreaBottom = safeAreaInsets.bottom
-                print("📱 StatusBar: Actual safe area bottom: \(actualSafeAreaBottom)")
-            }
-            
-            // If we can't get actual safe area, fall back to device detection
-            if actualSafeAreaBottom == 0 {
-                actualSafeAreaBottom = detectSafeAreaBottom()
-            }
-            
-            // Position StatusBar above the safe area with some padding
-            let calculatedBottom = actualSafeAreaBottom + 8
-            
-            // Debug logging for safe area calculations
-            print("📱 StatusBar: Using safe area bottom: \(actualSafeAreaBottom), calculated position: \(calculatedBottom)")
-            
-            return calculatedBottom
-        }
-    }
-    
-    private func detectSafeAreaBottom() -> CGFloat {
-        let screenHeight = kViewSize.height
-        let screenWidth = kViewSize.width
-        let aspectRatio = screenHeight / screenWidth
-        
-        // Safe area bottom insets for different iPhone models
-        let safeAreaInset: CGFloat
-        
-        // iPhone with Face ID (X and newer) - have home indicator
-        if aspectRatio > 2.0 {
-            safeAreaInset = 34 // Standard bottom safe area for Face ID devices
-        }
-        // iPhone with home button (8 and older) - no home indicator
-        else {
-            safeAreaInset = 0 // No bottom safe area
-        }
-        
-        print("📱 StatusBar: Device detection - Screen: \(screenWidth)x\(screenHeight), ratio: \(aspectRatio), bottom inset: \(safeAreaInset)")
-        
-        return safeAreaInset
-    }
-    
-    // MARK: - Modern Visual Effects
-    private func createGradientBackground(size: CGSize) -> SKSpriteNode {
-        // Create modern grayscale background with elegant transparency
-        let primaryColor = SKColor(white: 0.12, alpha: 0.95) // Dark charcoal gray
-        let background = SKSpriteNode(color: primaryColor, size: size)
-        
-        // Add subtle texture overlay for depth using light gray
-        let textureOverlay = SKSpriteNode(color: SKColor(white: 0.85, alpha: 0.04), size: size)
-        textureOverlay.anchorPoint = CGPoint.zero
-        textureOverlay.blendMode = .add
-        background.addChild(textureOverlay)
-        
-        return background
-    }
-    
-    private func createEdgeGlow(size: CGSize) -> SKNode {
-        let glowContainer = SKNode()
-        
-        // Top edge glow - bright white accent
-        let topGlow = SKSpriteNode(color: SKColor(white: 0.9, alpha: 0.7), 
-                                 size: CGSize(width: size.width, height: 1.5))
-        topGlow.anchorPoint = CGPoint(x: 0, y: 0)
-        topGlow.position = CGPoint(x: 0, y: size.height - 1.5)
-        topGlow.blendMode = .add
-        
-        // Bottom edge glow - soft gray
-        let bottomGlow = SKSpriteNode(color: SKColor(white: 0.6, alpha: 0.4), 
-                                    size: CGSize(width: size.width, height: 1.0))
-        bottomGlow.anchorPoint = CGPoint(x: 0, y: 0)
-        bottomGlow.position = CGPoint(x: 0, y: 0)
-        bottomGlow.blendMode = .add
-        
-        glowContainer.addChild(topGlow)
-        glowContainer.addChild(bottomGlow)
-        
-        return glowContainer
-    }
-    
-    fileprivate func setupStatusBarStarsCollected(collected: Int) {
-        let starContainer = SKNode()
-        let barHeight = self.statusBarBackground.size.height
-        let centerY = barHeight / 2
-        
-        // Icon scaled to 55% of bar height so it fits comfortably inside the bar
-        let iconHeight = barHeight * 0.55
-        self.starsCollectedIcon = SKSpriteNode(texture: GameTextures.sharedInstance.textureWithName(name: SpriteName.StarIcon))
-        let iconScale = iconHeight / self.starsCollectedIcon.size.height
-        self.starsCollectedIcon.setScale(iconScale)
-        
-        // Subtle glow slightly larger than icon
-        let starGlow = SKSpriteNode(texture: GameTextures.sharedInstance.textureWithName(name: SpriteName.StarIcon))
-        starGlow.setScale(iconScale * 1.25)
-        starGlow.alpha = 0.25
-        starGlow.color = SKColor(white: 0.85, alpha: 1.0)
-        starGlow.colorBlendFactor = 0.7
-        starGlow.zPosition = -1
-        
-        let leftPadding: CGFloat = kDeviceTablet ? 10.0 : 8.0
-        let iconRadius = self.starsCollectedIcon.size.width * 0.5
-        let starSectionX = leftPadding + iconRadius
-        
-        starGlow.position = CGPoint(x: starSectionX, y: centerY)
-        self.starsCollectedIcon.position = CGPoint(x: starSectionX, y: centerY)
-        
-        // Stars count label
-        self.starsCollectedLabel = GameFonts.shared.createLabel(string: String(collected), labelType: GameFonts.LabelType.statusBar)
-        self.starsCollectedLabel.fontColor = SKColor(white: 0.95, alpha: 1.0)
-        self.starsCollectedLabel.fontSize = kDeviceTablet ? 16 : 13
-        self.starsCollectedLabel.horizontalAlignmentMode = .left
-        
-        // Place label immediately right of icon with a small gap
-        let labelX = starSectionX + iconRadius + (kDeviceTablet ? 6.0 : 4.0)
-        self.starsCollectedLabel.position = CGPoint(x: labelX, y: centerY)
-        
-        starContainer.addChild(starGlow)
-        starContainer.addChild(self.starsCollectedIcon)
-        starContainer.addChild(self.starsCollectedLabel)
-        
-        self.statusBarBackground.addChild(starContainer)
-        
-        // Slow, elegant rotation
-        self.starsCollectedIcon.run(
-            SKAction.repeatForever(
-                SKAction.rotate(byAngle: CGFloat.pi * 2, duration: 6.0)))
-    }
-    
-    fileprivate func setupStatusBarScore(score: Int) {
-        let scoreContainer = SKNode()
-        let centerY = self.statusBarBackground.size.height / 2
-        
-        // Score label — size tied to bar height for consistent proportions
-        let fontSize: CGFloat = kDeviceTablet ? 18 : 14
-        self.scoreLabel = GameFonts.shared.createLabel(string: formatScore(score), labelType: GameFonts.LabelType.statusBar)
-        self.scoreLabel.fontColor = SKColor(white: 1.0, alpha: 1.0)
-        self.scoreLabel.fontSize = fontSize
-        self.scoreLabel.horizontalAlignmentMode = .right
-        
-        let rightPadding: CGFloat = kDeviceTablet ? 18 : 14
-        let scoreX = self.statusBarBackground.size.width - rightPadding
-        self.scoreLabel.position = CGPoint(x: scoreX, y: centerY)
-        
-        // Subtle glow copy
-        let scoreGlow = GameFonts.shared.createLabel(string: formatScore(score), labelType: GameFonts.LabelType.statusBar)
-        scoreGlow.fontColor = SKColor(white: 0.7, alpha: 0.35)
-        scoreGlow.fontSize = fontSize
-        scoreGlow.horizontalAlignmentMode = .right
-        scoreGlow.position = self.scoreLabel.position
-        scoreGlow.zPosition = -1
-        
-        scoreContainer.addChild(scoreGlow)
-        scoreContainer.addChild(self.scoreLabel)
-        
-        self.statusBarBackground.addChild(scoreContainer)
-    }
-    
-    // MARK: - Helper Methods
-    private func formatScore(_ score: Int) -> String {
-        // Add thousand separators for better readability
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        return formatter.string(from: NSNumber(value: score)) ?? "\(score)"
-    }
-    
-    fileprivate func setupPauseButton() {
-        let barHeight = self.statusBarBackground.size.height
-        // Scale to 62% of bar height — readable without being oversized
-        let desiredHeight = barHeight * 0.62
-        let buttonScale = desiredHeight / self.pauseButton.size.height
-        self.pauseButton.setScale(buttonScale)
-        
-        let centerY = barHeight / 2
-        // Place in the right quarter of the bar, clear of lives and score
-        let pauseButtonX = self.statusBarBackground.size.width * 0.76
-        self.pauseButton.position = CGPoint(x: pauseButtonX, y: centerY)
-        self.pauseButton.zPosition = 10
-        
-        // Single drop-shadow for depth without visual clutter
-        let shadow = SKSpriteNode(texture: self.pauseButton.texture)
-        shadow.size = self.pauseButton.size
-        shadow.position = CGPoint(x: -1.5, y: -1.5)
-        shadow.alpha = 0.25
-        shadow.color = SKColor.black
-        shadow.colorBlendFactor = 1.0
-        shadow.zPosition = -1
-        self.pauseButton.addChild(shadow)
-        
-        // Subtle ambient glow
-        let buttonGlow = SKSpriteNode(texture: self.pauseButton.texture)
-        buttonGlow.size = CGSize(width: self.pauseButton.size.width * 1.25,
-                                 height: self.pauseButton.size.height * 1.25)
-        buttonGlow.alpha = 0.18
-        buttonGlow.color = SKColor(white: 0.9, alpha: 1.0)
-        buttonGlow.colorBlendFactor = 0.8
-        buttonGlow.zPosition = -2
-        self.pauseButton.addChild(buttonGlow)
-        
-        self.statusBarBackground.addChild(self.pauseButton)
-    }
-    
-    // Tier indicator (small label top-right of bar)
-    private var tierLabel = SKLabelNode()
-    // Power-up dot (small colored circle)
+    // MARK: - Nodes
+    private var barBackground: SKShapeNode!
+    // internal — used by StatusBar+GlassEffect.swift extension for reactive animations
+    var livesContainer = SKNode()
+    var scoreLabel     = SKLabelNode()
+    var starIcon       = SKSpriteNode()
+    var starCountLabel = SKLabelNode()
+    private var tierLabel  = SKLabelNode()
     private var powerUpDot = SKShapeNode(circleOfRadius: 5)
 
-    // MARK: - Tier + Power-up setup (called once during init, public state updated later)
-    func setupTierAndPowerUpIndicators() {
-        let barH = statusBarBackground.size.height
-        let barW = statusBarBackground.size.width
+    // MARK: - Public
+    let pauseButton = PauseButton()
 
-        // Tier label — sits at top-right corner, inside the bar
-        tierLabel.text = "T1"
-        tierLabel.fontName = "AvenirNext-Bold"
-        tierLabel.fontSize = 11
+    /// Hit rectangle for the pause button, in statusBar's coordinate space.
+    private(set) var pauseButtonTapRect: CGRect = .zero
+
+    // MARK: - Init
+    required init?(coder aDecoder: NSCoder) { super.init(coder: aDecoder) }
+    override init() { super.init() }
+
+    convenience init(lives: Int, score: Int, stars: Int, safeAreaTop: CGFloat) {
+        self.init()
+
+        contentHeight  = kDeviceTablet ? 44 : 38
+        let totalHeight = safeAreaTop + contentHeight
+        barY           = kViewSize.height - totalHeight
+        contentCenterY = barY + contentHeight / 2
+
+        setupBackground(totalHeight: totalHeight)
+        setupPauseButton()
+        setupScore(score)
+        setupStarSection(stars)
+        setupTierAndPowerUp()
+
+        // Lives drawn last so it refreshes cleanly on updateLives()
+        updateLives(lives: lives)
+
+        zPosition = 100
+    }
+
+    // MARK: - Glass Background
+
+    private func setupBackground(totalHeight: CGFloat) {
+        // Dark glass panel — spans safe area + content strip
+        let bgRect = CGRect(x: 0, y: barY, width: kViewSize.width, height: totalHeight)
+        barBackground = SKShapeNode(rect: bgRect)
+        barBackground.fillColor   = UIColor(red: 0.02, green: 0.05, blue: 0.16, alpha: 0.92)
+        barBackground.strokeColor = .clear
+        barBackground.zPosition   = 0
+        addChild(barBackground)
+
+        // Subtle shimmer — rendered once as a texture, zero runtime cost
+        addGlassShimmer(rect: bgRect)
+
+        // Cyan accent line along the bottom edge of the bar
+        let edgeLine = SKSpriteNode(
+            color: UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 0.55),
+            size: CGSize(width: kViewSize.width, height: 1.0))
+        edgeLine.anchorPoint = CGPoint(x: 0, y: 0)
+        edgeLine.position    = CGPoint(x: 0, y: barY)
+        edgeLine.blendMode   = .add
+        edgeLine.zPosition   = 2
+        addChild(edgeLine)
+    }
+
+    private func addGlassShimmer(rect: CGRect) {
+        let renderer = UIGraphicsImageRenderer(size: rect.size)
+        let image = renderer.image { ctx in
+            let gradient = CGGradient(
+                colorsSpace: CGColorSpaceCreateDeviceRGB(),
+                colors: [
+                    UIColor.white.withAlphaComponent(0.16).cgColor,
+                    UIColor.white.withAlphaComponent(0.03).cgColor,
+                    UIColor.white.withAlphaComponent(0.09).cgColor
+                ] as CFArray,
+                locations: [0.0, 0.55, 1.0])!
+            // Gradient from top (bright) to bottom (darker) of the bar
+            ctx.cgContext.drawLinearGradient(
+                gradient,
+                start: CGPoint(x: 0, y: rect.height),
+                end:   CGPoint(x: 0, y: 0),
+                options: [])
+        }
+        let shimmer = SKSpriteNode(texture: SKTexture(image: image))
+        shimmer.anchorPoint = CGPoint(x: 0, y: 0)
+        shimmer.position    = CGPoint(x: 0, y: barY)
+        shimmer.blendMode   = .add
+        shimmer.alpha       = 0.85
+        shimmer.zPosition   = 1
+        addChild(shimmer)
+    }
+
+    // MARK: - Pause Button
+
+    private func setupPauseButton() {
+        let targetH = contentHeight * 0.65
+        let scale   = targetH / pauseButton.size.height
+        pauseButton.setScale(scale)
+
+        let cx = kDeviceTablet ? CGFloat(22) : CGFloat(20)
+        pauseButton.position  = CGPoint(x: cx, y: contentCenterY)
+        pauseButton.zPosition = 10
+        addChild(pauseButton)
+
+        // Generous tap target (44 × 44 minimum per HIG)
+        let tapSize: CGFloat = max(44, targetH + 16)
+        pauseButtonTapRect = CGRect(
+            x: cx - tapSize / 2, y: contentCenterY - tapSize / 2,
+            width: tapSize, height: tapSize)
+    }
+
+    // MARK: - Lives
+
+    func updateLives(lives: Int) {
+        livesContainer.removeFromParent()
+        livesContainer = SKNode()
+        livesContainer.zPosition = 5
+        addChild(livesContainer)
+
+        let iconH   = contentHeight * 0.56
+        let sample  = GameTextures.sharedInstance.spriteWithName(name: SpriteName.PlayerLives)
+        let scale   = iconH / sample.size.height
+        let iconW   = sample.size.width * scale
+        let spacing = iconW * 1.40
+        let startX: CGFloat = kDeviceTablet ? 60 : 50
+
+        for i in 0..<max(0, min(lives, 5)) {
+            let icon = GameTextures.sharedInstance.spriteWithName(name: SpriteName.PlayerLives)
+            icon.setScale(scale)
+            icon.position  = CGPoint(x: startX + spacing * CGFloat(i), y: contentCenterY)
+            icon.zPosition = 5
+            livesContainer.addChild(icon)
+        }
+    }
+
+    // MARK: - Score
+
+    private func setupScore(_ score: Int) {
+        scoreLabel.fontName  = "AvenirNext-Heavy"
+        scoreLabel.fontSize  = kDeviceTablet ? 20 : 17
+        scoreLabel.fontColor = .white
+        scoreLabel.horizontalAlignmentMode = .center
+        scoreLabel.verticalAlignmentMode   = .center
+        scoreLabel.text      = format(score)
+        scoreLabel.position  = CGPoint(x: kViewSize.width / 2, y: contentCenterY)
+        scoreLabel.zPosition = 5
+        addChild(scoreLabel)
+    }
+
+    func updateScore(score: Int) {
+        scoreLabel.text = format(score)
+    }
+
+    private func format(_ score: Int) -> String {
+        let fmt = NumberFormatter()
+        fmt.numberStyle = .decimal
+        return fmt.string(from: NSNumber(value: score)) ?? "\(score)"
+    }
+
+    // MARK: - Stars
+
+    private func setupStarSection(_ count: Int) {
+        // Spinning star icon
+        let rawTex = GameTextures.sharedInstance.textureWithName(name: SpriteName.StarIcon)
+        starIcon = SKSpriteNode(texture: rawTex)
+        let iconH = contentHeight * 0.52
+        let scale = iconH / rawTex.size().height
+        starIcon.setScale(scale)
+
+        let sectionX = kViewSize.width * 0.725
+        starIcon.position  = CGPoint(x: sectionX, y: contentCenterY)
+        starIcon.zPosition = 5
+        addChild(starIcon)
+
+        starIcon.run(SKAction.repeatForever(
+            SKAction.rotate(byAngle: .pi * 2, duration: 5.0)))
+
+        // Star count label
+        let labelX = sectionX + rawTex.size().width * scale / 2 + 5
+        starCountLabel.fontName  = "AvenirNext-DemiBold"
+        starCountLabel.fontSize  = kDeviceTablet ? 16 : 14
+        starCountLabel.fontColor = UIColor(red: 1.0, green: 0.88, blue: 0.10, alpha: 1.0)
+        starCountLabel.horizontalAlignmentMode = .left
+        starCountLabel.verticalAlignmentMode   = .center
+        starCountLabel.text      = "\(count)"
+        starCountLabel.position  = CGPoint(x: labelX, y: contentCenterY)
+        starCountLabel.zPosition = 5
+        addChild(starCountLabel)
+    }
+
+    func updateStarsCollected(collected: Int) {
+        starCountLabel.text = "\(collected)"
+        starIcon.run(bounce())
+    }
+
+    // MARK: - Tier + Power-up
+
+    private func setupTierAndPowerUp() {
+        tierLabel.fontName  = "AvenirNext-Bold"
+        tierLabel.fontSize  = kDeviceTablet ? 12 : 11
         tierLabel.fontColor = Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
         tierLabel.horizontalAlignmentMode = .right
-        tierLabel.verticalAlignmentMode = .center
-        tierLabel.position = CGPoint(x: barW - 8, y: barH * 0.72)
-        tierLabel.alpha = 0.8
+        tierLabel.verticalAlignmentMode   = .center
+        tierLabel.text      = "T1"
+        tierLabel.alpha     = 0.85
+        tierLabel.position  = CGPoint(x: kViewSize.width - 26, y: contentCenterY)
         tierLabel.zPosition = 5
-        statusBarBackground.addChild(tierLabel)
+        addChild(tierLabel)
 
-        // Power-up dot — small indicator to left of tier label
-        powerUpDot.fillColor = .clear
+        powerUpDot.fillColor   = .clear
         powerUpDot.strokeColor = .clear
-        powerUpDot.position = CGPoint(x: barW - 22, y: barH * 0.72)
-        powerUpDot.zPosition = 5
-        statusBarBackground.addChild(powerUpDot)
+        powerUpDot.position    = CGPoint(x: kViewSize.width - 9, y: contentCenterY)
+        powerUpDot.zPosition   = 5
+        addChild(powerUpDot)
     }
 
     func updateTier(_ tier: Int) {
         tierLabel.text = "T\(tier)"
-        let tierColors: [Int: UIColor] = [
+        let colors: [Int: UIColor] = [
             1: Colors.colorFromRGB(rgbvalue: Colors.AccentCyan),
             2: Colors.colorFromRGB(rgbvalue: Colors.AccentYellow),
             3: Colors.colorFromRGB(rgbvalue: Colors.AccentMagenta),
             4: Colors.colorFromRGB(rgbvalue: Colors.DangerRed)
         ]
-        tierLabel.fontColor = tierColors[tier] ?? Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
-        // Quick flash to draw attention on tier change
+        tierLabel.fontColor = colors[tier] ?? Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
         tierLabel.run(SKAction.sequence([
-            SKAction.scale(to: 1.4, duration: 0.1),
-            SKAction.scale(to: 1.0, duration: 0.15)
+            SKAction.scale(to: 1.4, duration: 0.10),
+            SKAction.scale(to: 1.0, duration: 0.12)
         ]))
     }
 
     func updatePowerUpStatus(shield: Bool, magnet: Bool, slowMo: Bool) {
+        let color: UIColor?
         if shield {
-            powerUpDot.fillColor = Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
-            powerUpDot.strokeColor = Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
-            if powerUpDot.action(forKey: "pulse") == nil {
-                powerUpDot.run(SKAction.repeatForever(SKAction.sequence([
-                    SKAction.fadeAlpha(to: 0.4, duration: 0.4),
-                    SKAction.fadeAlpha(to: 1.0, duration: 0.4)
-                ])), withKey: "pulse")
-            }
+            color = Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
         } else if magnet {
-            powerUpDot.fillColor = Colors.colorFromRGB(rgbvalue: Colors.AccentYellow)
-            powerUpDot.strokeColor = Colors.colorFromRGB(rgbvalue: Colors.AccentYellow)
-            if powerUpDot.action(forKey: "pulse") == nil {
-                powerUpDot.run(SKAction.repeatForever(SKAction.sequence([
-                    SKAction.fadeAlpha(to: 0.4, duration: 0.4),
-                    SKAction.fadeAlpha(to: 1.0, duration: 0.4)
-                ])), withKey: "pulse")
-            }
+            color = Colors.colorFromRGB(rgbvalue: Colors.AccentYellow)
         } else if slowMo {
-            powerUpDot.fillColor = UIColor(red: 0, green: 1.0, blue: 0.8, alpha: 1.0)
-            powerUpDot.strokeColor = UIColor(red: 0, green: 1.0, blue: 0.8, alpha: 1.0)
+            color = UIColor(red: 0.00, green: 1.00, blue: 0.80, alpha: 1.0)
+        } else {
+            color = nil
+        }
+
+        if let c = color {
+            powerUpDot.fillColor   = c
+            powerUpDot.strokeColor = c
             if powerUpDot.action(forKey: "pulse") == nil {
                 powerUpDot.run(SKAction.repeatForever(SKAction.sequence([
-                    SKAction.fadeAlpha(to: 0.4, duration: 0.4),
-                    SKAction.fadeAlpha(to: 1.0, duration: 0.4)
+                    SKAction.fadeAlpha(to: 0.35, duration: 0.40),
+                    SKAction.fadeAlpha(to: 1.00, duration: 0.40)
                 ])), withKey: "pulse")
             }
         } else {
-            powerUpDot.fillColor = .clear
+            powerUpDot.fillColor   = .clear
             powerUpDot.strokeColor = .clear
             powerUpDot.removeAction(forKey: "pulse")
             powerUpDot.alpha = 1.0
         }
     }
 
-    // MARK: - Public Functions
-    func updateScore(score: Int) {
-        let formattedScore = formatScore(score)
-        self.scoreLabel.text = formattedScore
-        
-        // Update glow effect if it exists
-        if let scoreGlow = self.scoreLabel.parent?.children.first(where: { $0.zPosition == -1 }) as? SKLabelNode {
-            scoreGlow.text = formattedScore
-        }
-    }
-    
-    func updateStarsCollected(collected: Int) {
-        self.starsCollectedLabel.text = String(collected)
-        
-        self.starsCollectedIcon.run(self.animateBounce())
-        self.scoreLabel.run(self.animateBounce())
-    }
-    
-    func updateLives(lives: Int) {
-        // Clear existing life sprites
-        self.statusBarBackground.enumerateChildNodes(withName: SpriteName.PlayerLives) { node, _ in
-            if let livesSprite = node as? SKSpriteNode {
-                livesSprite.removeFromParent()
-            }
-        }
-        
-        // Lives displayed centered in the middle third of the bar
-        let barHeight = self.statusBarBackground.size.height
-        let centerY = barHeight / 2
-        
-        // Scale each life icon to 60% of the bar height
-        let sampleSprite = GameTextures.sharedInstance.spriteWithName(name: SpriteName.PlayerLives)
-        let desiredIconHeight = barHeight * 0.60
-        let shipScale = desiredIconHeight / sampleSprite.size.height
-        let iconWidth = sampleSprite.size.width * shipScale
-        
-        let spacing: CGFloat = iconWidth * 1.3
-        let livesStartX = self.statusBarBackground.size.width * 0.42
-        
-        for i in 0..<lives {
-            let livesSprite = GameTextures.sharedInstance.spriteWithName(name: SpriteName.PlayerLives)
-            livesSprite.setScale(shipScale)
-            
-            // Subtle glow layer
-            let lifeGlow = GameTextures.sharedInstance.spriteWithName(name: SpriteName.PlayerLives)
-            lifeGlow.setScale(shipScale * 1.2)
-            lifeGlow.alpha = 0.25
-            lifeGlow.color = SKColor(white: 0.9, alpha: 1.0)
-            lifeGlow.colorBlendFactor = 0.5
-            lifeGlow.zPosition = -1
-            
-            let xPosition = livesStartX + (spacing * CGFloat(i))
-            livesSprite.position = CGPoint(x: xPosition, y: centerY)
-            lifeGlow.position = CGPoint(x: xPosition, y: centerY)
-            livesSprite.name = SpriteName.PlayerLives
-            
-            self.statusBarBackground.addChild(lifeGlow)
-            self.statusBarBackground.addChild(livesSprite)
-        }
-    }
-    
-    // MARK: - Animations
-    fileprivate func animateBounce() -> SKAction {
-        let scaleUp = SKAction.scale(to: 1.5, duration: 0.12)
-        let scaleNormal = SKAction.scale(to: 1.0, duration: 0.12)
-        let scaleSequence = SKAction.sequence([scaleUp, scaleNormal])
-        
-        return scaleSequence
-    }
-    
     // MARK: - Reset
+
     func reset() {
-        // Reset all displays to initial values
         updateScore(score: 0)
         updateLives(lives: 3)
         updateStarsCollected(collected: 0)
-        
-        // Remove any active animations
-        removeAllActions()
-        
-        // Reset pause button state
+        updateTier(1)
+        updatePowerUpStatus(shield: false, magnet: false, slowMo: false)
+        scoreLabel.removeAllActions()
         pauseButton.removeAllActions()
         pauseButton.alpha = 1.0
-        
-        // Reset visual effects
         alpha = 1.0
-        
-        // Reset labels to initial states
-        scoreLabel.removeAllActions()
-        starsCollectedLabel.removeAllActions()
-        
-        // Reset background
-        statusBarBackground.removeAllActions()
-        statusBarBackground.alpha = 1.0
-        
-        // Ensure grayscale text colors are maintained
-        scoreLabel.fontColor = SKColor(white: 1.0, alpha: 1.0)
-        starsCollectedLabel.fontColor = SKColor(white: 0.95, alpha: 1.0)
+    }
+
+    // MARK: - Shared animation
+
+    func bounce() -> SKAction {
+        SKAction.sequence([
+            SKAction.scale(to: 1.45, duration: 0.10),
+            SKAction.scale(to: 1.00, duration: 0.10)
+        ])
     }
 }

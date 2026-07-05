@@ -407,11 +407,18 @@ final class GameAudio {
     // MARK: - Lifecycle
     func handleAppBackground() {
         pauseBackgroundMusic()
+        // Pause the entire engine so no sound effects fire while backgrounded
+        audioEngine.pause()
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
-    
+
     func handleAppForeground() {
         Task {
             try? await configureAudioSession()
+            // Restart the engine if it was paused during backgrounding
+            if !audioEngine.isRunning {
+                try? audioEngine.start()
+            }
             if !isMusicPlaying && currentMusicBuffer != nil {
                 resumeBackgroundMusic()
             }
