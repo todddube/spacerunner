@@ -59,6 +59,9 @@ public class EnhancedMenuScene: SKScene {
     // MARK: - Glass Effect Container
     private var glassContainer: SKNode!
 
+    // MARK: - Menu Volume Slider
+    private weak var menuVolumeContainer: UIView?
+
     // MARK: - Constants
     private let fonts = GameFonts.shared
 
@@ -77,6 +80,12 @@ public class EnhancedMenuScene: SKScene {
     public override func didMove(to view: SKView) {
         setupEnhancedMenuScene()
         GameAudio.shared.playBackgroundMusic()
+        setupMenuVolumeSlider(in: view)
+    }
+
+    public override func willMove(from view: SKView) {
+        menuVolumeContainer?.removeFromSuperview()
+        menuVolumeContainer = nil
     }
 
     // MARK: - Setup
@@ -88,6 +97,7 @@ public class EnhancedMenuScene: SKScene {
         setupUI()
         setupGlassEffects()
         setupInfoLabels()
+        setupControlsHints()
         animateSceneIntro()
     }
 
@@ -386,6 +396,163 @@ public class EnhancedMenuScene: SKScene {
         ]))
     }
 
+    // MARK: - Controls Hints Card
+
+    // Three-column glass card: TAP | TILT | DASH — fades in after the play button.
+    private func setupControlsHints() {
+        let cardW: CGFloat = kDeviceTablet ? 340 : 280
+        let cardH: CGFloat = kDeviceTablet ? 80  : 68
+        let cardY = kViewSize.height * 0.22
+
+        let card = SKNode()
+        card.position = CGPoint(x: kViewSize.width / 2, y: cardY)
+        card.alpha    = 0
+        card.name     = "controlsCard"
+        addChild(card)
+
+        // Glass pill background
+        let bg = SKShapeNode(
+            rect: CGRect(x: -cardW / 2, y: -cardH / 2, width: cardW, height: cardH),
+            cornerRadius: cardH / 2)
+        bg.fillColor   = UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 0.07)
+        bg.strokeColor = UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 0.38)
+        bg.lineWidth   = 1.0
+        card.addChild(bg)
+
+        // Subtle shimmer on the glass
+        let shimmer = SKShapeNode(
+            rect: CGRect(x: -cardW / 2, y: 0, width: cardW, height: cardH / 2),
+            cornerRadius: cardH / 2)
+        shimmer.fillColor   = UIColor.white.withAlphaComponent(0.04)
+        shimmer.strokeColor = .clear
+        card.addChild(shimmer)
+
+        let entries: [(icon: String, action: String, detail: String)] = [
+            ("👆", "TAP",    "to steer"),
+            ("📱", "TILT",   "to fly"),
+            ("⚡", "2× TAP", "to dash"),
+        ]
+
+        let colW = cardW / CGFloat(entries.count)
+
+        for (i, entry) in entries.enumerated() {
+            let cx = -cardW / 2 + colW * (CGFloat(i) + 0.5)
+
+            // Divider (between columns)
+            if i > 0 {
+                let div = SKSpriteNode(
+                    color: UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 0.22),
+                    size: CGSize(width: 1, height: cardH * 0.55))
+                div.position = CGPoint(x: cx - colW / 2, y: 0)
+                card.addChild(div)
+            }
+
+            // Icon
+            let icon = SKLabelNode(text: entry.icon)
+            icon.fontSize                 = kDeviceTablet ? 22 : 18
+            icon.horizontalAlignmentMode  = .center
+            icon.verticalAlignmentMode    = .center
+            icon.position                 = CGPoint(x: cx, y: 12)
+            card.addChild(icon)
+
+            // Action label (cyan, bold)
+            let actionLbl = SKLabelNode(fontNamed: "AvenirNext-Bold")
+            actionLbl.text                    = entry.action
+            actionLbl.fontSize                = kDeviceTablet ? 13 : 11
+            actionLbl.fontColor               = UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 1.0)
+            actionLbl.horizontalAlignmentMode = .center
+            actionLbl.verticalAlignmentMode   = .center
+            actionLbl.position                = CGPoint(x: cx, y: -6)
+            card.addChild(actionLbl)
+
+            // Detail label (white, dim)
+            let detailLbl = SKLabelNode(fontNamed: "AvenirNext-Regular")
+            detailLbl.text                    = entry.detail
+            detailLbl.fontSize                = kDeviceTablet ? 11 : 10
+            detailLbl.fontColor               = UIColor.white.withAlphaComponent(0.55)
+            detailLbl.horizontalAlignmentMode = .center
+            detailLbl.verticalAlignmentMode   = .center
+            detailLbl.position                = CGPoint(x: cx, y: -20)
+            card.addChild(detailLbl)
+        }
+
+        // Staggered entrance — card slides up after the play button pops in
+        card.run(SKAction.sequence([
+            SKAction.wait(forDuration: 2.7),
+            SKAction.group([
+                SKAction.fadeIn(withDuration: 0.7),
+                SKAction.moveBy(x: 0, y: 8, duration: 0.7)
+            ])
+        ]))
+
+        // Gentle breathing glow on the border
+        bg.run(SKAction.repeatForever(SKAction.sequence([
+            SKAction.wait(forDuration: 3.2),
+            SKAction.customAction(withDuration: 0.0) { node, _ in
+                (node as? SKShapeNode)?.strokeColor =
+                    UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 0.65)
+            },
+            SKAction.wait(forDuration: 1.8),
+            SKAction.customAction(withDuration: 0.0) { node, _ in
+                (node as? SKShapeNode)?.strokeColor =
+                    UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 0.38)
+            }
+        ])))
+    }
+
+    // MARK: - Menu Volume Slider (UIKit overlay)
+
+    private func setupMenuVolumeSlider(in view: SKView) {
+        let sliderW: CGFloat    = 165
+        let containerW: CGFloat = sliderW + 78
+        let containerH: CGFloat = 36
+        let x = (view.bounds.width  - containerW) / 2
+        // Sits between the controls card and the copyright strip at the bottom
+        let y = view.bounds.height - view.bounds.height * 0.145
+
+        let container = UIView(frame: CGRect(x: x, y: y, width: containerW, height: containerH))
+        container.backgroundColor = UIColor(red: 0.02, green: 0.05, blue: 0.16, alpha: 0.80)
+        container.layer.cornerRadius = containerH / 2
+        container.alpha = 0  // fades in via UIView animation after scene settles
+
+        // Speaker icon
+        let iconLbl = UILabel(frame: CGRect(x: 10, y: 0, width: 24, height: containerH))
+        iconLbl.text          = "🔊"
+        iconLbl.font          = UIFont.systemFont(ofSize: 13)
+        iconLbl.textAlignment = .center
+        container.addSubview(iconLbl)
+
+        // "VOL" label
+        let volLbl = UILabel(frame: CGRect(x: 34, y: 0, width: 28, height: containerH))
+        volLbl.text          = "VOL"
+        volLbl.font          = UIFont.systemFont(ofSize: 9, weight: .bold)
+        volLbl.textColor     = UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 0.85)
+        volLbl.textAlignment = .left
+        container.addSubview(volLbl)
+
+        // Slider
+        let slider = UISlider(frame: CGRect(x: 62, y: 8, width: sliderW, height: containerH - 16))
+        slider.minimumValue       = 0
+        slider.maximumValue       = 1
+        slider.value              = GameAudio.shared.musicVolume
+        slider.minimumTrackTintColor = UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 0.90)
+        slider.maximumTrackTintColor = UIColor.white.withAlphaComponent(0.18)
+        slider.thumbTintColor     = UIColor.white
+
+        slider.addAction(UIAction { _ in
+            GameAudio.shared.setMusicVolume(slider.value)
+        }, for: .valueChanged)
+
+        container.addSubview(slider)
+        view.addSubview(container)
+        menuVolumeContainer = container
+
+        // Fade the slider in after the controls card appears
+        UIView.animate(withDuration: 0.8, delay: 3.2, options: .curveEaseOut) {
+            container.alpha = 1
+        }
+    }
+
     // MARK: - UI Setup
 
     private func setupUI() {
@@ -489,24 +656,6 @@ public class EnhancedMenuScene: SKScene {
                 SKAction.fadeAlpha(to: 0.85, duration: 0.6)
             ]))
         }
-
-        let controlHint                          = SKLabelNode(fontNamed: "AvenirNext-Medium")
-        controlHint.text                         = "Tap or tilt to navigate"
-        controlHint.fontSize                     = 16
-        controlHint.fontColor                    = SKColor.cyan.withAlphaComponent(0.75)
-        controlHint.horizontalAlignmentMode      = .center
-        controlHint.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.18)
-        controlHint.alpha    = 0.0
-        controlHint.name     = "controlHint"
-        addChild(controlHint)
-        controlHint.run(SKAction.sequence([
-            SKAction.wait(forDuration: 2.2),
-            SKAction.fadeAlpha(to: 0.75, duration: 0.8),
-            SKAction.repeatForever(SKAction.sequence([
-                SKAction.fadeAlpha(to: 0.40, duration: 1.8),
-                SKAction.fadeAlpha(to: 0.75, duration: 1.8)
-            ]))
-        ]))
 
         setupInfoLabelAnimations()
     }
@@ -664,6 +813,8 @@ public class EnhancedMenuScene: SKScene {
         cameraEffects.performImpactShake()
         removeAction(forKey: "shootingStars")
         removeAction(forKey: "debris")
+        menuVolumeContainer?.removeFromSuperview()
+        menuVolumeContainer = nil
 
         // Ship launches upward before the scene fade
         let shipTex    = GameTextures.sharedInstance.textureWithName(name: SpriteName.Player)
