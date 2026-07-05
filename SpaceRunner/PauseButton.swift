@@ -69,15 +69,18 @@ class PauseButton:SKSpriteNode {
     // MARK: - Actions
     func tapped() {
         GameAudio.shared.playSoundEffect(.buttonTap)
-        
-        // Flip the value of gamePaused
-        self.gamePaused = !self.gamePaused
-        
-        // which texture should we use?
-        self.texture = self.gamePaused ? self.resumeTexture : self.pauseTexture
+        gamePaused = !gamePaused
+        texture = gamePaused ? resumeTexture : pauseTexture
     }
-    
+
+    /// Resets to the pause icon without playing a sound — call when resuming via
+    /// a tap outside the button so the icon stays consistent with game state.
+    func resetToPlayIcon() {
+        gamePaused = false
+        texture = pauseTexture
+    }
+
     func getPauseState() -> Bool {
-        return self.gamePaused
+        return gamePaused
     }
 }

@@ -8,7 +8,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "869456CD-4805-451B-83A8-E63FEAE92FC2"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SpaceRunner/PauseButton.swift"
@@ -24,7 +24,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "CE8FCB28-B505-4C88-B2DF-E3FD748DDE18"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SpaceRunner/PauseButton.swift"
@@ -39,16 +39,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "FACF9984-7042-42D5-9092-54539BD1D732"
+            uuid = "DE00122B-26F7-4F32-AD8F-53307E5BB968"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "SpaceRunner/GameScene.swift"
+            filePath = "SpaceRunner/StatusBar.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "501"
-            endingLineNumber = "501"
-            landmarkName = "touchesBegan(_:with:)"
+            startingLineNumber = "207"
+            endingLineNumber = "207"
+            landmarkName = "setupStarSection(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

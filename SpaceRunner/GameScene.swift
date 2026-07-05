@@ -880,9 +880,14 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     }
     
     private func handlePausedTouch(at location: CGPoint) {
-        // When paused, any tap resumes the game
-        // Could also check for specific pause button or resume area if desired
-        audioManager.playSoundEffect(.buttonTap)
+        // Pause button tap: use tapped() so it plays sound + swaps texture back to pause icon
+        if statusBar.pauseButtonTapRect.contains(location) {
+            statusBar.pauseButton.tapped()
+        } else {
+            // Tap anywhere else to resume — reset icon silently
+            statusBar.pauseButton.resetToPlayIcon()
+            audioManager.playSoundEffect(.buttonTap)
+        }
         setCurrentPhase(.running)
     }
     

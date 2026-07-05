@@ -157,7 +157,7 @@ class StatusBar: SKNode {
         livesContainer.zPosition = 5
         addChild(livesContainer)
 
-        let iconH   = contentHeight * 0.56
+        let iconH   = contentHeight * 0.36
         let sample  = GameTextures.sharedInstance.spriteWithName(name: SpriteName.PlayerLives)
         let scale   = iconH / sample.size.height
         let iconW   = sample.size.width * scale
@@ -203,9 +203,8 @@ class StatusBar: SKNode {
         // Spinning star icon
         let rawTex = GameTextures.sharedInstance.textureWithName(name: SpriteName.StarIcon)
         starIcon = SKSpriteNode(texture: rawTex)
-        let iconH = contentHeight * 0.52
-        let scale = iconH / rawTex.size().height
-        starIcon.setScale(scale)
+        let iconH: CGFloat = contentHeight * 0.20
+        starIcon.size = CGSize(width: iconH, height: iconH)
 
         let sectionX = kViewSize.width * 0.725
         starIcon.position  = CGPoint(x: sectionX, y: contentCenterY)
@@ -216,7 +215,7 @@ class StatusBar: SKNode {
             SKAction.rotate(byAngle: .pi * 2, duration: 5.0)))
 
         // Star count label
-        let labelX = sectionX + rawTex.size().width * scale / 2 + 5
+        let labelX = sectionX + iconH / 2 + 5
         starCountLabel.fontName  = "AvenirNext-DemiBold"
         starCountLabel.fontSize  = kDeviceTablet ? 16 : 14
         starCountLabel.fontColor = UIColor(red: 1.0, green: 0.88, blue: 0.10, alpha: 1.0)
@@ -308,6 +307,7 @@ class StatusBar: SKNode {
         updatePowerUpStatus(shield: false, magnet: false, slowMo: false)
         scoreLabel.removeAllActions()
         pauseButton.removeAllActions()
+        pauseButton.resetToPlayIcon()
         pauseButton.alpha = 1.0
         alpha = 1.0
     }
