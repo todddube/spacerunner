@@ -122,6 +122,9 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
 
     // Touch-circle toggle — tap rect in scene coordinates, active during tutorial
     private var touchToggleRect: CGRect = .zero
+
+    // Volume slider overlay — added to the SKView, removed on scene exit
+    private weak var volumeSliderContainer: UIView?
     
     private let logger = Logger(subsystem: "com.todddube.spacerunner", category: "GameScene")
     
@@ -143,9 +146,15 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     override func didMove(to view: SKView) {
         setupScene()
         setupNotifications()
+        setupVolumeSlider(in: view)
         logger.info("GameScene initialized and moved to view")
     }
-    
+
+    override func willMove(from view: SKView) {
+        volumeSliderContainer?.removeFromSuperview()
+        volumeSliderContainer = nil
+    }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
         logger.info("GameScene deinitialized")
@@ -276,7 +285,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
             name: NotificationName.pauseGame,
             object: nil
         )
-        
+
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(resumeGame),
@@ -284,7 +293,47 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
             object: nil
         )
     }
-    
+
+    // MARK: - Volume Slider
+
+    private func setupVolumeSlider(in view: SKView) {
+        let sliderW: CGFloat = 160
+        let containerW: CGFloat = sliderW + 52
+        let containerH: CGFloat = 34
+        let bottomPad: CGFloat = 12
+        let x = (view.bounds.width - containerW) / 2
+        let y = view.bounds.height - containerH - bottomPad
+
+        let container = UIView(frame: CGRect(x: x, y: y, width: containerW, height: containerH))
+        container.backgroundColor = UIColor(red: 0.02, green: 0.05, blue: 0.16, alpha: 0.75)
+        container.layer.cornerRadius = containerH / 2
+        container.clipsToBounds = true
+
+        // Speaker icon
+        let iconLabel = UILabel(frame: CGRect(x: 8, y: 0, width: 30, height: containerH))
+        iconLabel.text = "🔊"
+        iconLabel.font = UIFont.systemFont(ofSize: 14)
+        iconLabel.textAlignment = .center
+        container.addSubview(iconLabel)
+
+        // Volume slider
+        let slider = UISlider(frame: CGRect(x: 38, y: 6, width: sliderW, height: containerH - 12))
+        slider.minimumValue = 0
+        slider.maximumValue = 1
+        slider.value = GameAudio.shared.musicVolume
+        slider.minimumTrackTintColor = UIColor(red: 0.0, green: 0.88, blue: 1.0, alpha: 0.85)
+        slider.maximumTrackTintColor = UIColor.white.withAlphaComponent(0.20)
+        slider.thumbTintColor = UIColor.white
+
+        slider.addAction(UIAction { _ in
+            GameAudio.shared.setMusicVolume(slider.value)
+        }, for: .valueChanged)
+
+        container.addSubview(slider)
+        view.addSubview(container)
+        volumeSliderContainer = container
+    }
+
     // MARK: - Game State Management
     private func setCurrentPhase(_ phase: GameState.Phase) {
         let previousPhase = gameState.currentPhase

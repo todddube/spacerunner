@@ -128,23 +128,23 @@ final class GameAudio {
     
     private func setupAudioGraph() {
         let format = audioEngine.outputNode.inputFormat(forBus: 0)
-        
+
         audioEngine.attach(musicPlayerNode)
         audioEngine.attach(musicMixer)
         audioEngine.attach(effectsMixer)
-        
+
         // Connect music path with consistent format
         audioEngine.connect(musicPlayerNode, to: musicMixer, format: format)
         audioEngine.connect(musicMixer, to: audioEngine.mainMixerNode, format: format)
-        
+
         // Connect effects path with consistent format
         audioEngine.connect(effectsMixer, to: audioEngine.mainMixerNode, format: format)
-        
+
         // Create and attach sound effect player pool
         setupEffectPlayerPool(format: format)
-        
+
         // Set initial volumes
-        musicMixer.outputVolume = musicVolume
+        musicMixer.outputVolume   = musicVolume
         effectsMixer.outputVolume = effectsVolume
     }
     

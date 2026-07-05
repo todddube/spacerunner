@@ -5,10 +5,10 @@
 //  © 2026 Todd Dube. All rights reserved.
 //
 //  PURPOSE
-//  Renders 7–8 vivid arcade-colored nebulae (cyan, magenta, yellow) using
-//  additive blending so they glow against the dark background rather than
-//  muddying it. Each nebula independently pulses in scale and alpha and
-//  drifts slowly downward for a parallax depth effect.
+//  Renders 7–8 vivid arcade-colored nebulae using radial-gradient textures and
+//  additive blending so they glow against the dark background. Each nebula
+//  independently pulses in scale and alpha, drifts downward for parallax depth,
+//  and wraps back to the top when it exits the bottom.
 //
 
 import SpriteKit
@@ -25,19 +25,16 @@ class NebulaSystem: SKNode {
         UIColor(red: 1.0,  green: 0.9,  blue: 0.0,  alpha: 1.0), // yellow-gold
         UIColor(red: 0.25, green: 1.0,  blue: 0.5,  alpha: 1.0), // neon green
         UIColor(red: 0.5,  green: 0.0,  blue: 1.0,  alpha: 1.0), // violet
-        UIColor(red: 0.0,  green: 0.9,  blue: 1.0,  alpha: 1.0), // cyan (repeat for weight)
-        UIColor(red: 1.0,  green: 0.0,  blue: 0.9,  alpha: 1.0), // magenta (repeat)
+        UIColor(red: 0.0,  green: 0.9,  blue: 1.0,  alpha: 1.0), // cyan (weight)
+        UIColor(red: 1.0,  green: 0.0,  blue: 0.9,  alpha: 1.0), // magenta (weight)
     ]
 
     func setupNebulae(for size: CGSize) {
-        let nebulaCount = 7
-
-        for i in 0..<nebulaCount {
+        for i in 0..<7 {
             let nebula = createNebula(size: size, index: i)
-            // Distribute across the full scene height (including off-screen spawning area)
             nebula.position = CGPoint(
                 x: CGFloat.random(in: size.width * 0.05 ... size.width * 0.95),
-                y: CGFloat.random(in: size.height * 0.1 ... size.height * 1.8)
+                y: CGFloat.random(in: size.height * 0.1  ... size.height * 1.8)
             )
             nebula.name = "nebula_\(i)"
             nebulae.append(nebula)
@@ -46,45 +43,73 @@ class NebulaSystem: SKNode {
     }
 
     private func createNebula(size: CGSize, index: Int) -> SKSpriteNode {
-        let nebulaWidth  = CGFloat.random(in: size.width * 0.25 ... size.width * 0.65)
-        let nebulaHeight = CGFloat.random(in: size.height * 0.12 ... size.height * 0.30)
-        let nebulaSize   = CGSize(width: nebulaWidth, height: nebulaHeight)
+        let nebulaW = CGFloat.random(in: size.width  * 0.28 ... size.width  * 0.70)
+        let nebulaH = CGFloat.random(in: size.height * 0.14 ... size.height * 0.32)
+        let nebulaSize = CGSize(width: nebulaW, height: nebulaH)
 
         let color   = nebulaColors[index % nebulaColors.count]
-        let nebula  = SKSpriteNode(color: color, size: nebulaSize)
+        let texture = makeNebulaTexture(size: nebulaSize, color: color)
+        let nebula  = SKSpriteNode(texture: texture, size: nebulaSize)
         nebula.blendMode = .add
-        nebula.alpha     = CGFloat.random(in: 0.04 ... 0.10)
+        nebula.alpha     = CGFloat.random(in: 0.20 ... 0.50)
 
         // Gentle slow rotation
-        let duration = Double.random(in: 80...160)
+        let rotateDur = Double.random(in: 80...160)
         nebula.run(SKAction.repeatForever(
-            SKAction.rotate(byAngle: .pi * 2, duration: duration)
+            SKAction.rotate(byAngle: .pi * 2, duration: rotateDur)
         ))
 
         // Breathing pulse (scale + alpha, staggered by index)
         let delay    = Double(index) * 1.3
-        let pulseDur = Double.random(in: 6 ... 11)
+        let pulseDur = Double.random(in: 6...11)
         let baseAlpha = nebula.alpha
-        let pulseSeq = SKAction.sequence([
+        nebula.run(SKAction.sequence([
             SKAction.wait(forDuration: delay),
             SKAction.repeatForever(SKAction.sequence([
                 SKAction.group([
-                    SKAction.scale(to: 1.08, duration: pulseDur),
-                    SKAction.fadeAlpha(to: baseAlpha * 1.9, duration: pulseDur)
+                    SKAction.scale(to: 1.10, duration: pulseDur),
+                    SKAction.fadeAlpha(to: baseAlpha * 1.85, duration: pulseDur)
                 ]),
                 SKAction.group([
-                    SKAction.scale(to: 0.94, duration: pulseDur),
-                    SKAction.fadeAlpha(to: baseAlpha * 0.5, duration: pulseDur)
+                    SKAction.scale(to: 0.92, duration: pulseDur),
+                    SKAction.fadeAlpha(to: baseAlpha * 0.45, duration: pulseDur)
                 ])
             ]))
-        ])
-        nebula.run(pulseSeq)
+        ]))
 
         return nebula
     }
 
+    // Radial gradient from solid color center → transparent edge.
+    // This makes nebulae look like real diffuse gas clouds rather than rectangles.
+    private func makeNebulaTexture(size: CGSize, color: UIColor) -> SKTexture {
+        let renderer = UIGraphicsImageRenderer(size: size)
+        let image = renderer.image { ctx in
+            let center  = CGPoint(x: size.width / 2, y: size.height / 2)
+            // Use the longer axis as the outer radius so the gradient fills the shape
+            let outerR  = max(size.width, size.height) / 2
+            let innerR  = outerR * 0.05
+
+            guard let gradient = CGGradient(
+                colorsSpace: CGColorSpaceCreateDeviceRGB(),
+                colors: [
+                    color.withAlphaComponent(1.0).cgColor,
+                    color.withAlphaComponent(0.55).cgColor,
+                    color.withAlphaComponent(0.0).cgColor
+                ] as CFArray,
+                locations: [0.0, 0.35, 1.0]) else { return }
+
+            ctx.cgContext.drawRadialGradient(
+                gradient,
+                startCenter: center, startRadius: innerR,
+                endCenter:   center, endRadius:   outerR,
+                options:     [.drawsAfterEndLocation])
+        }
+        return SKTexture(image: image)
+    }
+
     func startAnimation() {
-        // Animations already started in createNebula — no extra work needed
+        // Animations already started in createNebula
     }
 
     func update(deltaTime: TimeInterval) {

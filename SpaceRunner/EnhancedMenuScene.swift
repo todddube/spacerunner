@@ -5,26 +5,29 @@
 //  © 2026 Todd Dube. All rights reserved.
 //
 //  PURPOSE
-//  Modern replacement for MenuScene. Delivers a premium first-impression using
-//  the full enhanced-graphics stack: multi-layer parallax, animated nebulae,
-//  dynamic lighting, and a responsive glass play button with spring animations.
+//  Modern replacement for MenuScene. Delivers a cinematic first-impression using
+//  the full enhanced-graphics stack: multi-layer parallax, gradient nebulae,
+//  dynamic lighting, a detailed gas-giant planet with rings, periodic shooting
+//  stars, and a glass play button with spring animations.
 //
 //  VISUAL FEATURES
-//  - ParallaxBackground + NebulaSystem  — living space backdrop
-//  - DynamicLighting                    — atmospheric ambient and hover light
-//  - Liquid glass play-button container — rounded rect with shimmer animation
-//  - Staggered entrance animations      — title, button, and labels fly in
-//      sequentially using spring-based timing
-//  - Touch sparkle effects              — 8 cyan particles burst from each tap
-//  - Camera shake intro                 — dramatic entrance on scene load
+//  - Gas-giant planet (upper right) with rendered gradient texture, atmosphere
+//      rim glow, surface bands, and a ring system drawn in correct z-layers
+//  - Shooting stars — random dramatic diagonal streaks with glow trails
+//  - ParallaxBackground at 0.5× speed — faster scroll feels more alive
+//  - NebulaSystem with radial-gradient textures for soft gas-cloud look
+//  - DynamicLighting — atmospheric ambient and hover light
+//  - Liquid glass play-button container with shimmer and spring pop
+//  - Staggered entrance animations — title, planet, button fly in sequentially
+//  - Touch sparkle effects — 8 cyan particles burst from each tap
+//  - Camera shake intro — dramatic entrance on scene load
 //
 //  RESPONSIBILITIES
-//  - setupScene()       — async init of all visual systems and layout
-//  - setupTitle()       — position and animate the "SPACE RUNNER" title label
-//  - setupPlayButton()  — create the glass container + ModernStartButton
-//  - setupLabels()      — author and version labels above safe-area bottom
-//  - touchesBegan(…)    — detect play-button tap; spawn sparkles on every touch
-//  - loadGameScene()    — transition to GameScene with fade
+//  - setupEnhancedVisuals()  — background, nebulae, lighting, planet, shooting stars
+//  - setupUI()               — play button, game title, ship assembly
+//  - setupInfoLabels()       — copyright + version strip with sparkle animations
+//  - touchesBegan(…)         — detect play-button tap; spawn sparkles on every touch
+//  - transitionToGame()      — launch animation then push GameScene
 //
 //  REQUIRES @MainActor — all SpriteKit mutations on the main thread
 //
@@ -77,6 +80,7 @@ public class EnhancedMenuScene: SKScene {
     }
 
     // MARK: - Setup
+
     private func setupEnhancedMenuScene() {
         backgroundColor = Colors.colorFromRGB(rgbvalue: Colors.Background)
 
@@ -88,50 +92,318 @@ public class EnhancedMenuScene: SKScene {
     }
 
     private func setupEnhancedVisuals() {
-        // Enhanced background with parallax scrolling
+        // Multi-layer parallax star-field
         parallaxBackground = ParallaxBackground()
         addChild(parallaxBackground)
         parallaxBackground.startScrolling()
 
-        // Animated nebulae system
+        // Radial-gradient nebulae — drift as a slow parallax layer
         nebulae = NebulaSystem()
         addChild(nebulae)
         nebulae.startAnimation()
 
-        // Dynamic lighting system
+        // Gas-giant planet with rings (added before nebulae so it sits behind)
+        addPlanet()
+
+        // Dynamic scene lighting
         dynamicLighting = DynamicLighting()
         addChild(dynamicLighting)
-        // Ambient lighting is set up automatically in init
 
-        // Animation controller
+        // Animation and camera helpers
         animationController = AnimationController()
-
-        // Camera effects for intro
         cameraEffects = CameraEffects()
         cameraEffects.setupForScene(self)
+
+        // Periodic shooting stars — dramatic diagonal streaks
+        startShootingStars()
+
+        // Slow decorative asteroids drifting across the background — like the game
+        startBackgroundDebris()
     }
 
+    // MARK: - Planet
+
+    private func addPlanet() {
+        let radius: CGFloat = kDeviceTablet ? 90 : 66
+
+        let container = SKNode()
+        // Upper-right region — partially off-screen for a dramatic framing
+        container.position = CGPoint(x: kViewSize.width * 0.76, y: kViewSize.height * 0.83)
+        container.zPosition = 1   // in front of background, behind nebulae (z 2+)
+        container.alpha = 0
+        container.name = "planet"
+        addChild(container)
+
+        // Back ring half — drawn behind planet body
+        let ringBack = makePlanetRing(radius: radius, alpha: 0.22, zPos: -1)
+        container.addChild(ringBack)
+
+        // Planet surface — radial gradient rendered as texture once at setup
+        let surfaceTex = makePlanetSurfaceTexture(radius: radius)
+        let body = SKSpriteNode(texture: surfaceTex, size: CGSize(width: radius * 2, height: radius * 2))
+        body.zPosition = 0
+        container.addChild(body)
+
+        // Atmospheric rim glow — thin cyan-violet ring around the sphere
+        let rim = SKShapeNode(circleOfRadius: radius + 5)
+        rim.fillColor   = .clear
+        rim.strokeColor = UIColor(red: 0.45, green: 0.20, blue: 0.90, alpha: 0.45)
+        rim.lineWidth   = 5.0
+        rim.blendMode   = .add
+        rim.zPosition   = 1
+        container.addChild(rim)
+
+        // Outer atmosphere haze (wider, softer)
+        let haze = SKShapeNode(circleOfRadius: radius + 14)
+        haze.fillColor   = .clear
+        haze.strokeColor = UIColor(red: 0.30, green: 0.10, blue: 0.70, alpha: 0.18)
+        haze.lineWidth   = 4.0
+        haze.blendMode   = .add
+        haze.zPosition   = 1
+        container.addChild(haze)
+
+        // Front ring half — drawn in front of planet body
+        let ringFront = makePlanetRing(radius: radius, alpha: 0.42, zPos: 2)
+        container.addChild(ringFront)
+
+        // Gentle float — planet breathes up and down
+        container.run(SKAction.repeatForever(SKAction.sequence([
+            SKAction.moveBy(x: 0, y: 10, duration: 7.0),
+            SKAction.moveBy(x: 0, y: -10, duration: 7.0)
+        ])))
+
+        // Planet entrance — delayed so camera shake settles first
+        container.run(SKAction.sequence([
+            SKAction.wait(forDuration: 1.2),
+            SKAction.group([
+                SKAction.fadeAlpha(to: 0.92, duration: 1.4),
+                SKAction.moveBy(x: 0, y: 12, duration: 1.4)
+            ])
+        ]))
+    }
+
+    // Radial-gradient planet surface rendered once into a UIImage → SKTexture.
+    // Simulates a light source above-left with darker limb darkening on the right.
+    private func makePlanetSurfaceTexture(radius: CGFloat) -> SKTexture {
+        let size = CGSize(width: radius * 2, height: radius * 2)
+        let renderer = UIGraphicsImageRenderer(size: size)
+        let image = renderer.image { ctx in
+            let cgCtx  = ctx.cgContext
+            let center = CGPoint(x: radius, y: radius)
+
+            // Clip all drawing to the planet circle
+            cgCtx.addEllipse(in: CGRect(x: 0, y: 0, width: radius * 2, height: radius * 2))
+            cgCtx.clip()
+
+            // Base colour — deep indigo gradient lit from top-left
+            guard let baseGrad = CGGradient(
+                colorsSpace: CGColorSpaceCreateDeviceRGB(),
+                colors: [
+                    UIColor(red: 0.22, green: 0.12, blue: 0.48, alpha: 1.0).cgColor,
+                    UIColor(red: 0.10, green: 0.05, blue: 0.24, alpha: 1.0).cgColor,
+                    UIColor(red: 0.05, green: 0.02, blue: 0.14, alpha: 1.0).cgColor
+                ] as CFArray,
+                locations: [0.0, 0.55, 1.0]) else { return }
+
+            let lightPt = CGPoint(x: radius * 0.55, y: radius * 1.55)
+            cgCtx.drawRadialGradient(baseGrad,
+                startCenter: lightPt, startRadius: 0,
+                endCenter:   center,  endRadius:   radius * 1.1,
+                options:     [.drawsAfterEndLocation])
+
+            // Horizontal surface bands — gas-giant look
+            let bands: [(y: CGFloat, h: CGFloat, r: CGFloat, g: CGFloat, b: CGFloat, a: CGFloat)] = [
+                (radius * 0.22, radius * 0.11, 0.32, 0.14, 0.60, 0.50),
+                (radius * 0.52, radius * 0.08, 0.10, 0.05, 0.28, 0.55),
+                (radius * 0.78, radius * 0.09, 0.28, 0.16, 0.58, 0.42),
+                (radius * 1.18, radius * 0.08, 0.10, 0.05, 0.26, 0.52),
+                (radius * 1.52, radius * 0.11, 0.24, 0.12, 0.52, 0.45),
+            ]
+            for b in bands {
+                cgCtx.setFillColor(UIColor(red: b.r, green: b.g, blue: b.b, alpha: b.a).cgColor)
+                cgCtx.fill(CGRect(x: 0, y: b.y - b.h, width: radius * 2, height: b.h * 2))
+            }
+
+            // Specular highlight — soft white spot upper-left
+            guard let specGrad = CGGradient(
+                colorsSpace: CGColorSpaceCreateDeviceRGB(),
+                colors: [
+                    UIColor.white.withAlphaComponent(0.18).cgColor,
+                    UIColor.white.withAlphaComponent(0.00).cgColor
+                ] as CFArray,
+                locations: [0.0, 1.0]) else { return }
+
+            let specPt = CGPoint(x: radius * 0.52, y: radius * 1.48)
+            cgCtx.drawRadialGradient(specGrad,
+                startCenter: specPt, startRadius: 0,
+                endCenter:   specPt, endRadius:   radius * 0.75,
+                options:     [])
+        }
+        return SKTexture(image: image)
+    }
+
+    // Full ellipse ring. Placing two instances at z:-1 (dim) and z:+2 (bright) with
+    // the planet body at z:0 in between creates a natural split-ring illusion.
+    private func makePlanetRing(radius: CGFloat, alpha: CGFloat, zPos: CGFloat) -> SKShapeNode {
+        let ringW = radius * 1.85
+        let ringH = radius * 0.24
+        let rect  = CGRect(x: -ringW, y: -ringH / 2, width: ringW * 2, height: ringH)
+        let ring  = SKShapeNode(path: UIBezierPath(ovalIn: rect).cgPath)
+        ring.fillColor   = UIColor(red: 0.55, green: 0.32, blue: 0.88, alpha: alpha * 0.25)
+        ring.strokeColor = UIColor(red: 0.62, green: 0.38, blue: 0.92, alpha: alpha)
+        ring.lineWidth   = kDeviceTablet ? 3.5 : 2.5
+        ring.blendMode   = .add
+        ring.zPosition   = zPos
+        return ring
+    }
+
+    // MARK: - Shooting Stars
+
+    // Schedules periodic shooting-star streaks at random intervals (4–11 s).
+    private func startShootingStars() {
+        let spawnLoop = SKAction.repeatForever(SKAction.sequence([
+            SKAction.wait(forDuration: 5.5, withRange: 5.5),
+            SKAction.run { [weak self] in self?.spawnShootingStar() }
+        ]))
+        run(spawnLoop, withKey: "shootingStars")
+    }
+
+    private func spawnShootingStar() {
+        // Spawn from top edge or right edge, travel diagonally downward-left
+        let fromRight = Bool.random()
+        let startX: CGFloat = fromRight
+            ? kViewSize.width + 20
+            : CGFloat.random(in: kViewSize.width * 0.3 ... kViewSize.width)
+        let startY: CGFloat = fromRight
+            ? CGFloat.random(in: kViewSize.height * 0.5 ... kViewSize.height + 20)
+            : kViewSize.height + 20
+
+        let travelX  = CGFloat.random(in: -kViewSize.width * 0.85 ... -kViewSize.width * 0.45)
+        let travelY  = CGFloat.random(in: -kViewSize.height * 0.65 ... -kViewSize.height * 0.35)
+        let dist     = sqrt(travelX * travelX + travelY * travelY)
+        let speed    = CGFloat.random(in: 900...1500)
+        let duration = Double(dist / speed)
+        let angle    = atan2(travelY, travelX) + .pi / 2
+
+        // White core streak
+        let streakLen = CGFloat.random(in: 55...110)
+        let streak    = SKSpriteNode(color: .white, size: CGSize(width: 1.5, height: streakLen))
+        streak.alpha     = 0
+        streak.blendMode = .add
+        streak.zRotation = angle
+        streak.zPosition = 3
+        streak.position  = CGPoint(x: startX, y: startY)
+        addChild(streak)
+
+        // Soft cyan glow copy (wider, dimmer)
+        let glow = SKSpriteNode(
+            color: UIColor(red: 0.6, green: 0.9, blue: 1.0, alpha: 1.0),
+            size: CGSize(width: 4, height: streakLen))
+        glow.blendMode   = .add
+        glow.zRotation   = angle
+        glow.zPosition   = 2
+        glow.position    = streak.position
+        addChild(glow)
+
+        let move = SKAction.moveBy(x: travelX, y: travelY, duration: duration)
+
+        streak.run(SKAction.group([move, SKAction.sequence([
+            SKAction.fadeAlpha(to: 1.0,  duration: duration * 0.08),
+            SKAction.fadeAlpha(to: 0.85, duration: duration * 0.72),
+            SKAction.fadeOut(withDuration: duration * 0.20),
+            SKAction.removeFromParent()
+        ])]))
+
+        glow.run(SKAction.group([
+            SKAction.moveBy(x: travelX, y: travelY, duration: duration),
+            SKAction.sequence([
+                SKAction.fadeAlpha(to: 0.35, duration: duration * 0.08),
+                SKAction.fadeAlpha(to: 0.25, duration: duration * 0.72),
+                SKAction.fadeOut(withDuration: duration * 0.20),
+                SKAction.removeFromParent()
+            ])
+        ]))
+    }
+
+    // MARK: - Background Debris
+
+    // Spawns slow, low-opacity decorative asteroids drifting downward —
+    // the same feel as the gameplay backdrop but non-interactive.
+    private func startBackgroundDebris() {
+        // Seed a few rocks on-screen immediately so it doesn't feel empty at first
+        for i in 0..<4 {
+            let delay = Double(i) * 1.2
+            run(SKAction.wait(forDuration: delay)) {
+                self.spawnBackgroundRock(startY: CGFloat.random(
+                    in: kViewSize.height * 0.2 ... kViewSize.height * 0.95))
+            }
+        }
+
+        // Continuous trickle thereafter
+        run(SKAction.repeatForever(SKAction.sequence([
+            SKAction.wait(forDuration: 3.5, withRange: 2.5),
+            SKAction.run { [weak self] in
+                self?.spawnBackgroundRock(startY: kViewSize.height + 60)
+            }
+        ])), withKey: "debris")
+    }
+
+    private func spawnBackgroundRock(startY: CGFloat) {
+        // Randomly pick from the available meteor sizes
+        let names = [SpriteName.MeteorHuge, SpriteName.MeteorLarge,
+                     SpriteName.MeteorMedium, SpriteName.MeteorSmall]
+        let texName = names.randomElement()!
+        let tex  = GameTextures.sharedInstance.textureWithName(name: texName)
+        let rock = SKSpriteNode(texture: tex)
+
+        // Scale so the largest rock fits nicely without dominating the screen
+        let targetW = CGFloat.random(in: 40...90)
+        let scale   = targetW / rock.size.width
+        rock.setScale(scale)
+
+        // Very low opacity — these are background ambience, not obstacles
+        rock.alpha    = CGFloat.random(in: 0.08...0.22)
+        rock.blendMode = .add
+
+        // Drift speed slower than actual game so it feels like distant parallax
+        let driftSpeed = CGFloat.random(in: 55...120)  // pts/s
+        let duration   = Double((startY + rock.size.height) / driftSpeed)
+
+        rock.position = CGPoint(
+            x: CGFloat.random(in: rock.size.width / 2 ... kViewSize.width - rock.size.width / 2),
+            y: startY)
+        rock.zPosition = 2
+
+        // Gentle tumble
+        let rotateDur = Double.random(in: 6...18)
+        rock.run(SKAction.repeatForever(
+            SKAction.rotate(byAngle: Bool.random() ? .pi * 2 : -.pi * 2, duration: rotateDur)))
+
+        addChild(rock)
+        rock.run(SKAction.sequence([
+            SKAction.moveBy(x: CGFloat.random(in: -25...25), y: -startY - rock.size.height * 2, duration: duration),
+            SKAction.removeFromParent()
+        ]))
+    }
+
+    // MARK: - UI Setup
+
     private func setupUI() {
-        // Modern play button with liquid glass effects
         modernPlayButton = ModernStartButton()
         modernPlayButton.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.35)
-        modernPlayButton.setScale(0.0) // Start invisible for animation
+        modernPlayButton.setScale(0.0)
         addChild(modernPlayButton)
 
-        // Game title
         gameTitle = GameTitle()
         addChild(gameTitle)
 
-        // Ship assembly animation — added to scene inside animateSceneIntro()
         shipAssembly = ShipAssemblyAnimation()
     }
 
     private func setupGlassEffects() {
-        // Create glass container for UI elements
         glassContainer = SKNode()
         addChild(glassContainer)
 
-        // Add glass background effect
         let glassBackground = createGlassBackground()
         glassBackground.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.35)
         glassContainer.addChild(glassBackground)
@@ -141,62 +413,55 @@ public class EnhancedMenuScene: SKScene {
     private func createGlassBackground() -> SKShapeNode {
         let rect = CGRect(x: -120, y: -80, width: 240, height: 160)
         let glassShape = SKShapeNode(rect: rect, cornerRadius: 25)
+        glassShape.fillColor   = SKColor.white.withAlphaComponent(0.10)
+        glassShape.strokeColor = SKColor.cyan.withAlphaComponent(0.30)
+        glassShape.lineWidth   = 2.0
 
-        // Liquid glass appearance
-        glassShape.fillColor = SKColor.white.withAlphaComponent(0.1)
-        glassShape.strokeColor = SKColor.cyan.withAlphaComponent(0.3)
-        glassShape.lineWidth = 2.0
-
-        // Add inner glow
         let innerGlow = SKShapeNode(rect: rect.insetBy(dx: 5, dy: 5), cornerRadius: 20)
-        innerGlow.fillColor = SKColor.clear
-        innerGlow.strokeColor = SKColor.white.withAlphaComponent(0.2)
-        innerGlow.lineWidth = 1.0
+        innerGlow.fillColor   = SKColor.clear
+        innerGlow.strokeColor = SKColor.white.withAlphaComponent(0.20)
+        innerGlow.lineWidth   = 1.0
         glassShape.addChild(innerGlow)
 
         return glassShape
     }
 
+    // MARK: - Info Labels
+
     private func setupInfoLabels() {
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        let appVersion  = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
         let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
 
-        // Container — fades in as one unit; sparkles are children of this node
-        infoContainer = SKNode()
+        infoContainer          = SKNode()
         infoContainer.position = CGPoint(x: kViewSize.width / 2, y: 52)
-        infoContainer.alpha = 0
+        infoContainer.alpha    = 0
         addChild(infoContainer)
 
-        // Copyright label
-        authorLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
-        authorLabel.text = "© 2026 Todd Dube"
-        authorLabel.fontSize = 13
-        authorLabel.fontColor = .white
-        authorLabel.horizontalAlignmentMode = .center
-        authorLabel.verticalAlignmentMode   = .center
-        authorLabel.position = CGPoint(x: 0, y: 14)
+        authorLabel                          = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        authorLabel.text                     = "© 2026 Todd Dube"
+        authorLabel.fontSize                 = 13
+        authorLabel.fontColor                = .white
+        authorLabel.horizontalAlignmentMode  = .center
+        authorLabel.verticalAlignmentMode    = .center
+        authorLabel.position                 = CGPoint(x: 0, y: 14)
         infoContainer.addChild(authorLabel)
 
-        // Version label
-        versionLabel = SKLabelNode(fontNamed: "AvenirNext-Light")
-        versionLabel.text = "v\(appVersion)  ·  build \(buildNumber)"
-        versionLabel.fontSize = 11
-        versionLabel.fontColor = SKColor.cyan.withAlphaComponent(0.85)
+        versionLabel                         = SKLabelNode(fontNamed: "AvenirNext-Light")
+        versionLabel.text                    = "v\(appVersion)  ·  build \(buildNumber)"
+        versionLabel.fontSize                = 11
+        versionLabel.fontColor               = SKColor.cyan.withAlphaComponent(0.85)
         versionLabel.horizontalAlignmentMode = .center
         versionLabel.verticalAlignmentMode   = .center
-        versionLabel.position = CGPoint(x: 0, y: -2)
+        versionLabel.position                = CGPoint(x: 0, y: -2)
         infoContainer.addChild(versionLabel)
 
-        // Thin cyan accent line between labels
-        let accent = SKSpriteNode(
-            color: SKColor.cyan.withAlphaComponent(0.35),
-            size: CGSize(width: 180, height: 0.5))
-        accent.blendMode  = .add
-        accent.position   = CGPoint(x: 0, y: 7)
+        let accent     = SKSpriteNode(color: SKColor.cyan.withAlphaComponent(0.35),
+                                      size: CGSize(width: 180, height: 0.5))
+        accent.blendMode = .add
+        accent.position  = CGPoint(x: 0, y: 7)
         infoContainer.addChild(accent)
 
-        // Pulsing glow halo behind the text
-        let halo = SKShapeNode(rectOf: CGSize(width: 210, height: 36), cornerRadius: 10)
+        let halo        = SKShapeNode(rectOf: CGSize(width: 210, height: 36), cornerRadius: 10)
         halo.fillColor   = SKColor.cyan.withAlphaComponent(0.04)
         halo.strokeColor = SKColor.cyan.withAlphaComponent(0.18)
         halo.lineWidth   = 1.0
@@ -208,17 +473,16 @@ public class EnhancedMenuScene: SKScene {
             SKAction.fadeAlpha(to: 1.0, duration: 2.2)
         ])))
 
-        // Best score — gold treatment, shown only when > 0
         let best = GameSettings.shared.bestScore
         if best > 0 {
             let fmt = NumberFormatter(); fmt.numberStyle = .decimal
-            let bestLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
-            bestLabel.text = "BEST  \(fmt.string(from: NSNumber(value: best)) ?? "\(best)")"
-            bestLabel.fontSize = 15
-            bestLabel.fontColor = SKColor(red: 1.0, green: 0.9, blue: 0.0, alpha: 0.85)
-            bestLabel.horizontalAlignmentMode = .center
+            let bestLabel                         = SKLabelNode(fontNamed: "AvenirNext-Bold")
+            bestLabel.text                        = "BEST  \(fmt.string(from: NSNumber(value: best)) ?? "\(best)")"
+            bestLabel.fontSize                    = 15
+            bestLabel.fontColor                   = SKColor(red: 1.0, green: 0.9, blue: 0.0, alpha: 0.85)
+            bestLabel.horizontalAlignmentMode     = .center
             bestLabel.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.27)
-            bestLabel.alpha = 0
+            bestLabel.alpha    = 0
             addChild(bestLabel)
             bestLabel.run(SKAction.sequence([
                 SKAction.wait(forDuration: 2.4),
@@ -226,21 +490,20 @@ public class EnhancedMenuScene: SKScene {
             ]))
         }
 
-        // Control hint
-        let controlHint = SKLabelNode(fontNamed: "AvenirNext-Medium")
-        controlHint.text = "Tap or tilt to navigate"
-        controlHint.fontSize = 16
-        controlHint.fontColor = SKColor.cyan.withAlphaComponent(0.75)
-        controlHint.horizontalAlignmentMode = .center
+        let controlHint                          = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        controlHint.text                         = "Tap or tilt to navigate"
+        controlHint.fontSize                     = 16
+        controlHint.fontColor                    = SKColor.cyan.withAlphaComponent(0.75)
+        controlHint.horizontalAlignmentMode      = .center
         controlHint.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.18)
-        controlHint.alpha = 0.0
-        controlHint.name = "controlHint"
+        controlHint.alpha    = 0.0
+        controlHint.name     = "controlHint"
         addChild(controlHint)
         controlHint.run(SKAction.sequence([
             SKAction.wait(forDuration: 2.2),
             SKAction.fadeAlpha(to: 0.75, duration: 0.8),
             SKAction.repeatForever(SKAction.sequence([
-                SKAction.fadeAlpha(to: 0.4, duration: 1.8),
+                SKAction.fadeAlpha(to: 0.40, duration: 1.8),
                 SKAction.fadeAlpha(to: 0.75, duration: 1.8)
             ]))
         ]))
@@ -249,31 +512,30 @@ public class EnhancedMenuScene: SKScene {
     }
 
     private func setupInfoLabelAnimations() {
-        // Copyright: slow color shimmer white → cyan → white → soft magenta
-        let shimmer = SKAction.repeatForever(SKAction.sequence([
-            SKAction.colorize(with: .white,                                             colorBlendFactor: 1, duration: 2.5),
-            SKAction.colorize(with: SKColor(red: 0.4, green: 1.0, blue: 1.0, alpha: 1), colorBlendFactor: 1, duration: 2.5),
-            SKAction.colorize(with: .white,                                             colorBlendFactor: 1, duration: 2.5),
-            SKAction.colorize(with: SKColor(red: 1.0, green: 0.5, blue: 1.0, alpha: 1), colorBlendFactor: 1, duration: 2.5)
-        ]))
-        authorLabel.run(shimmer)
+        authorLabel.run(SKAction.repeatForever(SKAction.sequence([
+            SKAction.colorize(with: .white,
+                              colorBlendFactor: 1, duration: 2.5),
+            SKAction.colorize(with: SKColor(red: 0.4, green: 1.0, blue: 1.0, alpha: 1),
+                              colorBlendFactor: 1, duration: 2.5),
+            SKAction.colorize(with: .white,
+                              colorBlendFactor: 1, duration: 2.5),
+            SKAction.colorize(with: SKColor(red: 1.0, green: 0.5, blue: 1.0, alpha: 1),
+                              colorBlendFactor: 1, duration: 2.5)
+        ])))
 
-        // Version: gentle breathe
         versionLabel.run(SKAction.repeatForever(SKAction.sequence([
             SKAction.fadeAlpha(to: 0.45, duration: 3.0),
             SKAction.fadeAlpha(to: 0.85, duration: 3.0)
         ])))
 
-        // Spawn sparkles continuously once the container is visible
-        let spawnSparkles = SKAction.repeatForever(SKAction.sequence([
+        infoContainer.run(SKAction.repeatForever(SKAction.sequence([
             SKAction.wait(forDuration: 0.55, withRange: 0.7),
             SKAction.run { [weak self] in self?.spawnInfoSparkle() }
-        ]))
-        infoContainer.run(spawnSparkles, withKey: "sparkles")
+        ])), withKey: "sparkles")
     }
 
     private func spawnInfoSparkle() {
-        let radius = CGFloat.random(in: 0.7...2.2)
+        let radius  = CGFloat.random(in: 0.7...2.2)
         let sparkle = SKShapeNode(circleOfRadius: radius)
         let palette: [SKColor] = [
             .cyan,
@@ -285,11 +547,8 @@ public class EnhancedMenuScene: SKScene {
         sparkle.strokeColor = .clear
         sparkle.blendMode   = .add
         sparkle.alpha       = 0
-
-        // Random scatter across the label area
-        sparkle.position = CGPoint(
-            x: CGFloat.random(in: -105...105),
-            y: CGFloat.random(in: -18...28))
+        sparkle.position    = CGPoint(x: CGFloat.random(in: -105...105),
+                                      y: CGFloat.random(in: -18...28))
         infoContainer.addChild(sparkle)
 
         let peakAlpha = CGFloat.random(in: 0.55...1.0)
@@ -304,34 +563,29 @@ public class EnhancedMenuScene: SKScene {
         ]))
     }
 
+    // MARK: - Scene Intro Animation
+
     private func animateSceneIntro() {
-        // Camera intro effect - using available shake for dramatic intro
         cameraEffects.performGameStartShake()
 
-        // Ship assembly — parts fly in from the four corners ~0.7 s after the
-        // camera shake fires, landing at 57 % screen height (between title and button).
         let assemblyPos = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.57)
         run(SKAction.wait(forDuration: 0.7)) {
             self.shipAssembly?.runAssembly(in: self, at: assemblyPos)
         }
 
-        // Glass container animation
-        let glassDelay = SKAction.wait(forDuration: 1.5)
-        let glassFadeIn = SKAction.fadeIn(withDuration: 0.8)
-        let glassSequence = SKAction.sequence([glassDelay, glassFadeIn])
-        glassContainer.run(glassSequence)
+        glassContainer.run(SKAction.sequence([
+            SKAction.wait(forDuration: 1.5),
+            SKAction.fadeIn(withDuration: 0.8)
+        ]))
 
-        // Modern play button animation
-        let buttonDelay = SKAction.wait(forDuration: 2.0)
-        let buttonScale = animationController.createPulseAnimation(scale: 1.0, duration: 0.6)
-        let buttonSequence = SKAction.sequence([buttonDelay, buttonScale])
-        modernPlayButton.run(buttonSequence) {
-            // Add subtle floating animation
+        modernPlayButton.run(SKAction.sequence([
+            SKAction.wait(forDuration: 2.0),
+            animationController.createPulseAnimation(scale: 1.0, duration: 0.6)
+        ])) {
             let floating = self.animationController.createFloatingAnimation(distance: 5, duration: 3.0)
             self.modernPlayButton.run(SKAction.repeatForever(floating))
         }
 
-        // Info container — fade + float up together
         infoContainer.run(SKAction.sequence([
             SKAction.wait(forDuration: 2.5),
             SKAction.group([
@@ -340,44 +594,42 @@ public class EnhancedMenuScene: SKScene {
             ])
         ]))
 
-        // Dynamic lighting effects
-        let lightingDelay = SKAction.wait(forDuration: 1.0)
-        let lightingSequence = SKAction.sequence([lightingDelay, SKAction.run {
-            self.dynamicLighting.transitionToGameplay()
-        }])
-        run(lightingSequence)
+        run(SKAction.sequence([
+            SKAction.wait(forDuration: 1.0),
+            SKAction.run { self.dynamicLighting.transitionToGameplay() }
+        ]))
     }
 
     // MARK: - Update
+
     public override func update(_ currentTime: TimeInterval) {
         let deltaTime: TimeInterval = lastUpdateTime > 0
-            ? min(currentTime - lastUpdateTime, 1.0 / 30.0) // cap at 30 FPS floor
+            ? min(currentTime - lastUpdateTime, 1.0 / 30.0)
             : 1.0 / 60.0
         lastUpdateTime = currentTime
 
-        parallaxBackground.update(deltaTime: deltaTime, gameSpeed: 0.3)
+        // 0.5 gameSpeed — faster scroll makes the menu feel alive vs 0.3
+        parallaxBackground.update(deltaTime: deltaTime, gameSpeed: 0.5)
         nebulae.update(deltaTime: deltaTime)
-        dynamicLighting.update(playerPosition: CGPoint(x: kViewSize.width / 2, y: kViewSize.height / 2))
+        dynamicLighting.update(playerPosition: CGPoint(x: kViewSize.width / 2,
+                                                       y: kViewSize.height / 2))
         cameraEffects.update(deltaTime: deltaTime)
     }
 
     // MARK: - Touch Events
+
     public override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let touchLocation = touch.location(in: self)
 
         if modernPlayButton.contains(touchLocation) {
-            // Animate button tap
-            let scaleDown = SKAction.scale(to: 0.9, duration: 0.1)
-            let scaleUp = SKAction.scale(to: 1.0, duration: 0.1)
-            let tapAnimation = SKAction.sequence([scaleDown, scaleUp])
-            modernPlayButton.run(tapAnimation)
+            modernPlayButton.run(SKAction.sequence([
+                SKAction.scale(to: 0.9, duration: 0.1),
+                SKAction.scale(to: 1.0, duration: 0.1)
+            ]))
             GameAudio.shared.playSoundEffect(.buttonTap)
-
-            // Trigger sparkles at touch location
             createTouchSparkles(at: touchLocation)
 
-            // Transition to game with enhanced effects
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                 self.transitionToGame()
             }
@@ -390,47 +642,48 @@ public class EnhancedMenuScene: SKScene {
             sparkle.position = position
             addChild(sparkle)
 
-            let randomAngle = Float.random(in: 0...(2 * Float.pi))
-            let randomDistance = CGFloat.random(in: 30...60)
-            let targetX = position.x + cos(CGFloat(randomAngle)) * randomDistance
-            let targetY = position.y + sin(CGFloat(randomAngle)) * randomDistance
+            let angle    = Float.random(in: 0...(2 * Float.pi))
+            let distance = CGFloat.random(in: 30...60)
+            let target   = CGPoint(x: position.x + cos(CGFloat(angle)) * distance,
+                                   y: position.y + sin(CGFloat(angle)) * distance)
 
-            let moveAction = SKAction.move(to: CGPoint(x: targetX, y: targetY), duration: 0.6)
-            let fadeAction = SKAction.fadeOut(withDuration: 0.6)
-            let scaleAction = SKAction.scale(to: 0.1, duration: 0.6)
-            let removeAction = SKAction.removeFromParent()
-
-            let sparkleAnimation = SKAction.group([moveAction, fadeAction, scaleAction])
-            let sparkleSequence = SKAction.sequence([sparkleAnimation, removeAction])
-
-            sparkle.run(sparkleSequence)
+            sparkle.run(SKAction.sequence([
+                SKAction.group([
+                    SKAction.move(to: target, duration: 0.6),
+                    SKAction.fadeOut(withDuration: 0.6),
+                    SKAction.scale(to: 0.1, duration: 0.6)
+                ]),
+                SKAction.removeFromParent()
+            ]))
         }
     }
 
+    // MARK: - Scene Transition
+
     private func transitionToGame() {
         cameraEffects.performImpactShake()
+        removeAction(forKey: "shootingStars")
+        removeAction(forKey: "debris")
 
-        // Spawn a ship that launches upward before the transition
-        let shipTex = GameTextures.sharedInstance.textureWithName(name: SpriteName.Player)
+        // Ship launches upward before the scene fade
+        let shipTex    = GameTextures.sharedInstance.textureWithName(name: SpriteName.Player)
         let launchShip = SKSpriteNode(texture: shipTex)
         launchShip.setScale(0.85)
-        launchShip.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.57)
+        launchShip.position  = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.57)
         launchShip.zPosition = 100
         addChild(launchShip)
 
-        // Neon engine glow under the ship
         let engineGlow = SKShapeNode(ellipseOf: CGSize(width: 18, height: 8))
-        engineGlow.fillColor = Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
+        engineGlow.fillColor   = Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
         engineGlow.strokeColor = .clear
-        engineGlow.blendMode = .add
-        engineGlow.alpha = 0.8
-        engineGlow.position = CGPoint(x: 0, y: -launchShip.size.height * 0.4)
-        engineGlow.zPosition = -1
+        engineGlow.blendMode   = .add
+        engineGlow.alpha       = 0.8
+        engineGlow.position    = CGPoint(x: 0, y: -launchShip.size.height * 0.4)
+        engineGlow.zPosition   = -1
         launchShip.addChild(engineGlow)
 
-        // Launch: slow wind-up then fast exit
-        let windUp  = SKAction.moveBy(x: 0, y: -8,  duration: 0.12)
-        let blast   = SKAction.moveBy(x: 0, y: kViewSize.height * 1.6, duration: 0.45)
+        let windUp = SKAction.moveBy(x: 0, y: -8, duration: 0.12)
+        let blast  = SKAction.moveBy(x: 0, y: kViewSize.height * 1.6, duration: 0.45)
         blast.timingMode = .easeIn
         let glowPop = SKAction.sequence([
             SKAction.scale(to: 1.4, duration: 0.08),
@@ -439,10 +692,9 @@ public class EnhancedMenuScene: SKScene {
         launchShip.run(SKAction.sequence([windUp, blast]))
         engineGlow.run(glowPop)
 
-        // Fade everything else and transition
         run(SKAction.wait(forDuration: 0.42)) { [weak self] in
             guard let self else { return }
-            let gameScene = GameScene(size: kViewSize)
+            let gameScene  = GameScene(size: kViewSize)
             let transition = SKTransition.fade(with: .black, duration: 0.5)
             transition.pausesIncomingScene = false
             self.view?.presentScene(gameScene, transition: transition)
