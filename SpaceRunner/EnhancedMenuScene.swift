@@ -176,6 +176,22 @@ public class EnhancedMenuScene: SKScene {
         authorLabel.alpha = 0.0
         addChild(authorLabel)
 
+        // Best score — gold treatment, shown only when > 0
+        let best = GameSettings.shared.bestScore
+        if best > 0 {
+            let bestLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
+            bestLabel.text = "BEST  \(best)"
+            bestLabel.fontSize = 15
+            bestLabel.fontColor = SKColor(red: 1.0, green: 0.9, blue: 0.0, alpha: 0.85)
+            bestLabel.horizontalAlignmentMode = .center
+            bestLabel.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.27)
+            bestLabel.alpha = 0
+            addChild(bestLabel)
+            let bestDelay = SKAction.wait(forDuration: 2.4)
+            let bestFade  = SKAction.fadeAlpha(to: 0.85, duration: 0.6)
+            bestLabel.run(SKAction.sequence([bestDelay, bestFade]))
+        }
+
         // Control hint — TAP or TILT
         let controlHint = SKLabelNode(fontNamed: "AvenirNext-Medium")
         controlHint.text = "Tap or tilt to navigate"
@@ -328,14 +344,44 @@ public class EnhancedMenuScene: SKScene {
     }
 
     private func transitionToGame() {
-        // Enhanced transition with camera zoom out
-        // Enhanced transition with camera shake
         cameraEffects.performImpactShake()
 
-        let gameScene = GameScene(size: kViewSize)
-        let transition = SKTransition.fade(with: SKColor.black, duration: 1.2)
-        transition.pausesIncomingScene = false
+        // Spawn a ship that launches upward before the transition
+        let shipTex = GameTextures.sharedInstance.textureWithName(name: SpriteName.Player)
+        let launchShip = SKSpriteNode(texture: shipTex)
+        launchShip.setScale(0.85)
+        launchShip.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.57)
+        launchShip.zPosition = 100
+        addChild(launchShip)
 
-        view?.presentScene(gameScene, transition: transition)
+        // Neon engine glow under the ship
+        let engineGlow = SKShapeNode(ellipseOf: CGSize(width: 18, height: 8))
+        engineGlow.fillColor = Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
+        engineGlow.strokeColor = .clear
+        engineGlow.blendMode = .add
+        engineGlow.alpha = 0.8
+        engineGlow.position = CGPoint(x: 0, y: -launchShip.size.height * 0.4)
+        engineGlow.zPosition = -1
+        launchShip.addChild(engineGlow)
+
+        // Launch: slow wind-up then fast exit
+        let windUp  = SKAction.moveBy(x: 0, y: -8,  duration: 0.12)
+        let blast   = SKAction.moveBy(x: 0, y: kViewSize.height * 1.6, duration: 0.45)
+        blast.timingMode = .easeIn
+        let glowPop = SKAction.sequence([
+            SKAction.scale(to: 1.4, duration: 0.08),
+            SKAction.scale(to: 1.0, duration: 0.35)
+        ])
+        launchShip.run(SKAction.sequence([windUp, blast]))
+        engineGlow.run(glowPop)
+
+        // Fade everything else and transition
+        run(SKAction.wait(forDuration: 0.42)) { [weak self] in
+            guard let self else { return }
+            let gameScene = GameScene(size: kViewSize)
+            let transition = SKTransition.fade(with: .black, duration: 0.5)
+            transition.pausesIncomingScene = false
+            self.view?.presentScene(gameScene, transition: transition)
+        }
     }
 }

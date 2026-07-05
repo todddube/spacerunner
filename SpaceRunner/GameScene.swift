@@ -713,6 +713,12 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         statusBar.updateScore(score: gameState.score)
         statusBar.updateLives(lives: gameState.lives)
         statusBar.updateStarsCollected(collected: gameState.starsCollected)
+        statusBar.updateTier(currentTier)
+        statusBar.updatePowerUpStatus(
+            shield: powerUpController.isShieldActive,
+            magnet: powerUpController.isMagnetActive,
+            slowMo: powerUpController.isSlowMoActive
+        )
     }
     
     // MARK: - Touch Handling

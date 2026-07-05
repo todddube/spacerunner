@@ -33,6 +33,9 @@ extension Player {
         // Create layered engine effects
         createMultiLayeredEngineTrail()
 
+        // Dash charge indicator dots
+        setupDashIndicator()
+
         // Add dynamic engine sound
         startEnhancedEngineSound()
     }
@@ -213,7 +216,48 @@ extension Player {
         
         // Orbit around player
         particles.particlePositionRange = CGVector(dx: size.width * 1.5, dy: size.height * 1.5)
-        
+
         return particles
+    }
+
+    // MARK: - Dash charge indicator
+
+    /// Three small dots below the ship: cyan=ready, dark=recharging.
+    /// Call once after setup; update via updateDashIndicator(available:progress:).
+    func setupDashIndicator() {
+        let spacing: CGFloat = 10
+        let dotR: CGFloat = 3
+        let startX = -(spacing)  // center 3 dots around 0
+        let yOff = -(size.height * 0.55)
+
+        for i in 0..<3 {
+            let dot = SKShapeNode(circleOfRadius: dotR)
+            dot.fillColor = Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
+            dot.strokeColor = .clear
+            dot.blendMode = .add
+            dot.alpha = 1.0
+            dot.position = CGPoint(x: startX + CGFloat(i) * spacing, y: yOff)
+            dot.zPosition = 10
+            dot.name = "dashDot_\(i)"
+            addChild(dot)
+        }
+    }
+
+    /// Update dot appearance each frame based on dash state.
+    func updateDashIndicator(available: Bool, rechargeProgress: CGFloat) {
+        for i in 0..<3 {
+            guard let dot = childNode(withName: "dashDot_\(i)") as? SKShapeNode else { continue }
+            if available {
+                dot.fillColor = Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
+                dot.alpha = 0.9
+            } else {
+                // Fill dots left-to-right as recharge progresses (0→1)
+                let threshold = CGFloat(i + 1) / 3.0
+                dot.fillColor = rechargeProgress >= threshold
+                    ? Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
+                    : UIColor(white: 0.3, alpha: 1.0)
+                dot.alpha = 0.6
+            }
+        }
     }
 }

@@ -214,12 +214,16 @@ class Player: SKSpriteNode {
     }
 
     func updateDash(deltaTime: TimeInterval) {
-        guard !dashChargeAvailable else { return }
-        dashRechargeTimer -= deltaTime
-        if dashRechargeTimer <= 0 {
-            dashChargeAvailable = true
-            dashRechargeTimer = 0
+        if !dashChargeAvailable {
+            dashRechargeTimer -= deltaTime
+            if dashRechargeTimer <= 0 {
+                dashChargeAvailable = true
+                dashRechargeTimer = 0
+            }
         }
+        // Recharge progress 0→1 over 6s; 1.0 when ready
+        let progress = dashChargeAvailable ? 1.0 : CGFloat(1.0 - (dashRechargeTimer / 6.0))
+        updateDashIndicator(available: dashChargeAvailable, rechargeProgress: progress)
     }
     
     // MARK: - Update Score

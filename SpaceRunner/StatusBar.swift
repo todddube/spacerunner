@@ -59,7 +59,8 @@ class StatusBar: SKNode {
         self.updateLives(lives: lives)
         self.setupStatusBarStarsCollected(collected: stars)
         self.setupPauseButton()
-        
+        self.setupTierAndPowerUpIndicators()
+
         // Ensure StatusBar appears above game elements
         self.zPosition = 100
         
@@ -308,6 +309,88 @@ class StatusBar: SKNode {
         self.statusBarBackground.addChild(self.pauseButton)
     }
     
+    // Tier indicator (small label top-right of bar)
+    private var tierLabel = SKLabelNode()
+    // Power-up dot (small colored circle)
+    private var powerUpDot = SKShapeNode(circleOfRadius: 5)
+
+    // MARK: - Tier + Power-up setup (called once during init, public state updated later)
+    func setupTierAndPowerUpIndicators() {
+        let barH = statusBarBackground.size.height
+        let barW = statusBarBackground.size.width
+
+        // Tier label — sits at top-right corner, inside the bar
+        tierLabel.text = "T1"
+        tierLabel.fontName = "AvenirNext-Bold"
+        tierLabel.fontSize = 11
+        tierLabel.fontColor = Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
+        tierLabel.horizontalAlignmentMode = .right
+        tierLabel.verticalAlignmentMode = .center
+        tierLabel.position = CGPoint(x: barW - 8, y: barH * 0.72)
+        tierLabel.alpha = 0.8
+        tierLabel.zPosition = 5
+        statusBarBackground.addChild(tierLabel)
+
+        // Power-up dot — small indicator to left of tier label
+        powerUpDot.fillColor = .clear
+        powerUpDot.strokeColor = .clear
+        powerUpDot.position = CGPoint(x: barW - 22, y: barH * 0.72)
+        powerUpDot.zPosition = 5
+        statusBarBackground.addChild(powerUpDot)
+    }
+
+    func updateTier(_ tier: Int) {
+        tierLabel.text = "T\(tier)"
+        let tierColors: [Int: UIColor] = [
+            1: Colors.colorFromRGB(rgbvalue: Colors.AccentCyan),
+            2: Colors.colorFromRGB(rgbvalue: Colors.AccentYellow),
+            3: Colors.colorFromRGB(rgbvalue: Colors.AccentMagenta),
+            4: Colors.colorFromRGB(rgbvalue: Colors.DangerRed)
+        ]
+        tierLabel.fontColor = tierColors[tier] ?? Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
+        // Quick flash to draw attention on tier change
+        tierLabel.run(SKAction.sequence([
+            SKAction.scale(to: 1.4, duration: 0.1),
+            SKAction.scale(to: 1.0, duration: 0.15)
+        ]))
+    }
+
+    func updatePowerUpStatus(shield: Bool, magnet: Bool, slowMo: Bool) {
+        if shield {
+            powerUpDot.fillColor = Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
+            powerUpDot.strokeColor = Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
+            if powerUpDot.action(forKey: "pulse") == nil {
+                powerUpDot.run(SKAction.repeatForever(SKAction.sequence([
+                    SKAction.fadeAlpha(to: 0.4, duration: 0.4),
+                    SKAction.fadeAlpha(to: 1.0, duration: 0.4)
+                ])), withKey: "pulse")
+            }
+        } else if magnet {
+            powerUpDot.fillColor = Colors.colorFromRGB(rgbvalue: Colors.AccentYellow)
+            powerUpDot.strokeColor = Colors.colorFromRGB(rgbvalue: Colors.AccentYellow)
+            if powerUpDot.action(forKey: "pulse") == nil {
+                powerUpDot.run(SKAction.repeatForever(SKAction.sequence([
+                    SKAction.fadeAlpha(to: 0.4, duration: 0.4),
+                    SKAction.fadeAlpha(to: 1.0, duration: 0.4)
+                ])), withKey: "pulse")
+            }
+        } else if slowMo {
+            powerUpDot.fillColor = UIColor(red: 0, green: 1.0, blue: 0.8, alpha: 1.0)
+            powerUpDot.strokeColor = UIColor(red: 0, green: 1.0, blue: 0.8, alpha: 1.0)
+            if powerUpDot.action(forKey: "pulse") == nil {
+                powerUpDot.run(SKAction.repeatForever(SKAction.sequence([
+                    SKAction.fadeAlpha(to: 0.4, duration: 0.4),
+                    SKAction.fadeAlpha(to: 1.0, duration: 0.4)
+                ])), withKey: "pulse")
+            }
+        } else {
+            powerUpDot.fillColor = .clear
+            powerUpDot.strokeColor = .clear
+            powerUpDot.removeAction(forKey: "pulse")
+            powerUpDot.alpha = 1.0
+        }
+    }
+
     // MARK: - Public Functions
     func updateScore(score: Int) {
         let formattedScore = formatScore(score)
