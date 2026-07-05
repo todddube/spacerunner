@@ -196,20 +196,27 @@ class ShipAssemblyAnimation: SKNode {
     // MARK: - Flash and reveal
 
     private func flashAndReveal(completion: (() -> Void)?) {
-        // 1. Cyan burst flash at the assembly point.
+        // 1. Cyan burst flash — two concentric circles with additive blending
+        //    so it looks like a radial glow, not a rectangle.
         let cyanColor = Colors.colorFromRGB(rgbvalue: Colors.Magic)
-        let flash = SKSpriteNode(
-            color: cyanColor,
-            size: CGSize(width: shipSize.width * 2.4, height: shipSize.height * 2.4))
-        flash.alpha = 0
-        flash.zPosition = 20
-        addChild(flash)
+        let outerRadius = max(shipSize.width, shipSize.height) * 1.1
+        let innerRadius = outerRadius * 0.5
 
-        flash.run(SKAction.sequence([
-            .fadeAlpha(to: 0.72, duration: 0.06),
-            .fadeAlpha(to: 0.00, duration: 0.22),
-            .removeFromParent()
-        ]))
+        for (radius, alpha) in [(outerRadius, CGFloat(0.45)), (innerRadius, CGFloat(0.80))] {
+            let ring = SKShapeNode(circleOfRadius: radius)
+            ring.fillColor   = cyanColor
+            ring.strokeColor = .clear
+            ring.blendMode   = .add
+            ring.alpha       = 0
+            ring.zPosition   = 20
+            addChild(ring)
+
+            ring.run(SKAction.sequence([
+                .fadeAlpha(to: alpha, duration: 0.06),
+                .fadeAlpha(to: 0.00,  duration: 0.22),
+                .removeFromParent()
+            ]))
+        }
 
         // 2. Dissolve the crop-node fragments behind the flash.
         for part in partNodes {
