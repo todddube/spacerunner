@@ -34,7 +34,6 @@ final class GameViewController: UIViewController {
     // MARK: - Properties
     private var skView: SKView!
     private var currentGameScene: GameScene?
-    // private var overlayHostingController: UIHostingController<GameOverlay>? // TODO: Add SwiftUI files to project
     
     // iOS 18+ specific properties
     private var isSetupComplete = false
@@ -143,73 +142,15 @@ final class GameViewController: UIViewController {
         let transition = SKTransition.fade(with: .black, duration: 0.5)
         skView.presentScene(gameScene, transition: transition)
         
-        // Add SwiftUI overlay
-        // setupGameOverlay(for: gameScene) // TODO: Enable when SwiftUI files are in project
-        
-        logger.info("Presented game scene with SwiftUI overlay")
+        logger.info("Presented game scene")
     }
     
     func returnToMenuScene() {
-        // removeGameOverlay() // TODO: Enable when SwiftUI files are in project
         currentGameScene = nil
         presentMenuScene()
         
         logger.info("Returned to menu scene")
     }
-    
-    // MARK: - SwiftUI Overlay Management
-    // TODO: Uncomment when SwiftUI files are properly added to project
-    /*
-    private func setupGameOverlay(for gameScene: GameScene) {
-        guard isSetupComplete else {
-            logger.warning("Attempted to setup overlay before view controller setup complete")
-            return
-        }
-        
-        // Remove existing overlay
-        removeGameOverlay()
-        
-        // Create SwiftUI overlay - iOS 18+ guaranteed
-        let overlayView = GameOverlay(gameScene: gameScene)
-        let hostingController = UIHostingController(rootView: overlayView)
-        
-        // Configure hosting controller for iOS 18+
-        hostingController.view.backgroundColor = UIColor.clear
-        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        
-        // iOS 18+ optimizations
-        hostingController.view.layer.allowsGroupOpacity = false
-        hostingController.view.isOpaque = false
-        
-        // Add as child view controller
-        addChild(hostingController)
-        view.addSubview(hostingController.view)
-        hostingController.didMove(toParent: self)
-        
-        // Setup constraints with safe area support
-        NSLayoutConstraint.activate([
-            hostingController.view.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            hostingController.view.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            hostingController.view.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            hostingController.view.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
-        ])
-        
-        self.overlayHostingController = hostingController
-        
-        logger.info("SwiftUI overlay configured and added for iOS 18+")
-    }
-    
-    private func removeGameOverlay() {
-        guard let hostingController = overlayHostingController else { return }
-        
-        hostingController.willMove(toParent: nil as UIViewController?)
-        hostingController.view.removeFromSuperview()
-        hostingController.removeFromParent()
-        overlayHostingController = nil
-        
-        logger.debug("SwiftUI overlay removed")
-    }
-    */
     
     // MARK: - App Lifecycle Handlers
     @objc private func handleAppWillResignActive() {

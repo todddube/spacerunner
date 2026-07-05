@@ -51,6 +51,7 @@ public class EnhancedMenuScene: SKScene {
     // MARK: - Info Labels
     private var authorLabel: SKLabelNode!
     private var versionLabel: SKLabelNode!
+    private var infoContainer: SKNode!
 
     // MARK: - Glass Effect Container
     private var glassContainer: SKNode!
@@ -157,42 +158,75 @@ public class EnhancedMenuScene: SKScene {
     }
 
     private func setupInfoLabels() {
-        // Version information
         let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
         let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
 
-        versionLabel = fonts.createLabel(string: "v\(appVersion).\(buildNumber)", labelType: .statusBar)
-        versionLabel.position = CGPoint(x: kViewSize.width / 2, y: 40)
-        versionLabel.horizontalAlignmentMode = .center
-        versionLabel.fontColor = SKColor.cyan.withAlphaComponent(0.7)
-        versionLabel.alpha = 0.0
-        addChild(versionLabel)
+        // Container — fades in as one unit; sparkles are children of this node
+        infoContainer = SKNode()
+        infoContainer.position = CGPoint(x: kViewSize.width / 2, y: 52)
+        infoContainer.alpha = 0
+        addChild(infoContainer)
 
-        // Author information
-        authorLabel = fonts.createLabel(string: UIText.AuthorLabel, labelType: .statusBar)
-        authorLabel.position = CGPoint(x: kViewSize.width / 2, y: 65)
+        // Copyright label
+        authorLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        authorLabel.text = "© 2026 Todd Dube"
+        authorLabel.fontSize = 13
+        authorLabel.fontColor = .white
         authorLabel.horizontalAlignmentMode = .center
-        authorLabel.fontColor = SKColor.white.withAlphaComponent(0.6)
-        authorLabel.alpha = 0.0
-        addChild(authorLabel)
+        authorLabel.verticalAlignmentMode   = .center
+        authorLabel.position = CGPoint(x: 0, y: 14)
+        infoContainer.addChild(authorLabel)
+
+        // Version label
+        versionLabel = SKLabelNode(fontNamed: "AvenirNext-Light")
+        versionLabel.text = "v\(appVersion)  ·  build \(buildNumber)"
+        versionLabel.fontSize = 11
+        versionLabel.fontColor = SKColor.cyan.withAlphaComponent(0.85)
+        versionLabel.horizontalAlignmentMode = .center
+        versionLabel.verticalAlignmentMode   = .center
+        versionLabel.position = CGPoint(x: 0, y: -2)
+        infoContainer.addChild(versionLabel)
+
+        // Thin cyan accent line between labels
+        let accent = SKSpriteNode(
+            color: SKColor.cyan.withAlphaComponent(0.35),
+            size: CGSize(width: 180, height: 0.5))
+        accent.blendMode  = .add
+        accent.position   = CGPoint(x: 0, y: 7)
+        infoContainer.addChild(accent)
+
+        // Pulsing glow halo behind the text
+        let halo = SKShapeNode(rectOf: CGSize(width: 210, height: 36), cornerRadius: 10)
+        halo.fillColor   = SKColor.cyan.withAlphaComponent(0.04)
+        halo.strokeColor = SKColor.cyan.withAlphaComponent(0.18)
+        halo.lineWidth   = 1.0
+        halo.blendMode   = .add
+        halo.position    = CGPoint(x: 0, y: 6)
+        infoContainer.addChild(halo)
+        halo.run(SKAction.repeatForever(SKAction.sequence([
+            SKAction.fadeAlpha(to: 0.4, duration: 2.2),
+            SKAction.fadeAlpha(to: 1.0, duration: 2.2)
+        ])))
 
         // Best score — gold treatment, shown only when > 0
         let best = GameSettings.shared.bestScore
         if best > 0 {
+            let fmt = NumberFormatter(); fmt.numberStyle = .decimal
             let bestLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
-            bestLabel.text = "BEST  \(best)"
+            bestLabel.text = "BEST  \(fmt.string(from: NSNumber(value: best)) ?? "\(best)")"
             bestLabel.fontSize = 15
             bestLabel.fontColor = SKColor(red: 1.0, green: 0.9, blue: 0.0, alpha: 0.85)
             bestLabel.horizontalAlignmentMode = .center
             bestLabel.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.27)
             bestLabel.alpha = 0
             addChild(bestLabel)
-            let bestDelay = SKAction.wait(forDuration: 2.4)
-            let bestFade  = SKAction.fadeAlpha(to: 0.85, duration: 0.6)
-            bestLabel.run(SKAction.sequence([bestDelay, bestFade]))
+            bestLabel.run(SKAction.sequence([
+                SKAction.wait(forDuration: 2.4),
+                SKAction.fadeAlpha(to: 0.85, duration: 0.6)
+            ]))
         }
 
-        // Control hint — TAP or TILT
+        // Control hint
         let controlHint = SKLabelNode(fontNamed: "AvenirNext-Medium")
         controlHint.text = "Tap or tilt to navigate"
         controlHint.fontSize = 16
@@ -202,41 +236,72 @@ public class EnhancedMenuScene: SKScene {
         controlHint.alpha = 0.0
         controlHint.name = "controlHint"
         addChild(controlHint)
-
-        // Animate hint in after button appears and pulse it
-        let hintDelay = SKAction.wait(forDuration: 2.2)
-        let hintFadeIn = SKAction.fadeAlpha(to: 0.75, duration: 0.8)
-        let hintPulse = SKAction.repeatForever(SKAction.sequence([
-            SKAction.fadeAlpha(to: 0.4, duration: 1.8),
-            SKAction.fadeAlpha(to: 0.75, duration: 1.8)
+        controlHint.run(SKAction.sequence([
+            SKAction.wait(forDuration: 2.2),
+            SKAction.fadeAlpha(to: 0.75, duration: 0.8),
+            SKAction.repeatForever(SKAction.sequence([
+                SKAction.fadeAlpha(to: 0.4, duration: 1.8),
+                SKAction.fadeAlpha(to: 0.75, duration: 1.8)
+            ]))
         ]))
-        controlHint.run(SKAction.sequence([hintDelay, hintFadeIn, hintPulse]))
 
-        // Add subtle breathing animation to info labels
         setupInfoLabelAnimations()
     }
 
     private func setupInfoLabelAnimations() {
-        let breathe = SKAction.sequence([
-            SKAction.fadeAlpha(to: 0.4, duration: 2.5),
-            SKAction.fadeAlpha(to: 0.8, duration: 2.5)
-        ])
+        // Copyright: slow color shimmer white → cyan → white → soft magenta
+        let shimmer = SKAction.repeatForever(SKAction.sequence([
+            SKAction.colorize(with: .white,                                             colorBlendFactor: 1, duration: 2.5),
+            SKAction.colorize(with: SKColor(red: 0.4, green: 1.0, blue: 1.0, alpha: 1), colorBlendFactor: 1, duration: 2.5),
+            SKAction.colorize(with: .white,                                             colorBlendFactor: 1, duration: 2.5),
+            SKAction.colorize(with: SKColor(red: 1.0, green: 0.5, blue: 1.0, alpha: 1), colorBlendFactor: 1, duration: 2.5)
+        ]))
+        authorLabel.run(shimmer)
 
-        let versionBreathe = SKAction.sequence([
-            SKAction.fadeAlpha(to: 0.3, duration: 3.0),
-            SKAction.fadeAlpha(to: 0.7, duration: 3.0)
-        ])
+        // Version: gentle breathe
+        versionLabel.run(SKAction.repeatForever(SKAction.sequence([
+            SKAction.fadeAlpha(to: 0.45, duration: 3.0),
+            SKAction.fadeAlpha(to: 0.85, duration: 3.0)
+        ])))
 
-        // Delayed breathing animation
-        let delayedBreathe = SKAction.sequence([
-            SKAction.wait(forDuration: 3.0),
-            SKAction.run {
-                self.authorLabel.run(SKAction.repeatForever(breathe))
-                self.versionLabel.run(SKAction.repeatForever(versionBreathe))
-            }
-        ])
+        // Spawn sparkles continuously once the container is visible
+        let spawnSparkles = SKAction.repeatForever(SKAction.sequence([
+            SKAction.wait(forDuration: 0.55, withRange: 0.7),
+            SKAction.run { [weak self] in self?.spawnInfoSparkle() }
+        ]))
+        infoContainer.run(spawnSparkles, withKey: "sparkles")
+    }
 
-        run(delayedBreathe)
+    private func spawnInfoSparkle() {
+        let radius = CGFloat.random(in: 0.7...2.2)
+        let sparkle = SKShapeNode(circleOfRadius: radius)
+        let palette: [SKColor] = [
+            .cyan,
+            .white,
+            SKColor(red: 0.8, green: 0.4, blue: 1.0, alpha: 1),
+            SKColor(red: 0.4, green: 1.0, blue: 0.8, alpha: 1)
+        ]
+        sparkle.fillColor   = palette.randomElement()!
+        sparkle.strokeColor = .clear
+        sparkle.blendMode   = .add
+        sparkle.alpha       = 0
+
+        // Random scatter across the label area
+        sparkle.position = CGPoint(
+            x: CGFloat.random(in: -105...105),
+            y: CGFloat.random(in: -18...28))
+        infoContainer.addChild(sparkle)
+
+        let peakAlpha = CGFloat.random(in: 0.55...1.0)
+        sparkle.run(SKAction.sequence([
+            SKAction.group([
+                SKAction.fadeAlpha(to: peakAlpha, duration: 0.12),
+                SKAction.moveBy(x: CGFloat.random(in: -6...6),
+                                y: CGFloat.random(in: 6...18), duration: 1.1)
+            ]),
+            SKAction.fadeOut(withDuration: 0.5),
+            SKAction.removeFromParent()
+        ]))
     }
 
     private func animateSceneIntro() {
@@ -266,15 +331,14 @@ public class EnhancedMenuScene: SKScene {
             self.modernPlayButton.run(SKAction.repeatForever(floating))
         }
 
-        // Info labels animation
-        let infoDelay = SKAction.wait(forDuration: 2.5)
-        let infoFadeIn = SKAction.fadeIn(withDuration: 1.0)
-        let infoUpward = SKAction.moveBy(x: 0, y: 10, duration: 1.0)
-        let infoAnimation = SKAction.group([infoFadeIn, infoUpward])
-        let infoSequence = SKAction.sequence([infoDelay, infoAnimation])
-
-        authorLabel.run(infoSequence)
-        versionLabel.run(infoSequence)
+        // Info container — fade + float up together
+        infoContainer.run(SKAction.sequence([
+            SKAction.wait(forDuration: 2.5),
+            SKAction.group([
+                SKAction.fadeIn(withDuration: 1.0),
+                SKAction.moveBy(x: 0, y: 10, duration: 1.0)
+            ])
+        ]))
 
         // Dynamic lighting effects
         let lightingDelay = SKAction.wait(forDuration: 1.0)

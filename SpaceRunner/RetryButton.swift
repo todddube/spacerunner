@@ -20,9 +20,9 @@ import SpriteKit
 
 class RetryButton: SKSpriteNode {
     
-    // MARK: - Privat class variables
+    // MARK: - Private class variables
     fileprivate var animation = SKAction()
-    
+
     // MARK: - Init
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
@@ -32,7 +32,6 @@ class RetryButton: SKSpriteNode {
         super.init(texture: texture, color: color, size: size)
     }
     
-    // TODO: 
     convenience init() {
         let texture = GameTextures.sharedInstance.textureWithName(name: SpriteName.ButtonRetry)
         self.init(texture: texture, color: SKColor.white, size: texture.size())

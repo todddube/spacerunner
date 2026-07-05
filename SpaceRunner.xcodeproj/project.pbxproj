@@ -56,7 +56,6 @@
 		276F58FF2E80497B000A7D20 /* Player+EnhancedEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276F58FE2E80497B000A7D20 /* Player+EnhancedEffects.swift */; };
 		276F59012E804997000A7D20 /* StatusBar+GlassEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276F59002E804997000A7D20 /* StatusBar+GlassEffect.swift */; };
 		276F59032E8049A6000A7D20 /* GameAudio+SpatialEffects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276F59022E8049A6000A7D20 /* GameAudio+SpatialEffects.swift */; };
-		277ADDF62E2C19260066E326 /* auto_increment_version.sh in Resources */ = {isa = PBXBuildFile; fileRef = 277ADDF42E2C19260066E326 /* auto_increment_version.sh */; };
 		2782E46B247B058B00204498 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2782E469247B058B00204498 /* Assets.xcassets */; };
 		2792AD951CA1E4AB001C4393 /* GameTitle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2792AD941CA1E4AB001C4393 /* GameTitle.swift */; };
 		2792AD971CA1E748001C4393 /* GameTitleShip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2792AD961CA1E748001C4393 /* GameTitleShip.swift */; };
@@ -156,7 +155,6 @@
 		276F58FE2E80497B000A7D20 /* Player+EnhancedEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Player+EnhancedEffects.swift"; sourceTree = "<group>"; };
 		276F59002E804997000A7D20 /* StatusBar+GlassEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StatusBar+GlassEffect.swift"; sourceTree = "<group>"; };
 		276F59022E8049A6000A7D20 /* GameAudio+SpatialEffects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameAudio+SpatialEffects.swift"; sourceTree = "<group>"; };
-		277ADDF42E2C19260066E326 /* auto_increment_version.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = auto_increment_version.sh; sourceTree = "<group>"; };
 		2782E469247B058B00204498 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2792AD941CA1E4AB001C4393 /* GameTitle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameTitle.swift; sourceTree = "<group>"; };
 		2792AD961CA1E748001C4393 /* GameTitleShip.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameTitleShip.swift; sourceTree = "<group>"; };
@@ -206,28 +204,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		CC001EFFECTS00000001EF01 /* Effects */ = {
-			isa = PBXGroup;
-			children = (
-				01861BA986194BD99B8E07E8 /* ShipBreakEffect.swift */,
-				7AACC9DB9BF54E73B10CC6CD /* ShipAssemblyAnimation.swift */,
-				276F58F62E8048FE000A7D20 /* CameraEffects.swift */,
-				276F58FA2E80493C000A7D20 /* AnimationController.swift */,
-				276F58F42E8048EF000A7D20 /* DynamicLighting.swift */,
-				276F58F82E804920000A7D20 /* EnhancedParticleManager.swift */,
-			);
-			name = Effects;
-			sourceTree = "<group>";
-		};
-		CC002POWERUP00000001PU02 /* PowerUps */ = {
-			isa = PBXGroup;
-			children = (
-				64B9DD07617E49629853A03C /* PowerUp.swift */,
-				4D0FB3124A154A4B96C0D08D /* PowerUpController.swift */,
-			);
-			name = PowerUps;
-			sourceTree = "<group>";
-		};
 		2706E4121C9E1AC20068CDAD = {
 			isa = PBXGroup;
 			children = (
@@ -252,7 +228,6 @@
 		2706E41D1C9E1AC20068CDAD /* SpaceRunner */ = {
 			isa = PBXGroup;
 			children = (
-				277ADDF52E2C19260066E326 /* Scripts */,
 				2706E4541C9E1E620068CDAD /* Classes */,
 				2706E4551C9EE5080068CDAD /* Game Resources */,
 				2792AD861CA1E264001C4393 /* Launch */,
@@ -267,20 +242,20 @@
 			children = (
 				2781DA3A1CA047BB001F9106 /* Buttons */,
 				274BFB281C9F5348001A6852 /* Background */,
-				274BFB201C9EF9EB001A6852 /* Constants */,
-				2792AD931CA1E49E001C4393 /* Interface Nodes */,
-				27FC50861CA2CB8600F601A2 /* Meteor */,
+				274BFB201C9EF9EB001A6852 /* Core */,
+				2792AD931CA1E49E001C4393 /* Nodes */,
+				27FC50861CA2CB8600F601A2 /* Obstacles */,
 				2792AD981CA1EB55001C4393 /* Player */,
 				2706E4801C9EE6070068CDAD /* Scenes */,
 				2773718B1CB820D1002A55B4 /* Shaders */,
-				274BFB1D1C9EF7B3001A6852 /* Singletons */,
+				274BFB1D1C9EF7B3001A6852 /* Resources */,
 				27FE352A1CA5ED0800FF85D6 /* Stars */,
 				279B4BDB1CA32B75008D7245 /* StatusBar */,
 				2706E47F1C9EE6010068CDAD /* ViewController */,
 				AA001000000010000000ACC0 /* Accessibility */,
 				CC001EFFECTS00000001EF01 /* Effects */,
-			CC002POWERUP00000001PU02 /* PowerUps */,
-		);
+				CC002POWERUP00000001PU02 /* PowerUps */,
+			);
 			name = Classes;
 			sourceTree = "<group>";
 		};
@@ -370,7 +345,7 @@
 			name = Scenes;
 			sourceTree = "<group>";
 		};
-		274BFB1D1C9EF7B3001A6852 /* Singletons */ = {
+		274BFB1D1C9EF7B3001A6852 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				274BFB1E1C9EF7C5001A6852 /* GameTextures.swift */,
@@ -380,18 +355,18 @@
 				2717075D1CB2E2080084BADE /* GameShaders.swift */,
 				276630991CADA5A300CF2E43 /* GameAudio.swift */,
 				276F59022E8049A6000A7D20 /* GameAudio+SpatialEffects.swift */,
-		);
+			);
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		274BFB201C9EF9EB001A6852 /* Constants */ = {
+		274BFB201C9EF9EB001A6852 /* Core */ = {
 			isa = PBXGroup;
 			children = (
 				2706E4821C9EE6820068CDAD /* Constants.swift */,
 				274BFB211C9EF9F8001A6852 /* Colors.swift */,
 				274BFB241C9EFB97001A6852 /* Math.swift */,
 				AA1MC0002EA000000001MC00 /* MotionController.swift */,
-		);
+			);
 			name = Core;
 			sourceTree = "<group>";
 		};
@@ -413,21 +388,13 @@
 			name = Shaders;
 			sourceTree = "<group>";
 		};
-		277ADDF52E2C19260066E326 /* Scripts */ = {
-			isa = PBXGroup;
-			children = (
-				277ADDF42E2C19260066E326 /* auto_increment_version.sh */,
-			);
-			path = Scripts;
-			sourceTree = "<group>";
-		};
 		2781DA3A1CA047BB001F9106 /* Buttons */ = {
 			isa = PBXGroup;
 			children = (
 				2723BDAE1CA188B2002F6EBC /* RetryButton.swift */,
 				275F8ABD1CAED3C30081543A /* PauseButton.swift */,
 				276F58FC2E80495A000A7D20 /* ModernStartButton.swift */,
-		);
+			);
 			name = Buttons;
 			sourceTree = "<group>";
 		};
@@ -439,7 +406,7 @@
 			path = ../Launch;
 			sourceTree = "<group>";
 		};
-		2792AD931CA1E49E001C4393 /* Interface Nodes */ = {
+		2792AD931CA1E49E001C4393 /* Nodes */ = {
 			isa = PBXGroup;
 			children = (
 				2792AD941CA1E4AB001C4393 /* GameTitle.swift */,
@@ -456,7 +423,7 @@
 				2792AD991CA1EB67001C4393 /* TouchCircle.swift */,
 				2792AD9B1CA1EF51001C4393 /* Player.swift */,
 				276F58FE2E80497B000A7D20 /* Player+EnhancedEffects.swift */,
-		);
+			);
 			name = Player;
 			sourceTree = "<group>";
 		};
@@ -465,7 +432,7 @@
 			children = (
 				279B4BDC1CA32B8A008D7245 /* StatusBar.swift */,
 				276F59002E804997000A7D20 /* StatusBar+GlassEffect.swift */,
-		);
+			);
 			name = StatusBar;
 			sourceTree = "<group>";
 		};
@@ -487,7 +454,7 @@
 				27FC50871CA2CB9600F601A2 /* Meteor.swift */,
 				27FC50891CA2D16400F601A2 /* MeteorController.swift */,
 				4EEF9BDE896B4998A3F991E9 /* LaserBeam.swift */,
-				);
+			);
 			name = Obstacles;
 			sourceTree = "<group>";
 		};
@@ -522,6 +489,28 @@
 				AA001001000010010000ACC0 /* AccessibilityManager.swift */,
 			);
 			path = Accessibility;
+			sourceTree = "<group>";
+		};
+		CC001EFFECTS00000001EF01 /* Effects */ = {
+			isa = PBXGroup;
+			children = (
+				01861BA986194BD99B8E07E8 /* ShipBreakEffect.swift */,
+				7AACC9DB9BF54E73B10CC6CD /* ShipAssemblyAnimation.swift */,
+				276F58F62E8048FE000A7D20 /* CameraEffects.swift */,
+				276F58FA2E80493C000A7D20 /* AnimationController.swift */,
+				276F58F42E8048EF000A7D20 /* DynamicLighting.swift */,
+				276F58F82E804920000A7D20 /* EnhancedParticleManager.swift */,
+			);
+			name = Effects;
+			sourceTree = "<group>";
+		};
+		CC002POWERUP00000001PU02 /* PowerUps */ = {
+			isa = PBXGroup;
+			children = (
+				64B9DD07617E49629853A03C /* PowerUp.swift */,
+				4D0FB3124A154A4B96C0D08D /* PowerUpController.swift */,
+			);
+			name = PowerUps;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -638,7 +627,6 @@
 				2706E47D1C9EE5080068CDAD /* ShieldDown.caf in Resources */,
 				27B6EEC01CCD2DE400D48CCE /* StarParticle.sks in Resources */,
 				2706E47A1C9EE5080068CDAD /* ButtonTap.caf in Resources */,
-				277ADDF62E2C19260066E326 /* auto_increment_version.sh in Resources */,
 				2754039524685ACA001C5B2A /* Main.storyboard in Resources */,
 				271707601CB2E2260084BADE /* Grayscale.fsh in Resources */,
 				2706E47B1C9EE5080068CDAD /* Explosion.caf in Resources */,
@@ -898,6 +886,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 0705;
 				DEVELOPMENT_TEAM = YT8HJFH9K8;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = SpaceRunner/Info.plist;
@@ -908,8 +897,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				CURRENT_PROJECT_VERSION = 25;
-				MARKETING_VERSION = 0.5.12;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.thedubes.SpaceRunnerWorld;
 				PRODUCT_NAME = SpaceRunner;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -924,8 +912,8 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 0705;
 				DEVELOPMENT_TEAM = YT8HJFH9K8;
-				CURRENT_PROJECT_VERSION = 25;
 				INFOPLIST_FILE = SpaceRunner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SpaceRunner;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
@@ -934,7 +922,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.5.12;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.thedubes.SpaceRunnerWorld;
 				PRODUCT_NAME = SpaceRunner;
 				SWIFT_VERSION = 6.0;
