@@ -908,6 +908,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				CURRENT_PROJECT_VERSION = 25;
+				MARKETING_VERSION = 0.5.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.thedubes.SpaceRunnerWorld;
 				PRODUCT_NAME = SpaceRunner;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -923,6 +925,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEVELOPMENT_TEAM = YT8HJFH9K8;
+				CURRENT_PROJECT_VERSION = 25;
 				INFOPLIST_FILE = SpaceRunner/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = SpaceRunner;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
@@ -931,6 +934,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 0.5.12;
 				PRODUCT_BUNDLE_IDENTIFIER = com.thedubes.SpaceRunnerWorld;
 				PRODUCT_NAME = SpaceRunner;
 				SWIFT_VERSION = 6.0;
