@@ -99,6 +99,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CC003README000000001RE03 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
 		01861BA986194BD99B8E07E8 /* ShipBreakEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShipBreakEffect.swift; sourceTree = "<group>"; };
 		2706E41B1C9E1AC20068CDAD /* SpaceRunner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpaceRunner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2706E41E1C9E1AC20068CDAD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -207,6 +208,7 @@
 		2706E4121C9E1AC20068CDAD = {
 			isa = PBXGroup;
 			children = (
+				CC003README000000001RE03 /* README.md */,
 				2754039424685ACA001C5B2A /* Main.storyboard */,
 				2706E41D1C9E1AC20068CDAD /* SpaceRunner */,
 				AA000005000000050000AABB /* SpaceRunnerTests */,

@@ -1,53 +1,172 @@
 # SpaceRunner
 
-An iOS space-themed endless runner game built with SpriteKit targeting iOS 18+.
+A fast-paced iOS space endless runner built with SpriteKit, targeting iOS 18+.
+
+[![Swift](https://img.shields.io/badge/Swift-6.0-orange.svg)](https://swift.org)
+[![iOS](https://img.shields.io/badge/iOS-18.0+-blue.svg)](https://developer.apple.com/ios/)
+[![Xcode](https://img.shields.io/badge/Xcode-16+-blue.svg)](https://developer.apple.com/xcode/)
+
+---
 
 ## Overview
 
-SpaceRunner is a fast-paced endless runner where players control a spaceship, dodge meteors, and collect stars while surviving as long as possible in the depths of space.
+SpaceRunner is an arcade endless runner where you pilot a spaceship through an ever-thickening field of meteors, collect stars, and chase high scores. The game features a cinematic ship-assembly intro, a top-of-screen glass HUD, a dash mechanic, power-ups, and a full enhanced-graphics pipeline built on top of SpriteKit.
+
+---
 
 ## Features
 
-- **Modern iOS 18+ Architecture**: Built with @Observable patterns, async/await, and SwiftUI integration
-- **Endless Gameplay**: Procedurally generated meteors and collectible stars
-- **Progressive Difficulty**: Game speed and meteor frequency increase over time
-- **Scoring System**: Points for survival time and star collection with streak bonuses
-- **Lives System**: Multiple chances with visual life indicators
-- **Accessibility Support**: VoiceOver, Dynamic Type, and haptic feedback
-- **Audio Experience**: Spatial audio effects with AVAudioEngine
+| Category | Details |
+|---|---|
+| **Gameplay** | Dodge meteors, collect stars, streak multipliers, dash mechanic, power-ups (shield, magnet, slow-mo) |
+| **Progression** | 4 score-based difficulty tiers — speed, spawn rate, and obstacle mix all scale |
+| **Controls** | Touch to steer, double-tap to dash, gyroscope tilt navigation |
+| **Visuals** | Ship assembly intro, multi-layer parallax, nebula system, dynamic lighting, additive-blend particles, cinematic camera shake |
+| **HUD** | Compact top-of-screen glass bar — lives, score, spinning star count, tier badge, power-up indicator, pause |
+| **Audio** | AVAudioEngine spatial audio, layered engine sounds, background music with background/foreground lifecycle management |
+| **Accessibility** | VoiceOver, haptic feedback, Dynamic Type support |
+| **Modern iOS** | `@Observable`, `@MainActor`, `async/await`, SwiftUI-ready overlays |
 
-## Technical Highlights
-
-- **SpriteKit Game Engine**: Smooth 60fps gameplay with optimized physics
-- **SwiftUI Overlays**: Modern menu systems and settings interfaces
-- **Responsive Design**: Supports both iPhone and iPad with adaptive layouts
-- **Performance Optimized**: Sprite atlases, object pooling, and efficient collision detection
+---
 
 ## Requirements
 
-- iOS 18.0+
-- Xcode 16+
-- Swift 6+
+- **iOS 18.0+** (uses `@Observable`, `@MainActor`)
+- **Xcode 16+**
+- **Swift 6**
+- Portrait orientation only; supports iPhone and iPad
+
+---
 
 ## Getting Started
 
-1. Open `SpaceRunner.xcodeproj` in Xcode
-2. Select your target device/simulator
-3. Build and run (⌘R)
+```bash
+git clone https://github.com/todddube/spacerunner.git
+cd spacerunner
+open SpaceRunner.xcodeproj
+```
 
-## Game Controls
+Select a simulator or connected device and press **⌘R**.
 
-- **Tap anywhere**: Move ship up
-- **Release**: Ship falls with gravity
-- **Pause Button**: Top-left corner to pause/resume
+> Building for a physical device requires a valid provisioning profile in your Apple Developer account.
+
+---
+
+## Controls
+
+| Gesture | Action |
+|---|---|
+| Tap / drag | Steer the ship toward your finger |
+| Double-tap | Dash in that direction (6 s recharge) |
+| Tilt | Gyroscope navigation (requires motion permission) |
+| Pause button | Top-left of the glass HUD — toggles pause/resume |
+| Tap anywhere (paused) | Resume game |
+
+---
+
+## Versioning
+
+Version is managed via Xcode build settings:
+
+| Setting | Key | Current |
+|---|---|---|
+| Marketing version | `MARKETING_VERSION` | 0.5.12 |
+| Build number | `CURRENT_PROJECT_VERSION` | 25 |
+
+To bump the version, open **Xcode → Target → General → Identity** and update the fields there. `Info.plist` resolves the values at build time via `$(MARKETING_VERSION)` and `$(CURRENT_PROJECT_VERSION)`. No script needed.
+
+---
 
 ## Architecture
 
-The game follows a clean scene-based architecture:
-- `GameScene`: Main gameplay logic and state management
-- `MenuScene`: Main menu and navigation
-- `Player`: Ship movement and collision handling
-- `MeteorController`/`StarController`: Object spawning and management
-- Modern font and audio systems with iOS 18+ features
+### Scenes
 
-Built with modern iOS development practices including proper memory management, accessibility support, and responsive design patterns.
+| File | Role |
+|---|---|
+| `EnhancedMenuScene.swift` | Main menu — ship assembly animation, sparkle copyright, glass play button |
+| `GameScene.swift` | Core gameplay — 4-phase state machine (tutorial → running → paused → gameOver) |
+| `GameOverScene.swift` | End-game score summary and retry |
+
+### Core Game Components
+
+| File | Role |
+|---|---|
+| `Player.swift` | Ship movement (lerp + dash velocity), lives, scoring, streak |
+| `Player+EnhancedEffects.swift` | Multi-layer engine trails, dash indicator dots |
+| `MeteorController.swift` | Obstacle spawning and tier-based difficulty scaling |
+| `StarController.swift` | Star and power-up spawning |
+| `PowerUpController.swift` | Shield / magnet / slow-mo power-up lifecycle |
+
+### Enhanced Graphics
+
+| File | Role |
+|---|---|
+| `ParallaxBackground.swift` | Multi-layer depth-scrolling starfield |
+| `NebulaSystem.swift` | Animated nebula clouds with additive blending |
+| `DynamicLighting.swift` | Ambient and event-driven SKLightNode system |
+| `EnhancedParticleManager.swift` | Explosions, debris, and collection bursts |
+| `CameraEffects.swift` | Screen shake, zoom pulse, slow motion |
+| `ShipAssemblyAnimation.swift` | Four-quadrant crop-node ship assembly on menu |
+| `AnimationController.swift` | Centralised spring and float animation helpers |
+
+### HUD & UI
+
+| File | Role |
+|---|---|
+| `StatusBar.swift` | Top glass HUD — lives, score, star, tier, power-up dot |
+| `StatusBar+GlassEffect.swift` | Show/hide slide animations and reactive pulses |
+| `ModernStartButton.swift` | Liquid-glass play button with shimmer |
+| `PauseButton.swift` | Pause ↔ resume texture toggle |
+
+### Resources & Systems
+
+| File | Role |
+|---|---|
+| `GameAudio.swift` | AVAudioEngine music + pooled sound effects, app lifecycle pausing |
+| `GameTextures.swift` | Centralised texture cache |
+| `GameFonts.swift` | Label creation with `editundo.ttf` and system-font fallback |
+| `GameSettings.swift` | `@Observable` UserDefaults singleton — best score, touch-circle toggle |
+| `Constants.swift` | Screen size, z-layers, physics categories, sprite names |
+| `Colors.swift` | Shared colour palette (cyan, magenta, yellow, danger red) |
+
+---
+
+## Project Structure
+
+```
+SpaceRunner/
+├── Classes/
+│   ├── Background/         ParallaxBackground, NebulaSystem, Background
+│   ├── Buttons/            PauseButton, RetryButton, ModernStartButton
+│   ├── Core/               Constants, Colors, Math, MotionController
+│   ├── Effects/            CameraEffects, AnimationController, DynamicLighting,
+│   │                       EnhancedParticleManager, ShipBreakEffect,
+│   │                       ShipAssemblyAnimation
+│   ├── Nodes/              GameTitle, GameTitleShip, GameOverTitle, ScoreBoard
+│   ├── Obstacles/          Meteor, MeteorController, LaserBeam
+│   ├── Player/             Player, Player+EnhancedEffects, TouchCircle
+│   ├── PowerUps/           PowerUp, PowerUpController
+│   ├── Resources/          GameTextures, GameParticles, GameFonts, GameSettings,
+│   │                       GameShaders, GameAudio, GameAudio+SpatialEffects
+│   ├── Scenes/             GameScene, EnhancedMenuScene, GameOverScene
+│   ├── Stars/              Star, StarController
+│   ├── StatusBar/          StatusBar, StatusBar+GlassEffect
+│   └── ViewController/     GameViewController, AppDelegate
+├── GameResources/
+│   ├── Fonts/              editundo.ttf
+│   ├── Music/              GameMusic.mp3
+│   └── Sounds/             ButtonTap, Explosion, Pickup, ShieldDown, ShieldUp (.caf)
+└── Assets.xcassets         Sprites, icons, particle atlases
+```
+
+---
+
+## Documentation
+
+- **[ENHANCED_GRAPHICS_README.md](SpaceRunner/ENHANCED_GRAPHICS_README.md)** — deep dive into the visual pipeline: parallax system, dynamic lighting, particle effects, camera system, and animation controller.
+
+---
+
+## Credits
+
+© 2026 Todd Dube. All rights reserved.
