@@ -26,18 +26,18 @@ import SpriteKit
 
 extension Player {
     
-    func setupEnhancedEngineEffects() async {
+    func setupEnhancedEngineEffects() {
         // Remove existing engine particles
         children.filter { $0 is SKEmitterNode }.forEach { $0.removeFromParent() }
-        
+
         // Create layered engine effects
-        await createMultiLayeredEngineTrail()
-        
+        createMultiLayeredEngineTrail()
+
         // Add dynamic engine sound
         startEnhancedEngineSound()
     }
-    
-    private func createMultiLayeredEngineTrail() async {
+
+    private func createMultiLayeredEngineTrail() {
         // Layer 1: Core flame (blue/white center)
         let coreFlame = GameParticles.sharedInstance.createParticle(particles: .engineFlameCore)
         coreFlame.position = CGPoint(x: 0, y: -size.height * 0.3)

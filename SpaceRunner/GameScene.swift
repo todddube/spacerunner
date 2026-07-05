@@ -126,9 +126,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     }
     
     override func didMove(to view: SKView) {
-        Task {
-            await setupScene()
-        }
+        setupScene()
         setupNotifications()
         logger.info("GameScene initialized and moved to view")
     }
@@ -139,23 +137,20 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     }
     
     // MARK: - Setup
-    private func setupScene() async {
+    private func setupScene() {
         backgroundColor = UIColor(red: 0.039, green: 0.039, blue: 0.102, alpha: 1.0) // #0A0A1A arcade deep blue
         setupPhysics()
-        await setupNodes()
-        await setupVisualEffects()
+        setupNodes()
+        setupVisualEffects()
         setupInterface()
         setupAccessibility()
-        
+
         // Initialize game state
         gameState.lives = player.lives
         gameState.score = player.score
         gameState.starsCollected = 0
-        
-        // Start with dramatic camera transition
-        await cameraEffects.performIntroTransition()
-        
-        // Start tutorial phase
+
+        // Enter tutorial immediately — the menu→game SKTransition handles the fade-in visually
         setCurrentPhase(.tutorial)
     }
     
@@ -165,70 +160,53 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         physicsWorld.speed = 1.0
     }
     
-    private func setupNodes() async {
+    private func setupNodes() {
         // Game world setup
         addChild(gameNode)
         gameNode.zPosition = GameLayer.Background
-        
+
         // Effects layer for particles and lighting
         addChild(effectsNode)
         effectsNode.zPosition = GameLayer.Background - 1
-        
+
         // Lighting system
         addChild(lightingNode)
         lightingNode.zPosition = GameLayer.Background + 0.5
         lightingNode.addChild(dynamicLighting)
-        
-        // Enhanced background system
-        await setupEnhancedBackground()
-        
-        // Setup player with enhanced effects
-        await setupEnhancedPlayer()
-        
-        // Setup enhanced controllers
-        gameNode.addChild(meteorController)
-        gameNode.addChild(starController)
-        gameNode.addChild(powerUpController)
-        
-        // Initialize audio with enhanced effects
-        audioManager.playBackgroundMusic()
-        await audioManager.setupSpatialAudio()
-    }
-    
-    private func setupEnhancedBackground() async {
-        // Layer 1: Deep space background
+
+        // Background layers
         background.zPosition = GameLayer.Background
         gameNode.addChild(background)
-        
-        // Layer 2: Parallax star fields
+
         parallaxBackground.setupLayers(for: size)
         parallaxBackground.zPosition = GameLayer.Background + 0.1
         gameNode.addChild(parallaxBackground)
-        
-        // Layer 3: Distant nebulae
+
         nebulae.setupNebulae(for: size)
         nebulae.zPosition = GameLayer.Background + 0.2
         gameNode.addChild(nebulae)
-    }
-    
-    private func setupEnhancedPlayer() async {
+
+        // Player
         player.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.15)
         player.zPosition = GameLayer.Player
-        
-        // Add enhanced engine trails
-        await player.setupEnhancedEngineEffects()
-        
-        // Add dynamic lighting
-        let playerLight = dynamicLighting.addLight(at: player.position, 
-                                                 color: .cyan, 
-                                                 intensity: 0.8,
-                                                 radius: 150)
+        player.setupEnhancedEngineEffects()
+        let playerLight = dynamicLighting.addLight(at: player.position,
+                                                   color: .cyan,
+                                                   intensity: 0.8,
+                                                   radius: 150)
         playerLight.name = "playerLight"
-        
         gameNode.addChild(player)
+
+        // Controllers
+        gameNode.addChild(meteorController)
+        gameNode.addChild(starController)
+        gameNode.addChild(powerUpController)
+
+        // Audio
+        audioManager.playBackgroundMusic()
     }
-    
-    private func setupVisualEffects() async {
+
+    private func setupVisualEffects() {
         // Screen flash for dramatic effects
         screenFlash.texture = nil
         screenFlash.color = .white
