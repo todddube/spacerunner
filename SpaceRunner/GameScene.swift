@@ -16,13 +16,25 @@
 //  .gameOver   — effects play, high scores saved, transitions to GameOverScene
 //
 //  KEY SYSTEMS
-//  - ParallaxBackground + NebulaSystem  — layered scrolling backdrop
+//  - ParallaxBackground + NebulaSystem  — 5-layer scrolling backdrop with star streaks
 //  - DynamicLighting                    — real-time coloured light sources
 //  - EnhancedParticleManager            — multi-intensity explosions and star bursts
-//  - CameraEffects                      — screen shake, slow-motion, intro transition
+//  - CameraEffects                      — screen shake, dash zoom, slow-motion
 //  - AnimationController                — ambient UI micro-animations
 //  - GameAudio (spatial)                — distance-attenuated sound effects
-//  - StatusBar (glass HUD)              — score, lives, stars, pause button
+//  - StatusBar (glass HUD)              — score, lives, stars, tier, power-up, pause
+//  - MeteorController                   — tiered obstacle spawning (meteors, swarms, lasers)
+//  - PowerUpController                  — shield / magnet / slow-mo power-up lifecycle
+//  - AccessibilityManager               — haptic feedback on all gameplay events
+//
+//  PROGRESSION
+//  - Score thresholds 500/1500/3000 advance tiers 1–4
+//  - Boss wave triggers every 1000 points (15s, 1.8× speed, +100 survival bonus)
+//
+//  POWER-UPS
+//  - Shield: blocks damage; dash+shield = dash kill (+10 score)
+//  - Magnet: stars pulled toward ship each frame
+//  - Slow-Mo: physicsWorld.speed = 0.4 for duration
 //
 //  TOUCH HANDLING
 //  - Tutorial phase: tap anywhere in startButton.tapRect to start

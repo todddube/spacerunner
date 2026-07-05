@@ -14,8 +14,11 @@
 //  - Device helpers              — kDeviceTablet for iPhone vs iPad branching
 //  - SpriteName class            — string keys for every texture/node name
 //  - Contact class               — physics category bitmasks for collision routing
+//                                   Player, Meteor, Star, PowerUp
 //  - UIText class                — localised UI string constants
 //  - GameLayer class             — z-position values that define draw order
+//  - GameTier class              — spawn intervals, speed multipliers, power-up
+//                                   intervals for difficulty tiers 1–4
 //
 
 import Foundation

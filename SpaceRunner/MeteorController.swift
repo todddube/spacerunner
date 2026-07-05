@@ -10,13 +10,14 @@
 //  as the game progresses.
 //
 //  RESPONSIBILITIES
-//  - startSendingMeteors()    — begin the spawn timer with initial difficulty settings
-//  - stopSendingMetors()      — halt spawning (pause / game-over)
-//  - update(delta:)           — forward delta time to every active Meteor child node
-//  - gameOver()               — stop spawning and freeze all active meteors
-//  - spawnMeteor()            — pick a random Meteor size variant, position it above
-//      the top of the screen at a random X, and add it as a child node
-//  - Difficulty ramps by shortening the spawn interval over time
+//  - startSendingMeteors() / stopSendingMeteors() — start / halt spawning
+//  - setTier(_ tier:)      — apply GameTier spawn interval and speed multiplier
+//  - update(delta:)        — advance spawn timer; forward delta to Meteor and LaserBeam children
+//  - spawnMeteors()        — standard random-mix spawn (4–10 meteors per wave)
+//  - spawnSwarm()          — tier 2+: 6 small meteors in a horizontal line (20% chance)
+//  - LaserBeam spawn       — tier 3+: horizontal laser obstacle (15% chance)
+//  - speedMultiplier       — applied to each spawned Meteor; ramped by boss waves
+//  - reset()               — full state reset including tier back to 1
 //
 
 import Foundation

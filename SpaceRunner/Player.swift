@@ -11,15 +11,17 @@
 //
 //  RESPONSIBILITIES
 //  - init()                         — load Player texture, configure circular physics body
-//  - update()                       — lerp position toward targetLocation each frame
-//  - updateTargetLocation(newLocation:) — set the destination from a touch event
-//  - enableMovement() / disableMovement() — toggle touch-following (tutorial vs gameplay)
-//  - hitMeteor()                    — decrement lives, trigger invincibility flash
-//  - collectStar()                  — increment score; used by GameScene on star contact
-//  - gameOver()                     — freeze the ship and remove physics body
+//  - update()                       — lerp + dash velocity toward target; banking zRotation
+//  - updateTargetLocation(newLocation:) — set destination from touch or tilt
+//  - enableMovement() / disableMovement() — toggle input (tutorial vs gameplay)
+//  - dash(toward:)                  — velocity spike + i-frames; 6s recharge
+//  - updateDash(deltaTime:)         — recharge timer + dash indicator dots update
+//  - hitMeteor()                    — decrement lives, trigger invincibility blink
+//  - pickedUpStar()                 — increment score with streak multiplier
+//  - gameOver()                     — freeze ship and remove physics body
 //  - startEnhancedEngineEffects() / stopEnhancedEngineEffects() — delegate to
-//      Player+EnhancedEffects extension for multi-layer engine trail particles
-//  - lives / score properties accessed by GameScene for state tracking
+//      Player+EnhancedEffects for multi-layer engine trails and dash indicator
+//  - hasShield                      — set by GameScene when shield power-up is active
 //
 
 import Foundation

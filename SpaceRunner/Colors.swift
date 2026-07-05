@@ -5,8 +5,15 @@
 //  © 2026 Todd Dube. All rights reserved.
 //
 //  PURPOSE
-//  Central palette for all game colours. Use the named constants rather than
-//  raw hex values to keep the look consistent and allow theme updates in one place.
+//  Central vibrant arcade palette. Use named constants instead of raw hex so the
+//  look stays consistent and theme changes require only this file.
+//
+//  PALETTE  (#0A0A1A dark bg, neon accents, additive-blend friendly)
+//  AccentCyan     #00E5FF  — primary neon: shield, engine glow, tier-1 indicator
+//  AccentMagenta  #FF00E5  — secondary neon: meteors, game-over title
+//  AccentYellow   #FFE500  — tertiary neon: stars, score pop, survival bonus
+//  DangerRed      #FF4040  — boss wave alerts, last-life flash
+//  Engine colors alias the arcade palette (EngineGreen→cyan, EngineRed→magenta)
 //
 //  CONTENTS
 //  - Colors class               — hex colour constants (Background, Border, Font variants…)

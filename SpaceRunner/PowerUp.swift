@@ -5,9 +5,15 @@
 //  © 2026 Todd Dube. All rights reserved.
 //
 //  PURPOSE
-//  A collectible orb that grants the player a timed effect.
-//  Three types: shield (5s invulnerability), magnet (8s star pull), slowMo (4s time dilation).
-//  Scrolls downward at the same base speed as small meteors.
+//  A collectible orb that grants the player a timed effect on contact.
+//
+//  TYPES
+//  .shield  (cyan,   🛡️, 5s) — invulnerability; combined with dash → dash kill (+10)
+//  .magnet  (yellow, 🔮, 8s) — stars pulled toward player at 180 pt/s
+//  .slowMo  (teal,   ⏱️, 4s) — physicsWorld.speed = 0.4; player movement unaffected
+//
+//  Spawned by PowerUpController at tier-scaled intervals (18s down to 10s).
+//  Falls at small-meteor speed. Physics body: Contact.PowerUp, contactTest: Contact.Player.
 //
 
 import Foundation
