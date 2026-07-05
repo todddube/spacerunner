@@ -56,9 +56,6 @@ public class EnhancedMenuScene: SKScene {
     private var versionLabel: SKLabelNode!
     private var infoContainer: SKNode!
 
-    // MARK: - Glass Effect Container
-    private var glassContainer: SKNode!
-
     // MARK: - Menu Volume Slider
     private weak var menuVolumeContainer: UIView?
 
@@ -95,7 +92,6 @@ public class EnhancedMenuScene: SKScene {
 
         setupEnhancedVisuals()
         setupUI()
-        setupGlassEffects()
         setupInfoLabels()
         setupControlsHints()
         animateSceneIntro()
@@ -402,7 +398,7 @@ public class EnhancedMenuScene: SKScene {
     private func setupControlsHints() {
         let cardW: CGFloat = kDeviceTablet ? 340 : 280
         let cardH: CGFloat = kDeviceTablet ? 80  : 68
-        let cardY = kViewSize.height * 0.22
+        let cardY = kViewSize.height * 0.26
 
         let card = SKNode()
         card.position = CGPoint(x: kViewSize.width / 2, y: cardY)
@@ -503,27 +499,29 @@ public class EnhancedMenuScene: SKScene {
     // MARK: - Menu Volume Slider (UIKit overlay)
 
     private func setupMenuVolumeSlider(in view: SKView) {
-        let sliderW: CGFloat    = 165
-        let containerW: CGFloat = sliderW + 78
+        let sliderW: CGFloat    = 130
+        let circlesBtnW: CGFloat = 92
         let containerH: CGFloat = 36
-        let x = (view.bounds.width  - containerW) / 2
-        // Sits between the controls card and the copyright strip at the bottom
+        // Sections: icon(22) + vol(24) + slider + divider(12) + circlesBtn
+        let containerW = 22 + 24 + sliderW + 12 + circlesBtnW
+        let x = (view.bounds.width - containerW) / 2
         let y = view.bounds.height - view.bounds.height * 0.145
 
         let container = UIView(frame: CGRect(x: x, y: y, width: containerW, height: containerH))
-        container.backgroundColor = UIColor(red: 0.02, green: 0.05, blue: 0.16, alpha: 0.80)
+        container.backgroundColor = UIColor(red: 0.02, green: 0.05, blue: 0.16, alpha: 0.82)
         container.layer.cornerRadius = containerH / 2
-        container.alpha = 0  // fades in via UIView animation after scene settles
+        container.clipsToBounds = true
+        container.alpha = 0
 
         // Speaker icon
-        let iconLbl = UILabel(frame: CGRect(x: 10, y: 0, width: 24, height: containerH))
+        let iconLbl = UILabel(frame: CGRect(x: 8, y: 0, width: 22, height: containerH))
         iconLbl.text          = "🔊"
-        iconLbl.font          = UIFont.systemFont(ofSize: 13)
+        iconLbl.font          = UIFont.systemFont(ofSize: 12)
         iconLbl.textAlignment = .center
         container.addSubview(iconLbl)
 
         // "VOL" label
-        let volLbl = UILabel(frame: CGRect(x: 34, y: 0, width: 28, height: containerH))
+        let volLbl = UILabel(frame: CGRect(x: 30, y: 0, width: 22, height: containerH))
         volLbl.text          = "VOL"
         volLbl.font          = UIFont.systemFont(ofSize: 9, weight: .bold)
         volLbl.textColor     = UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 0.85)
@@ -531,26 +529,60 @@ public class EnhancedMenuScene: SKScene {
         container.addSubview(volLbl)
 
         // Slider
-        let slider = UISlider(frame: CGRect(x: 62, y: 8, width: sliderW, height: containerH - 16))
-        slider.minimumValue       = 0
-        slider.maximumValue       = 1
-        slider.value              = GameAudio.shared.musicVolume
+        let sliderX: CGFloat = 22 + 24
+        let slider = UISlider(frame: CGRect(x: sliderX, y: 8, width: sliderW, height: containerH - 16))
+        slider.minimumValue          = 0
+        slider.maximumValue          = 1
+        slider.value                 = GameAudio.shared.musicVolume
         slider.minimumTrackTintColor = UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 0.90)
         slider.maximumTrackTintColor = UIColor.white.withAlphaComponent(0.18)
-        slider.thumbTintColor     = UIColor.white
-
-        slider.addAction(UIAction { _ in
-            GameAudio.shared.setMusicVolume(slider.value)
-        }, for: .valueChanged)
-
+        slider.thumbTintColor        = UIColor.white
+        slider.addAction(UIAction { _ in GameAudio.shared.setMusicVolume(slider.value) }, for: .valueChanged)
         container.addSubview(slider)
+
+        // Divider
+        let divX = sliderX + sliderW + 4
+        let divider = UIView(frame: CGRect(x: divX, y: 7, width: 1, height: containerH - 14))
+        divider.backgroundColor = UIColor(red: 0, green: 0.88, blue: 1, alpha: 0.28)
+        container.addSubview(divider)
+
+        // Touch-circles toggle button
+        let circlesX = divX + 5
+        let circlesBtn = UIButton(type: .custom)
+        circlesBtn.frame = CGRect(x: circlesX, y: 0, width: circlesBtnW, height: containerH)
+        let isOn = GameSettings.shared.showTouchCircles
+        circlesBtn.setAttributedTitle(circlesTitle(isOn), for: .normal)
+        circlesBtn.titleLabel?.numberOfLines = 2
+        circlesBtn.titleLabel?.textAlignment = .center
+        circlesBtn.addAction(UIAction { _ in
+            GameSettings.shared.toggleTouchCircles()
+            let on = GameSettings.shared.showTouchCircles
+            circlesBtn.setAttributedTitle(self.circlesTitle(on), for: .normal)
+        }, for: .touchUpInside)
+        container.addSubview(circlesBtn)
+
         view.addSubview(container)
         menuVolumeContainer = container
 
-        // Fade the slider in after the controls card appears
         UIView.animate(withDuration: 0.8, delay: 3.2, options: .curveEaseOut) {
             container.alpha = 1
         }
+    }
+
+    private func circlesTitle(_ on: Bool) -> NSAttributedString {
+        let icon = on ? "⬤" : "○"
+        let color = on
+            ? UIColor(red: 0.00, green: 0.88, blue: 1.00, alpha: 1.0)
+            : UIColor.white.withAlphaComponent(0.50)
+        let top = NSMutableAttributedString(
+            string: icon + "\n",
+            attributes: [.font: UIFont.systemFont(ofSize: 11), .foregroundColor: color])
+        let bottom = NSAttributedString(
+            string: "CIRCLES",
+            attributes: [.font: UIFont.systemFont(ofSize: 9, weight: .semibold),
+                         .foregroundColor: UIColor.white.withAlphaComponent(0.65)])
+        top.append(bottom)
+        return top
     }
 
     // MARK: - UI Setup
@@ -565,32 +597,6 @@ public class EnhancedMenuScene: SKScene {
         addChild(gameTitle)
 
         shipAssembly = ShipAssemblyAnimation()
-    }
-
-    private func setupGlassEffects() {
-        glassContainer = SKNode()
-        addChild(glassContainer)
-
-        let glassBackground = createGlassBackground()
-        glassBackground.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.35)
-        glassContainer.addChild(glassBackground)
-        glassContainer.alpha = 0.0
-    }
-
-    private func createGlassBackground() -> SKShapeNode {
-        let rect = CGRect(x: -120, y: -80, width: 240, height: 160)
-        let glassShape = SKShapeNode(rect: rect, cornerRadius: 25)
-        glassShape.fillColor   = SKColor.white.withAlphaComponent(0.10)
-        glassShape.strokeColor = SKColor.cyan.withAlphaComponent(0.30)
-        glassShape.lineWidth   = 2.0
-
-        let innerGlow = SKShapeNode(rect: rect.insetBy(dx: 5, dy: 5), cornerRadius: 20)
-        innerGlow.fillColor   = SKColor.clear
-        innerGlow.strokeColor = SKColor.white.withAlphaComponent(0.20)
-        innerGlow.lineWidth   = 1.0
-        glassShape.addChild(innerGlow)
-
-        return glassShape
     }
 
     // MARK: - Info Labels
@@ -648,7 +654,7 @@ public class EnhancedMenuScene: SKScene {
             bestLabel.fontSize                    = 15
             bestLabel.fontColor                   = SKColor(red: 1.0, green: 0.9, blue: 0.0, alpha: 0.85)
             bestLabel.horizontalAlignmentMode     = .center
-            bestLabel.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.27)
+            bestLabel.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.155)
             bestLabel.alpha    = 0
             addChild(bestLabel)
             bestLabel.run(SKAction.sequence([
@@ -721,11 +727,6 @@ public class EnhancedMenuScene: SKScene {
         run(SKAction.wait(forDuration: 0.7)) {
             self.shipAssembly?.runAssembly(in: self, at: assemblyPos)
         }
-
-        glassContainer.run(SKAction.sequence([
-            SKAction.wait(forDuration: 1.5),
-            SKAction.fadeIn(withDuration: 0.8)
-        ]))
 
         modernPlayButton.run(SKAction.sequence([
             SKAction.wait(forDuration: 2.0),
