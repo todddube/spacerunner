@@ -120,6 +120,83 @@ class EnhancedParticleManager: SKNode {
         return SKKeyframeSequence(keyframeValues: colors, times: times as [NSNumber])
     }
     
+    // Adds a fire-burst emitter directly to `scene` (not to self).
+    // Used both from GameScene and from ShipBreakEffect for meteor hit explosions.
+    func addFireBurst(at position: CGPoint, to scene: SKScene) {
+        let fire = SKEmitterNode()
+        fire.position    = position
+        fire.zPosition   = GameLayer.Player + 1
+        fire.particleBlendMode = .add
+        fire.particleTexture = GameTextures.sharedInstance.textureWithName(name: SpriteName.Magic)
+        fire.particleBirthRate    = 180
+        fire.numParticlesToEmit   = 80
+        fire.particleLifetime     = 0.55
+        fire.particleLifetimeRange = 0.22
+        fire.emissionAngle        = .pi / 2
+        fire.emissionAngleRange   = .pi * 1.3
+        fire.particleSpeed        = 110
+        fire.particleSpeedRange   = 75
+        fire.particleScale        = 0.85
+        fire.particleScaleRange   = 0.4
+        fire.particleScaleSpeed   = -1.0
+        fire.particleAlpha        = 1.0
+        fire.particleAlphaSpeed   = -2.0
+        fire.xAcceleration        = 0
+        fire.yAcceleration        = 50
+        fire.particleColorBlendFactor = 1.0
+        fire.particleColorSequence = SKKeyframeSequence(
+            keyframeValues: [
+                UIColor.white,
+                UIColor(red: 1.0, green: 0.95, blue: 0.40, alpha: 1.0),
+                UIColor(red: 1.0, green: 0.44, blue: 0.00, alpha: 1.0),
+                UIColor(red: 0.85, green: 0.10, blue: 0.00, alpha: 0.60),
+                UIColor.clear,
+            ] as [Any],
+            times: [0.0, 0.12, 0.38, 0.70, 1.0] as [NSNumber])
+        scene.addChild(fire)
+        fire.run(.sequence([
+            .wait(forDuration: Double(fire.particleLifetime) + 0.35),
+            .removeFromParent()
+        ]))
+    }
+
+    // Adds a smoke-plume emitter directly to `scene`.
+    func addSmokePlume(at position: CGPoint, to scene: SKScene) {
+        let smoke = SKEmitterNode()
+        smoke.position    = position
+        smoke.zPosition   = GameLayer.Player
+        smoke.particleTexture = GameTextures.sharedInstance.textureWithName(name: SpriteName.Magic)
+        smoke.particleBirthRate    = 40
+        smoke.numParticlesToEmit   = 55
+        smoke.particleLifetime     = 1.8
+        smoke.particleLifetimeRange = 0.7
+        smoke.emissionAngle        = .pi / 2
+        smoke.emissionAngleRange   = .pi * 0.5
+        smoke.particleSpeed        = 35
+        smoke.particleSpeedRange   = 18
+        smoke.particleScale        = 0.65
+        smoke.particleScaleRange   = 0.3
+        smoke.particleScaleSpeed   = 0.5
+        smoke.particleAlpha        = 0.48
+        smoke.particleAlphaSpeed   = -0.25
+        smoke.xAcceleration        = 8
+        smoke.yAcceleration        = 52
+        smoke.particleColorBlendFactor = 1.0
+        smoke.particleColorSequence = SKKeyframeSequence(
+            keyframeValues: [
+                UIColor(white: 0.88, alpha: 0.82),
+                UIColor(white: 0.50, alpha: 0.60),
+                UIColor(white: 0.20, alpha: 0.30),
+                UIColor(white: 0.00, alpha: 0.00),
+            ] as [Any],
+            times: [0.0, 0.30, 0.65, 1.0] as [NSNumber])
+        scene.addChild(smoke)
+        smoke.run(.sequence([
+            .wait(forDuration: Double(smoke.particleLifetime) + 0.4),
+            .removeFromParent()
+        ]))
+    }
+
     func createDebris(at position: CGPoint, velocity: CGVector) -> SKEmitterNode {
         let debris = SKEmitterNode()
         

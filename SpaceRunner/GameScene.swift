@@ -382,7 +382,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         // Icon dot + label
         let dot   = isOn ? "●" : "○"
         let label = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
-        label.text = "\(dot)  TOUCH CIRCLES"
+        label.text = "\(dot)  /nTOUCH CIRCLES"
         label.fontSize = 14
         label.fontColor = isOn
             ? SKColor(red: 0.00, green: 0.90, blue: 1.00, alpha: 1.0)
@@ -987,8 +987,12 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
             let hapticType: HapticFeedbackType = (player.lives <= 0) ? .heavy : .medium
             accessibilityManager.playHapticFeedback(hapticType)
 
-            // Enhanced audio with spatial effects
-            audioManager.playSoundEffect(.explosion, at: meteorNode.position)
+            // Last-life death: full-volume non-spatial boom; otherwise spatial at meteor
+            if isLastLife {
+                audioManager.playSoundEffect(.explosion)
+            } else {
+                audioManager.playSoundEffect(.explosion, at: meteorNode.position)
+            }
 
             // Dynamic lighting effect
             dynamicLighting.flashAt(meteorNode.position, color: .red, intensity: 2.0)
@@ -1029,15 +1033,18 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     
     // MARK: - Enhanced Visual Effects
     private func performExplosionEffect(at position: CGPoint) {
-        // Main explosion
+        // Particle burst
         let explosion = particleManager.createExplosion(at: position, intensity: .high)
         effectsNode.addChild(explosion)
-        
-        // Secondary debris
-        let debris = particleManager.createDebris(at: position, velocity: CGVector(dx: 0, dy: -200))
-        effectsNode.addChild(debris)
-        
-        // Shockwave
+
+        // Fire + smoke on every hit
+        particleManager.addFireBurst(at: position, to: self)
+        run(.wait(forDuration: 0.08)) { [weak self] in
+            guard let self else { return }
+            self.particleManager.addSmokePlume(at: position, to: self)
+        }
+
+        // Expanding shockwave ring
         let shockwave = createShockwave(at: position)
         effectsNode.addChild(shockwave)
     }
