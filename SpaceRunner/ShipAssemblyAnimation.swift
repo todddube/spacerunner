@@ -196,26 +196,26 @@ class ShipAssemblyAnimation: SKNode {
     // MARK: - Flash and reveal
 
     private func flashAndReveal(completion: (() -> Void)?) {
-        // 1. Cyan burst flash — two concentric circles with additive blending
-        //    so it looks like a radial glow, not a rectangle.
-        let cyanColor = Colors.colorFromRGB(rgbvalue: Colors.Magic)
-        let outerRadius = max(shipSize.width, shipSize.height) * 1.1
-        let innerRadius = outerRadius * 0.5
+        // 1. Two rapid full-screen flashes — added to the parent scene so they
+        //    cover the entire display regardless of this node's position.
+        if let scene = self.scene {
+            for (delay, peakAlpha) in [(0.0, CGFloat(0.80)), (0.17, CGFloat(0.50))] {
+                let flash = SKSpriteNode(
+                    color: Colors.colorFromRGB(rgbvalue: Colors.Magic),
+                    size: kViewSize)
+                flash.position  = CGPoint(x: kViewSize.width / 2, y: kViewSize.height / 2)
+                flash.blendMode = .add
+                flash.alpha     = 0
+                flash.zPosition = 50
+                scene.addChild(flash)
 
-        for (radius, alpha) in [(outerRadius, CGFloat(0.45)), (innerRadius, CGFloat(0.80))] {
-            let ring = SKShapeNode(circleOfRadius: radius)
-            ring.fillColor   = cyanColor
-            ring.strokeColor = .clear
-            ring.blendMode   = .add
-            ring.alpha       = 0
-            ring.zPosition   = 20
-            addChild(ring)
-
-            ring.run(SKAction.sequence([
-                .fadeAlpha(to: alpha, duration: 0.06),
-                .fadeAlpha(to: 0.00,  duration: 0.22),
-                .removeFromParent()
-            ]))
+                flash.run(SKAction.sequence([
+                    .wait(forDuration: delay),
+                    .fadeAlpha(to: peakAlpha, duration: 0.04),
+                    .fadeAlpha(to: 0.00,      duration: 0.11),
+                    .removeFromParent()
+                ]))
+            }
         }
 
         // 2. Dissolve the crop-node fragments behind the flash.
