@@ -500,7 +500,7 @@ public class EnhancedMenuScene: SKScene {
 
     private func setupMenuVolumeSlider(in view: SKView) {
         let sliderW: CGFloat    = 130
-        let circlesBtnW: CGFloat = 92
+        let circlesBtnW: CGFloat = 106
         let containerH: CGFloat = 36
         // Sections: icon(22) + vol(24) + slider + divider(12) + circlesBtn
         let containerW = 22 + 24 + sliderW + 12 + circlesBtnW
@@ -578,8 +578,8 @@ public class EnhancedMenuScene: SKScene {
             string: icon + "\n",
             attributes: [.font: UIFont.systemFont(ofSize: 11), .foregroundColor: color])
         let bottom = NSAttributedString(
-            string: "CIRCLES",
-            attributes: [.font: UIFont.systemFont(ofSize: 9, weight: .semibold),
+            string: "TOUCH CIRCLES",
+            attributes: [.font: UIFont.systemFont(ofSize: 8, weight: .semibold),
                          .foregroundColor: UIColor.white.withAlphaComponent(0.65)])
         top.append(bottom)
         return top
