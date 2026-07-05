@@ -74,6 +74,9 @@
 		27FC508A1CA2D16400F601A2 /* MeteorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FC50891CA2D16400F601A2 /* MeteorController.swift */; };
 		27FE352C1CA5ED1D00FF85D6 /* Star.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FE352B1CA5ED1D00FF85D6 /* Star.swift */; };
 		27FE352E1CA5EFE800FF85D6 /* StarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FE352D1CA5EFE800FF85D6 /* StarController.swift */; };
+		DA3C64A404C64FEA902C33E9 /* PowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64B9DD07617E49629853A03C /* PowerUp.swift */; };
+		3AF2A23DA8CF4CC4AB52F3DF /* PowerUpController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D0FB3124A154A4B96C0D08D /* PowerUpController.swift */; };
+		B952E7FCB4014E11847DE627 /* LaserBeam.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EEF9BDE896B4998A3F991E9 /* LaserBeam.swift */; };
 		37807C2CC5264E71AADEF153 /* EnhancedMenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37807C2CC5264E71AADEF152 /* EnhancedMenuScene.swift */; };
 		AA000003000000030000AABB /* SpaceRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001000000010000AABB /* SpaceRunnerTests.swift */; };
 		AA000004000000040000AABB /* SpaceRunnerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000002000000020000AABB /* SpaceRunnerUITests.swift */; };
@@ -171,6 +174,9 @@
 		27FC50891CA2D16400F601A2 /* MeteorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeteorController.swift; sourceTree = "<group>"; };
 		27FE352B1CA5ED1D00FF85D6 /* Star.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Star.swift; sourceTree = "<group>"; };
 		27FE352D1CA5EFE800FF85D6 /* StarController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StarController.swift; sourceTree = "<group>"; };
+		64B9DD07617E49629853A03C /* PowerUp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PowerUp.swift; sourceTree = "<group>"; };
+		4D0FB3124A154A4B96C0D08D /* PowerUpController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PowerUpController.swift; sourceTree = "<group>"; };
+		4EEF9BDE896B4998A3F991E9 /* LaserBeam.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LaserBeam.swift; sourceTree = "<group>"; };
 		37807C2CC5264E71AADEF152 /* EnhancedMenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhancedMenuScene.swift; sourceTree = "<group>"; };
 		AA000001000000010000AABB /* SpaceRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceRunnerTests.swift; sourceTree = "<group>"; };
 		AA000002000000020000AABB /* SpaceRunnerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceRunnerUITests.swift; sourceTree = "<group>"; };
@@ -466,6 +472,9 @@
 			children = (
 				27FC50871CA2CB9600F601A2 /* Meteor.swift */,
 				27FC50891CA2D16400F601A2 /* MeteorController.swift */,
+				4EEF9BDE896B4998A3F991E9 /* LaserBeam.swift */,
+				64B9DD07617E49629853A03C /* PowerUp.swift */,
+				4D0FB3124A154A4B96C0D08D /* PowerUpController.swift */,
 			);
 			name = Meteor;
 			sourceTree = "<group>";
@@ -691,6 +700,9 @@
 				2792AD971CA1E748001C4393 /* GameTitleShip.swift in Sources */,
 				2706E4771C9EE5080068CDAD /* SKTTimingFunctions.swift in Sources */,
 				27FC508A1CA2D16400F601A2 /* MeteorController.swift in Sources */,
+				DA3C64A404C64FEA902C33E9 /* PowerUp.swift in Sources */,
+				3AF2A23DA8CF4CC4AB52F3DF /* PowerUpController.swift in Sources */,
+				B952E7FCB4014E11847DE627 /* LaserBeam.swift in Sources */,
 				274BFB251C9EFB97001A6852 /* Math.swift in Sources */,
 				276F58F92E804920000A7D20 /* EnhancedParticleManager.swift in Sources */,
 				27FC50881CA2CB9600F601A2 /* Meteor.swift in Sources */,

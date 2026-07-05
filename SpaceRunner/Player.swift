@@ -51,6 +51,8 @@ class Player: SKSpriteNode {
     internal var immune = false
     internal var starsCollected: Int = 0
     internal var highStreak: Int = 0
+    /// Set by GameScene when a shield power-up is active.
+    internal var hasShield = false
     
     // MARK: - Init
     required init?(coder aDecoder:NSCoder){
@@ -348,6 +350,7 @@ class Player: SKSpriteNode {
         
         // Reset player state
         immune = false
+        hasShield = false
         canMove = false
         isDashing = false
         dashChargeAvailable = true

@@ -36,6 +36,9 @@ class Meteor: SKSpriteNode {
     internal var drift: CGFloat = 0
     private(set) var meteorType: MeteorType = .medium
 
+    /// Multiplied into fall speed each frame. Set by MeteorController per tier.
+    var speedMultiplier: CGFloat = 1.0
+
     // Rotation speed in radians/sec — varied per size for visual interest
     private static let rotationSpeeds: [MeteorType: CGFloat] = [
         .huge:   0.3,
@@ -146,7 +149,7 @@ class Meteor: SKSpriteNode {
     // MARK: - Update
 
     func update(delta: TimeInterval) {
-        let fallSpeed: CGFloat = kDeviceTablet ? CGFloat(delta * 60 * 4) : CGFloat(delta * 60 * 2)
+        let fallSpeed: CGFloat = (kDeviceTablet ? CGFloat(delta * 60 * 4) : CGFloat(delta * 60 * 2)) * speedMultiplier
         position.y -= fallSpeed
         position.x += drift
 

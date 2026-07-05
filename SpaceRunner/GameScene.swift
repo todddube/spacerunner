@@ -79,7 +79,15 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     private let player = Player()
     private let meteorController = MeteorController()
     private let starController = StarController()
+    private let powerUpController = PowerUpController()
     private var statusBar: StatusBar!
+
+    // Progression & boss wave
+    private var currentTier: Int = 1
+    private var bossWaveActive: Bool = false
+    private var bossWaveTimer: TimeInterval = 0
+    private var lastBossScore: Int = 0
+    private let bossWaveDuration: TimeInterval = 15.0
     
     // Visual Effects
     private let screenFlash = SKSpriteNode()
@@ -180,6 +188,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         // Setup enhanced controllers
         gameNode.addChild(meteorController)
         gameNode.addChild(starController)
+        gameNode.addChild(powerUpController)
         
         // Initialize audio with enhanced effects
         audioManager.playBackgroundMusic()
@@ -423,7 +432,10 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         player.startEnhancedEngineEffects()
         meteorController.startSendingMeteors()
         starController.startSendingStars()
+        powerUpController.startSpawning()
         motionController.startMotionUpdates()
+        currentTier = 1
+        lastBossScore = 0
         
         // Update dynamic lighting
         dynamicLighting.transitionToGameplay()
@@ -442,10 +454,11 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         physicsWorld.speed = 0.0
         meteorController.stopSendingMetors()
         starController.stopSendingStars()
+        powerUpController.stopSpawning()
         motionController.stopMotionUpdates()
         audioManager.pauseBackgroundMusic()
     }
-    
+
     private func resumeGameplay() {
         // Resume physics
         physicsWorld.speed = 1.0
@@ -454,6 +467,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         player.enableMovement()
         meteorController.startSendingMeteors()
         starController.startSendingStars()
+        powerUpController.startSpawning()
         motionController.startMotionUpdates()
         audioManager.playBackgroundMusic()
         
@@ -465,7 +479,11 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         physicsWorld.speed = 0.0
         meteorController.stopSendingMetors()
         starController.stopSendingStars()
-        
+        powerUpController.stopSpawning()
+        powerUpController.reset()
+        player.hasShield = false
+        bossWaveActive = false
+
         // Enhanced game over effects
         performGameOverEffects()
         
@@ -553,7 +571,25 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         player.updateDash(deltaTime: deltaTime)
         meteorController.update(delta: deltaTime)
         starController.update(delta: deltaTime)
-        
+        powerUpController.update(delta: deltaTime)
+
+        // Apply active power-up effects
+        player.hasShield = powerUpController.isShieldActive
+        if powerUpController.isSlowMoActive {
+            physicsWorld.speed = 0.4
+        } else if !bossWaveActive {
+            physicsWorld.speed = 1.0
+        }
+        if powerUpController.isMagnetActive {
+            applyMagnetEffect(deltaTime: deltaTime)
+        }
+
+        // Update boss wave timer
+        if bossWaveActive {
+            bossWaveTimer -= deltaTime
+            if bossWaveTimer <= 0 { endBossWave() }
+        }
+
         // Update game state
         updateGameState()
         updateStatusBar()
@@ -571,11 +607,127 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     private func updateGameState() {
         gameState.score = player.score
         gameState.lives = player.lives
-        // starsCollected is tracked directly in gameState when stars are collected
-        
+
         // Check for game over
         if player.lives <= 0 && gameState.currentPhase == .running {
             setCurrentPhase(.gameOver)
+            return
+        }
+
+        // Progression tier escalation
+        let score = gameState.score
+        let newTier: Int
+        if score >= 3000      { newTier = 4 }
+        else if score >= 1500 { newTier = 3 }
+        else if score >= 500  { newTier = 2 }
+        else                  { newTier = 1 }
+
+        if newTier != currentTier {
+            currentTier = newTier
+            meteorController.setTier(newTier)
+            powerUpController.currentTier = newTier
+            parallaxBackground.speedMultiplier = GameTier.speedMultipliers[newTier] ?? 1.0
+            showTierAdvanceEffect(tier: newTier)
+        }
+
+        // Boss wave every 1000 points
+        let bossThreshold = (score / 1000) * 1000
+        if bossThreshold > 0 && bossThreshold > lastBossScore && !bossWaveActive {
+            lastBossScore = bossThreshold
+            startBossWave()
+        }
+    }
+
+    private func showTierAdvanceEffect(tier: Int) {
+        let label = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        label.text = "TIER \(tier)!"
+        label.fontSize = 32
+        label.fontColor = Colors.colorFromRGB(rgbvalue: Colors.AccentCyan)
+        label.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.6)
+        label.zPosition = GameLayer.Interface + 5
+        label.alpha = 0
+        addChild(label)
+
+        label.run(SKAction.sequence([
+            SKAction.group([
+                SKAction.fadeIn(withDuration: 0.2),
+                SKAction.scale(to: 1.2, duration: 0.2)
+            ]),
+            SKAction.wait(forDuration: 0.8),
+            SKAction.group([
+                SKAction.fadeOut(withDuration: 0.3),
+                SKAction.moveBy(x: 0, y: 30, duration: 0.3)
+            ]),
+            SKAction.removeFromParent()
+        ]))
+        performScreenFlash(color: Colors.colorFromRGB(rgbvalue: Colors.AccentCyan), intensity: 0.15)
+    }
+
+    private func startBossWave() {
+        bossWaveActive = true
+        bossWaveTimer = bossWaveDuration
+        // Crank up speed
+        meteorController.speedMultiplier *= 1.8
+        physicsWorld.speed = 1.0
+
+        // Red vignette hint
+        performScreenFlash(color: Colors.colorFromRGB(rgbvalue: Colors.DangerRed), intensity: 0.25)
+
+        let label = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        label.text = "BOSS WAVE!"
+        label.fontSize = 36
+        label.fontColor = Colors.colorFromRGB(rgbvalue: Colors.DangerRed)
+        label.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.55)
+        label.zPosition = GameLayer.Interface + 5
+        label.name = "bossLabel"
+        addChild(label)
+        label.run(SKAction.sequence([
+            SKAction.scale(to: 1.15, duration: 0.12),
+            SKAction.scale(to: 1.0,  duration: 0.12),
+            SKAction.wait(forDuration: 1.0),
+            SKAction.fadeOut(withDuration: 0.4),
+            SKAction.removeFromParent()
+        ]))
+        cameraEffects.performImpactShake()
+    }
+
+    private func endBossWave() {
+        bossWaveActive = false
+        // Restore speed
+        meteorController.speedMultiplier = GameTier.speedMultipliers[currentTier] ?? 1.0
+        // Bonus score
+        player.score += 100
+
+        let label = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        label.text = "SURVIVED! +100"
+        label.fontSize = 28
+        label.fontColor = Colors.colorFromRGB(rgbvalue: Colors.AccentYellow)
+        label.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.55)
+        label.zPosition = GameLayer.Interface + 5
+        addChild(label)
+        label.run(SKAction.sequence([
+            SKAction.fadeIn(withDuration: 0.1),
+            SKAction.wait(forDuration: 1.2),
+            SKAction.group([
+                SKAction.fadeOut(withDuration: 0.4),
+                SKAction.moveBy(x: 0, y: 40, duration: 0.4)
+            ]),
+            SKAction.removeFromParent()
+        ]))
+        performScreenFlash(color: Colors.colorFromRGB(rgbvalue: Colors.AccentYellow), intensity: 0.2)
+    }
+
+    private func applyMagnetEffect(deltaTime: TimeInterval) {
+        let pullSpeed: CGFloat = 180 * CGFloat(deltaTime)
+        for node in starController.children {
+            guard let star = node as? Star else { continue }
+            let diff = CGPoint(x: player.position.x - star.position.x,
+                               y: player.position.y - star.position.y)
+            let dist = hypot(diff.x, diff.y)
+            guard dist > 1 else { continue }
+            let norm = CGPoint(x: diff.x / dist, y: diff.y / dist)
+            star.position.x += norm.x * min(pullSpeed, dist)
+            star.position.y += norm.y * min(pullSpeed, dist)
         }
     }
     
@@ -674,15 +826,55 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
            (contactA == Contact.Star && contactB == Contact.Player) {
             handlePlayerStarCollection(contact)
         }
+
+        // Player collection of power-up
+        if (contactA == Contact.Player && contactB == Contact.PowerUp) ||
+           (contactA == Contact.PowerUp && contactB == Contact.Player) {
+            handlePlayerPowerUpCollection(contact)
+        }
     }
     
+    private func handlePlayerPowerUpCollection(_ contact: SKPhysicsContact) {
+        guard gameState.isGameActive else { return }
+        let orb = contact.bodyA.categoryBitMask == Contact.PowerUp ?
+                  contact.bodyA.node : contact.bodyB.node
+        guard let powerUp = orb as? PowerUp else { return }
+
+        powerUpController.activateEffect(powerUp.powerUpType)
+        powerUp.removeFromParent()
+        player.score += 5
+
+        // Visual feedback
+        dynamicLighting.flashAt(powerUp.position, color: powerUp.powerUpType.color, intensity: 1.8)
+        performScreenFlash(color: powerUp.powerUpType.color, intensity: 0.12)
+        accessibilityManager.playHapticFeedback(.success)
+        createFloatingScoreIndicator(at: powerUp.position, value: 5)
+    }
+
     private func handlePlayerMeteorCollision(_ contact: SKPhysicsContact) {
         guard gameState.isGameActive else { return }
-        
-        let meteor = contact.bodyA.categoryBitMask == Contact.Meteor ? 
+
+        let meteor = contact.bodyA.categoryBitMask == Contact.Meteor ?
                      contact.bodyA.node : contact.bodyB.node
-        
+
         if let meteorNode = meteor as? Meteor {
+            // Dash kill: dashing + shield active = destroy meteor, no damage, +10 score
+            if player.isDashing && player.hasShield {
+                performExplosionEffect(at: meteorNode.position)
+                dynamicLighting.flashAt(meteorNode.position, color: UIColor(red: 1, green: 0.8, blue: 0, alpha: 1), intensity: 2.5)
+                meteorNode.hitMeteor()
+                player.score += 10
+                createFloatingScoreIndicator(at: meteorNode.position, value: 10)
+                accessibilityManager.playHapticFeedback(.heavy)
+                return
+            }
+            // Shield active (but not dashing): absorb the hit, remove meteor, no lives lost
+            if player.hasShield {
+                meteorNode.hitMeteor()
+                performScreenFlash(color: Colors.colorFromRGB(rgbvalue: Colors.AccentCyan), intensity: 0.18)
+                accessibilityManager.playHapticFeedback(.medium)
+                return
+            }
             // Enhanced collision effects
             performExplosionEffect(at: meteorNode.position)
             // Red flash on hit, white on last life
