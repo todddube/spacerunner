@@ -5,111 +5,173 @@
 //  © 2026 Todd Dube. All rights reserved.
 //
 //  PURPOSE
-//  A single meteor obstacle that falls down the screen. Four size variants
-//  (Huge, Large, Medium, Small) are randomly selected by MeteorController.
-//  Circular physics bodies drive collision detection against the player.
+//  A single meteor obstacle that falls down the screen with neon glow, rotation,
+//  and a trailing particle emitter. Four size variants (Huge, Large, Medium, Small)
+//  are randomly selected by MeteorController. Each size has a distinct neon glow
+//  color for clear visual identity. Circular physics bodies drive collision detection.
 //
 //  RESPONSIBILITIES
-//  - init(type:)      — load the appropriate texture variant and configure
-//      a circular SKPhysicsBody with the Meteor contact bitmask
-//  - update(delta:)   — advance vertical position each frame at a speed scaled
-//      by delta time; remove self when scrolled off the bottom of the screen
-//  - hitMeteor()      — trigger the explosion particle effect and remove the node
-//  - gameOver()       — stop movement and remove all actions on game-over
+//  - init(type:)        — load texture variant, add glow halo, rotation, particle trail
+//  - update(delta:)     — advance vertical position; remove when off-screen
+//  - hitMeteor()        — play explosion sound, remove from parent
+//  - gameOver()         — apply grayscale shader
 //
 
 import Foundation
 import SpriteKit
 
 class Meteor: SKSpriteNode {
-    
-    // MARK: - Public enum
-    internal enum MeteorType:Int {
+
+    // MARK: - Types
+
+    internal enum MeteorType: Int {
         case huge
         case large
         case medium
         case small
     }
-    
-    // MARK: - Public class variables
-    internal var drift = CGFloat()
-    
+
+    // MARK: - Properties
+
+    internal var drift: CGFloat = 0
+    private(set) var meteorType: MeteorType = .medium
+
+    // Rotation speed in radians/sec — varied per size for visual interest
+    private static let rotationSpeeds: [MeteorType: CGFloat] = [
+        .huge:   0.3,
+        .large:  0.7,
+        .medium: 1.2,
+        .small:  2.0
+    ]
+
+    // Neon glow colors per type — additive halo sprite for dark-background glow
+    private static let glowColors: [MeteorType: UIColor] = [
+        .huge:   UIColor(red: 1.0, green: 0.55, blue: 0.0,  alpha: 1.0), // orange
+        .large:  UIColor(red: 0.0, green: 0.90, blue: 1.0,  alpha: 1.0), // cyan
+        .medium: UIColor(red: 1.0, green: 0.0,  blue: 0.90, alpha: 1.0), // magenta
+        .small:  UIColor(red: 1.0, green: 0.90, blue: 0.0,  alpha: 1.0), // yellow
+    ]
+
     // MARK: - Init
+
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
-    
+
     override init(texture: SKTexture?, color: UIColor, size: CGSize) {
         super.init(texture: texture, color: color, size: size)
     }
-    
+
     convenience init(type: MeteorType) {
-        var texture = SKTexture()
-        
+        let textureName: String
         switch type {
-            case MeteorType.huge:
-                texture = GameTextures.sharedInstance.textureWithName(name: SpriteName.MeteorHuge)
-                break
-            case MeteorType.large:
-                texture = GameTextures.sharedInstance.textureWithName(name: SpriteName.MeteorLarge)
-                break
-            case MeteorType.medium:
-                texture = GameTextures.sharedInstance.textureWithName(name: SpriteName.MeteorMedium)
-                break
-            case MeteorType.small:
-                texture = GameTextures.sharedInstance.textureWithName(name: SpriteName.MeteorSmall)
-                break
+        case .huge:   textureName = SpriteName.MeteorHuge
+        case .large:  textureName = SpriteName.MeteorLarge
+        case .medium: textureName = SpriteName.MeteorMedium
+        case .small:  textureName = SpriteName.MeteorSmall
         }
-        
-        self.init(texture: texture, color: SKColor.white, size: texture.size())
-    
+        let texture = GameTextures.sharedInstance.textureWithName(name: textureName)
+        self.init(texture: texture, color: .white, size: texture.size())
+        self.meteorType = type
         self.setupMeteor()
         self.setupMeteorPhysics()
-        
     }
-    
+
     // MARK: - Setup
-    fileprivate func setupMeteor() {
-        self.zPosition = GameLayer.Meteor
-        
+
+    private func setupMeteor() {
+        zPosition = GameLayer.Meteor
+
+        // Neon glow halo — same texture, scaled 1.35x, additive blend, colored
+        addGlowHalo()
+
+        // Continuous spin at type-appropriate speed
+        let rotSpeed = Meteor.rotationSpeeds[meteorType] ?? 1.0
+        let rotDir: CGFloat = Bool.random() ? 1.0 : -1.0
+        let fullRotation = SKAction.rotate(byAngle: rotDir * .pi * 2, duration: Double((.pi * 2) / rotSpeed))
+        run(SKAction.repeatForever(fullRotation), withKey: "rotation")
+
+        // Small trailing particle emitter
+        addTrailParticles()
     }
-    
-    fileprivate func setupMeteorPhysics() {
-        self.physicsBody = SKPhysicsBody(circleOfRadius: self.size.width / 2, center: self.anchorPoint)
-        self.physicsBody?.categoryBitMask = Contact.Meteor
-        self.physicsBody?.collisionBitMask = 0x0  // Ignore collisions
-        self.physicsBody?.contactTestBitMask = 0x0 // Ignore contact
+
+    private func addGlowHalo() {
+        guard let tex = texture, let glowColor = Meteor.glowColors[meteorType] else { return }
+
+        let halo = SKSpriteNode(texture: tex, color: glowColor, size: size * 1.35)
+        halo.colorBlendFactor = 1.0
+        halo.blendMode = .add
+        halo.alpha = 0.55
+        halo.zPosition = -1
+
+        // Pulse the glow slightly
+        let glowPulse = SKAction.sequence([
+            SKAction.fadeAlpha(to: 0.75, duration: 0.6),
+            SKAction.fadeAlpha(to: 0.35, duration: 0.6)
+        ])
+        halo.run(SKAction.repeatForever(glowPulse))
+        addChild(halo)
     }
-    
+
+    private func addTrailParticles() {
+        guard let glowColor = Meteor.glowColors[meteorType] else { return }
+
+        let trail = SKEmitterNode()
+        trail.particleTexture    = GameTextures.sharedInstance.textureWithName(name: SpriteName.Magic)
+        trail.particleBirthRate  = 18
+        trail.particleLifetime   = 0.6
+        trail.particleLifetimeRange = 0.2
+        trail.particleSpeed      = 20
+        trail.particleSpeedRange = 10
+        trail.emissionAngle      = .pi / 2  // upward (opposite to fall direction)
+        trail.emissionAngleRange = 0.4
+        trail.particleScale      = 0.2
+        trail.particleScaleSpeed = -0.3
+        trail.particleAlpha      = 0.7
+        trail.particleAlphaSpeed = -1.2
+        trail.particleColor             = glowColor
+        trail.particleColorBlendFactor  = 1.0
+        trail.zPosition                 = -2
+        trail.position           = .zero
+        addChild(trail)
+    }
+
+    private func setupMeteorPhysics() {
+        physicsBody = SKPhysicsBody(circleOfRadius: size.width / 2, center: anchorPoint)
+        physicsBody?.categoryBitMask    = Contact.Meteor
+        physicsBody?.collisionBitMask   = 0x0
+        physicsBody?.contactTestBitMask = 0x0
+    }
+
     // MARK: - Update
-    func update(delta:TimeInterval) {
-        // move vertically down the screen based on the device type
-        self.position.y = kDeviceTablet ? self.position.y - CGFloat(delta * 60 * 4) : self.position.y - CGFloat(delta * 60 * 2)
-        
-        // Add the drift to the X position
-        self.position.x = self.position.x + self.drift
-        
-        // If meteor is complely off screen at the bottom remove from the parent
-        if self.position.y < (0 - self.size.height) {
-            self.removeFromParent()
-        }
-        
-        // If meteor is completely off screen left or right remove from parent
-        if self.position.x < (0 - self.size.width) || self.position.x > (kViewSize.width + self.size.width) {
-            self.removeFromParent()
+
+    func update(delta: TimeInterval) {
+        let fallSpeed: CGFloat = kDeviceTablet ? CGFloat(delta * 60 * 4) : CGFloat(delta * 60 * 2)
+        position.y -= fallSpeed
+        position.x += drift
+
+        if position.y < -size.height ||
+           position.x < -size.width ||
+           position.x > kViewSize.width + size.width {
+            removeFromParent()
         }
     }
-    
-    // MARK: - Action functions
+
+    // MARK: - Actions
+
     func hitMeteor() {
         GameAudio.shared.playSoundEffect(.explosion)
-        self.run(SKAction.wait(forDuration: 0.1), completion: {
+        run(SKAction.wait(forDuration: 0.1)) {
             self.removeFromParent()
-        })
+        }
     }
-    
+
     func gameOver() {
-        // Apply grayscale shader
         GameShaders.sharedInstance.shadeGray(node: self)
     }
+}
+
+// Convenience operator for CGSize scaling
+private func * (size: CGSize, scale: CGFloat) -> CGSize {
+    CGSize(width: size.width * scale, height: size.height * scale)
 }

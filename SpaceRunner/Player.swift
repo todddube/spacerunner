@@ -28,22 +28,29 @@ import SpriteKit
 class Player: SKSpriteNode {
     
     // MARK: - Private class constants
-    fileprivate let touchOffset:CGFloat = kDeviceTablet ? 64.0:32.0
-    // filter movement by 5% - modifed to adjustment parameters
-    // 11/18/16 - Updated to 10%
-    fileprivate let filter:CGFloat = 0.10
-    
+    fileprivate let touchOffset: CGFloat = kDeviceTablet ? 64.0 : 32.0
+    fileprivate let filter: CGFloat = 0.12
+
     // MARK: - Private class variables
     fileprivate var targetPosition = CGPoint()
     fileprivate var canMove = false
-    fileprivate var streakCount:Int = 0
-    
+    fileprivate var streakCount: Int = 0
+
+    // Horizontal velocity tracking for ship banking
+    fileprivate var lastFrameX: CGFloat = 0
+
+    // Dash mechanic
+    private(set) var isDashing = false
+    private(set) var dashChargeAvailable = true
+    private var dashRechargeTimer: TimeInterval = 0
+    fileprivate var dashVelocity = CGPoint.zero
+
     // MARK: - Public class variables
-    internal var score:Int = 0
-    internal var lives:Int = 3     // This was 4
+    internal var score: Int = 0
+    internal var lives: Int = 3
     internal var immune = false
-    internal var starsCollected:Int = 0
-    internal var highStreak:Int = 0
+    internal var starsCollected: Int = 0
+    internal var highStreak: Int = 0
     
     // MARK: - Init
     required init?(coder aDecoder:NSCoder){
@@ -86,10 +93,10 @@ class Player: SKSpriteNode {
     }
     
     fileprivate func setupPlayer() {
-        // Initial position is centered horz and 20% up the Y axis
-        self.position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.2)
-        self.targetPosition = self.position
-        self.zPosition = GameLayer.Player
+        position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.2)
+        targetPosition = position
+        lastFrameX = position.x
+        zPosition = GameLayer.Player
     }
     
     fileprivate func setupPlayerPhysics() {
@@ -148,11 +155,69 @@ class Player: SKSpriteNode {
     }
 
     fileprivate func move() {
-        let newX = Smooth(startPoint: self.position.x, endPoint: self.targetPosition.x, filter: self.filter)
-        let newY = Smooth(startPoint: self.position.y, endPoint: self.targetPosition.y, filter: self.filter)
-        
-        self.position = CGPoint(x: newX, y: newY)
+        // Lerp toward touch/tilt target
+        let lerpX = Smooth(startPoint: position.x, endPoint: targetPosition.x, filter: filter)
+        let lerpY = Smooth(startPoint: position.y, endPoint: targetPosition.y, filter: filter)
 
+        // Layer dash velocity on top and clamp to screen bounds
+        let margin = size.width * 0.5
+        let rawX = lerpX + dashVelocity.x
+        let rawY = lerpY + dashVelocity.y
+        let clampedX = max(margin, min(rawX, kViewSize.width - margin))
+        let clampedY = max(kViewSize.height * 0.08, min(rawY, kViewSize.height * 0.90))
+
+        // Bank ship based on horizontal movement speed (max ±8°)
+        let horizontalDelta = clampedX - position.x
+        let maxBankAngle: CGFloat = 0.14
+        let rawBank = -(horizontalDelta / max(size.width * 0.06, 1)) * maxBankAngle
+        let targetBank = max(-maxBankAngle, min(rawBank, maxBankAngle))
+        zRotation = Smooth(startPoint: zRotation, endPoint: targetBank, filter: 0.15)
+
+        position = CGPoint(x: clampedX, y: clampedY)
+        lastFrameX = clampedX
+
+        // Decay dash velocity each frame
+        if dashVelocity != .zero {
+            dashVelocity.x *= 0.82
+            dashVelocity.y *= 0.82
+            if abs(dashVelocity.x) < 0.3 && abs(dashVelocity.y) < 0.3 {
+                dashVelocity = .zero
+            }
+        }
+    }
+
+    // MARK: - Dash
+    func dash(toward direction: CGPoint) {
+        guard dashChargeAvailable, canMove else { return }
+
+        let magnitude = sqrt(direction.x * direction.x + direction.y * direction.y)
+        guard magnitude > 1 else { return }
+        let norm = CGPoint(x: direction.x / magnitude, y: direction.y / magnitude)
+
+        isDashing = true
+        dashChargeAvailable = false
+        immune = true
+        dashRechargeTimer = 6.0
+        dashVelocity = CGPoint(x: norm.x * 32, y: norm.y * 32)
+
+        createBoostEffect()
+
+        // End i-frames after dash completes (velocity decays in ~0.3 s)
+        run(SKAction.wait(forDuration: 0.30)) { [weak self] in
+            self?.isDashing = false
+            self?.run(SKAction.wait(forDuration: 0.12)) {
+                if self?.alpha == 1.0 { self?.immune = false }
+            }
+        }
+    }
+
+    func updateDash(deltaTime: TimeInterval) {
+        guard !dashChargeAvailable else { return }
+        dashRechargeTimer -= deltaTime
+        if dashRechargeTimer <= 0 {
+            dashChargeAvailable = true
+            dashRechargeTimer = 0
+        }
     }
     
     // MARK: - Update Score
@@ -284,10 +349,16 @@ class Player: SKSpriteNode {
         // Reset player state
         immune = false
         canMove = false
-        
+        isDashing = false
+        dashChargeAvailable = true
+        dashRechargeTimer = 0
+        dashVelocity = .zero
+
         // Reset position to initial location
         position = CGPoint(x: kViewSize.width / 2, y: kViewSize.height * 0.2)
         targetPosition = position
+        lastFrameX = position.x
+        zRotation = 0
         
         // Remove any active actions
         removeAllActions()

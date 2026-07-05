@@ -5,93 +5,97 @@
 //  © 2026 Todd Dube. All rights reserved.
 //
 //  PURPOSE
-//  Renders a collection of softly glowing nebula sprites that drift and pulse
-//  in the background, adding atmospheric depth beyond the star-field layers.
-//
-//  RESPONSIBILITIES
-//  - setupNebulae(for:)  — spawn randomised nebula sprites across the scene
-//  - startAnimation()    — begin per-nebula drift, rotation, and alpha pulse loops
-//  - update(deltaTime:)  — advance any time-driven nebula state each frame
-//  - Each nebula is placed at a randomised position, colour-tinted, and given
-//      independent timing to prevent visual repetition
+//  Renders 7–8 vivid arcade-colored nebulae (cyan, magenta, yellow) using
+//  additive blending so they glow against the dark background rather than
+//  muddying it. Each nebula independently pulses in scale and alpha and
+//  drifts slowly downward for a parallax depth effect.
 //
 
 import SpriteKit
 
 @MainActor
 class NebulaSystem: SKNode {
-    
+
     private var nebulae: [SKSpriteNode] = []
+
+    // Vibrant arcade nebula colors — additive blending makes these pop
     private let nebulaColors: [UIColor] = [
-        UIColor(red: 0.5, green: 0.2, blue: 0.8, alpha: 0.3),  // Purple
-        UIColor(red: 0.2, green: 0.5, blue: 0.8, alpha: 0.3),  // Blue
-        UIColor(red: 0.8, green: 0.3, blue: 0.5, alpha: 0.3),  // Pink
-        UIColor(red: 0.3, green: 0.8, blue: 0.6, alpha: 0.3)   // Cyan
+        UIColor(red: 0.0,  green: 0.9,  blue: 1.0,  alpha: 1.0), // cyan
+        UIColor(red: 1.0,  green: 0.0,  blue: 0.9,  alpha: 1.0), // magenta
+        UIColor(red: 1.0,  green: 0.9,  blue: 0.0,  alpha: 1.0), // yellow-gold
+        UIColor(red: 0.25, green: 1.0,  blue: 0.5,  alpha: 1.0), // neon green
+        UIColor(red: 0.5,  green: 0.0,  blue: 1.0,  alpha: 1.0), // violet
+        UIColor(red: 0.0,  green: 0.9,  blue: 1.0,  alpha: 1.0), // cyan (repeat for weight)
+        UIColor(red: 1.0,  green: 0.0,  blue: 0.9,  alpha: 1.0), // magenta (repeat)
     ]
-    
+
     func setupNebulae(for size: CGSize) {
-        let nebulaCount = 4
-        
+        let nebulaCount = 7
+
         for i in 0..<nebulaCount {
-            let nebula = createNebula(size: size)
+            let nebula = createNebula(size: size, index: i)
+            // Distribute across the full scene height (including off-screen spawning area)
             nebula.position = CGPoint(
-                x: CGFloat.random(in: -100...size.width + 100),
-                y: CGFloat.random(in: size.height...size.height * 2)
+                x: CGFloat.random(in: size.width * 0.05 ... size.width * 0.95),
+                y: CGFloat.random(in: size.height * 0.1 ... size.height * 1.8)
             )
             nebula.name = "nebula_\(i)"
             nebulae.append(nebula)
             addChild(nebula)
         }
     }
-    
-    private func createNebula(size: CGSize) -> SKSpriteNode {
-        // Create a large, soft cloud shape
-        let nebulaSize = CGSize(
-            width: CGFloat.random(in: 200...400),
-            height: CGFloat.random(in: 150...300)
-        )
-        
-        let nebula = SKSpriteNode(color: nebulaColors.randomElement() ?? nebulaColors[0], size: nebulaSize)
-        
-        // Create soft edges using blend mode
-        nebula.blendMode = .alpha
-        nebula.alpha = 0.2
-        
-        // Add subtle rotation
-        let rotateAction = SKAction.rotate(byAngle: .pi * 2, duration: Double.random(in: 60...120))
-        nebula.run(SKAction.repeatForever(rotateAction))
-        
-        // Add gentle floating motion
-        let floatUp = SKAction.moveBy(x: CGFloat.random(in: -20...20), y: 30, duration: Double.random(in: 8...15))
-        let floatDown = SKAction.moveBy(x: CGFloat.random(in: -20...20), y: -30, duration: Double.random(in: 8...15))
-        let float = SKAction.sequence([floatUp, floatDown])
-        nebula.run(SKAction.repeatForever(float))
-        
+
+    private func createNebula(size: CGSize, index: Int) -> SKSpriteNode {
+        let nebulaWidth  = CGFloat.random(in: size.width * 0.25 ... size.width * 0.65)
+        let nebulaHeight = CGFloat.random(in: size.height * 0.12 ... size.height * 0.30)
+        let nebulaSize   = CGSize(width: nebulaWidth, height: nebulaHeight)
+
+        let color   = nebulaColors[index % nebulaColors.count]
+        let nebula  = SKSpriteNode(color: color, size: nebulaSize)
+        nebula.blendMode = .add
+        nebula.alpha     = CGFloat.random(in: 0.04 ... 0.10)
+
+        // Gentle slow rotation
+        let duration = Double.random(in: 80...160)
+        nebula.run(SKAction.repeatForever(
+            SKAction.rotate(byAngle: .pi * 2, duration: duration)
+        ))
+
+        // Breathing pulse (scale + alpha, staggered by index)
+        let delay    = Double(index) * 1.3
+        let pulseDur = Double.random(in: 6 ... 11)
+        let baseAlpha = nebula.alpha
+        let pulseSeq = SKAction.sequence([
+            SKAction.wait(forDuration: delay),
+            SKAction.repeatForever(SKAction.sequence([
+                SKAction.group([
+                    SKAction.scale(to: 1.08, duration: pulseDur),
+                    SKAction.fadeAlpha(to: baseAlpha * 1.9, duration: pulseDur)
+                ]),
+                SKAction.group([
+                    SKAction.scale(to: 0.94, duration: pulseDur),
+                    SKAction.fadeAlpha(to: baseAlpha * 0.5, duration: pulseDur)
+                ])
+            ]))
+        ])
+        nebula.run(pulseSeq)
+
         return nebula
     }
-    
+
     func startAnimation() {
-        // Additional pulsing animation for nebulae
-        for nebula in nebulae {
-            let pulse = SKAction.sequence([
-                SKAction.fadeAlpha(to: 0.4, duration: Double.random(in: 3...8)),
-                SKAction.fadeAlpha(to: 0.1, duration: Double.random(in: 3...8))
-            ])
-            nebula.run(SKAction.repeatForever(pulse))
-        }
+        // Animations already started in createNebula — no extra work needed
     }
-    
+
     func update(deltaTime: TimeInterval) {
-        // Slowly move nebulae downward for parallax effect
-        let scrollSpeed: CGFloat = 15.0 * CGFloat(deltaTime)
-        
+        let scrollSpeed: CGFloat = 18.0 * CGFloat(deltaTime)
+
         for nebula in nebulae {
             nebula.position.y -= scrollSpeed
-            
-            // Reset position when off screen
+
             if nebula.position.y < -200 {
-                nebula.position.y = kViewSize.height + 200
-                nebula.position.x = CGFloat.random(in: -100...kViewSize.width + 100)
+                nebula.position.y = kViewSize.height + CGFloat.random(in: 100...300)
+                nebula.position.x = CGFloat.random(in: kViewSize.width * 0.05 ... kViewSize.width * 0.95)
             }
         }
     }

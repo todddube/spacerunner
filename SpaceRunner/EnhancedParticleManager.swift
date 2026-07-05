@@ -108,16 +108,15 @@ class EnhancedParticleManager: SKNode {
     }
     
     private func createExplosionColorSequence() -> SKKeyframeSequence? {
+        // Vibrant arcade palette: white core → cyan → magenta → yellow → clear
         let colors = [
             UIColor.white,
-            UIColor.yellow,
-            UIColor.orange,
-            UIColor.red,
+            UIColor(red: 0.0, green: 0.9, blue: 1.0, alpha: 1.0),  // cyan
+            UIColor(red: 1.0, green: 0.0, blue: 0.9, alpha: 1.0),  // magenta
+            UIColor(red: 1.0, green: 0.9, blue: 0.0, alpha: 1.0),  // yellow-gold
             UIColor.clear
         ]
-        
-        let times = [0.0, 0.2, 0.4, 0.7, 1.0]
-        
+        let times = [0.0, 0.15, 0.40, 0.70, 1.0]
         return SKKeyframeSequence(keyframeValues: colors, times: times as [NSNumber])
     }
     
@@ -141,8 +140,8 @@ class EnhancedParticleManager: SKNode {
         debris.particleAlpha = 0.8
         debris.particleAlphaSpeed = -0.3
         
-        debris.particleColor = UIColor.gray
-        debris.particleColorBlendFactor = 0.8
+        debris.particleColor = UIColor(red: 1.0, green: 0.55, blue: 0.0, alpha: 1.0) // neon orange debris
+        debris.particleColorBlendFactor = 0.9
         
         debris.xAcceleration = 0
         debris.yAcceleration = -100

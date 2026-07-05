@@ -19,23 +19,45 @@ import Foundation
 import SpriteKit
 
 class Colors {
-    // RGB Colors
-    class var Background:Int    {return 0x000000}
-    class var Magic:Int         {return 0x04f2de}
-    class var ScreenFlash:Int   {return 0xffffcc}
-    class var FontBonus:Int     {return 0xb3ff01}
-    class var FontScore:Int     {return 0xe6e7e8}
-    class var FontMenu:Int      {return 0xffffff}
-    class var Border:Int        {return 0x49b9ea}
-    class var EngineGreen:Int   {return 0x55f87e}
-    class var EngineYellow:Int  {return 0xEEF954}
-    class var EngineRed:Int     {return 0xf44336}
-    
-    class func colorFromRGB(rgbvalue rgbValue:Int) -> SKColor {
-        return SKColor(red: CGFloat((rgbValue & 0xFF0000)>>16)/255.0,
-            green: CGFloat((rgbValue & 0x00FF00)>>8)/255.0,
-            blue: CGFloat(rgbValue & 0x0000FF)/255.0,
-            alpha: 1.0)
+    // Core palette — vibrant arcade aesthetic
+    class var Background: Int    { return 0x0A0A1A } // near-black deep blue
+    class var Magic: Int         { return 0x00E5FF } // primary cyan
+    class var ScreenFlash: Int   { return 0xFFFFFF }
+    class var FontBonus: Int     { return 0xFFE500 } // yellow-gold
+    class var FontScore: Int     { return 0xFFFFFF }
+    class var FontMenu: Int      { return 0xFFFFFF }
+    class var Border: Int        { return 0x00E5FF } // cyan
+    class var EngineGreen: Int   { return 0x00E5FF } // cyan engine at normal speed
+    class var EngineYellow: Int  { return 0xFFE500 } // yellow-gold mid engine
+    class var EngineRed: Int     { return 0xFF00E5 } // magenta boost / dash trail
+
+    // Arcade accent colors
+    class var AccentCyan: Int    { return 0x00E5FF }
+    class var AccentMagenta: Int { return 0xFF00E5 }
+    class var AccentYellow: Int  { return 0xFFE500 }
+    class var AccentGreen: Int   { return 0x40FF80 }
+    class var DangerRed: Int     { return 0xFF4040 }
+
+    // Neon meteor glow colors
+    class var MeteorRocky: Int   { return 0xFF8C00 } // orange — standard rock
+    class var MeteorCrystal: Int { return 0x00E5FF } // cyan  — crystal type
+    class var MeteorEnergy: Int  { return 0xFF00E5 } // magenta — energy orb
+
+    class func colorFromRGB(rgbvalue rgbValue: Int) -> SKColor {
+        return SKColor(
+            red:   CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+            green: CGFloat((rgbValue & 0x00FF00) >> 8)  / 255.0,
+            blue:  CGFloat( rgbValue & 0x0000FF)         / 255.0,
+            alpha: 1.0
+        )
     }
-       
+
+    class func colorFromRGB(rgbvalue rgbValue: Int, alpha: CGFloat) -> SKColor {
+        return SKColor(
+            red:   CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
+            green: CGFloat((rgbValue & 0x00FF00) >> 8)  / 255.0,
+            blue:  CGFloat( rgbValue & 0x0000FF)         / 255.0,
+            alpha: alpha
+        )
+    }
 }

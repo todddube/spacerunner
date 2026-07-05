@@ -95,13 +95,26 @@ class CameraEffects: NSObject {
     func performGameStartShake() {
         startShake(intensity: 8.0, duration: 0.5)
     }
-    
+
     func performImpactShake() {
-        startShake(intensity: 15.0, duration: 0.3)
+        startShake(intensity: 14.0, duration: 0.28)
     }
-    
+
+    func performDeathShake() {
+        startShake(intensity: 26.0, duration: 0.65)
+    }
+
     func performCollectionShake() {
         startShake(intensity: 3.0, duration: 0.1)
+    }
+
+    func performDashZoom() {
+        guard let scene = gameScene else { return }
+        let zoomIn = SKAction.scale(to: 1.04, duration: 0.07)
+        zoomIn.timingMode = .easeOut
+        let zoomOut = SKAction.scale(to: 1.0, duration: 0.18)
+        zoomOut.timingMode = .easeOut
+        scene.run(SKAction.sequence([zoomIn, zoomOut]), withKey: "dashZoom")
     }
     
     private func startShake(intensity: CGFloat, duration: TimeInterval) {

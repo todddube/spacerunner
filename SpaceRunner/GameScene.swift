@@ -61,7 +61,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     private(set) var gameState = GameState()
     private let gameSettings = GameSettings.shared
     private let audioManager = GameAudio.shared
-    // private let accessibilityManager = AccessibilityManager.shared // TODO: Add AccessibilityManager to project
+    private let accessibilityManager = AccessibilityManager.shared
     
     // Enhanced Scene Nodes
     private let gameNode = SKNode()
@@ -95,6 +95,10 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     
     private var lastUpdateTime: TimeInterval = 0.0
     private var frameCount: TimeInterval = 0.0
+
+    // Double-tap tracking for dash
+    private var lastTapTime: TimeInterval = 0
+    private var lastTapLocation: CGPoint = .zero
     
     private let logger = Logger(subsystem: "com.todddube.spacerunner", category: "GameScene")
     
@@ -128,7 +132,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     
     // MARK: - Setup
     private func setupScene() async {
-        backgroundColor = UIColor(red: 0.05, green: 0.05, blue: 0.15, alpha: 1.0) // Deep space blue
+        backgroundColor = UIColor(red: 0.039, green: 0.039, blue: 0.102, alpha: 1.0) // #0A0A1A arcade deep blue
         setupPhysics()
         await setupNodes()
         await setupVisualEffects()
@@ -494,11 +498,11 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     }
     
     private func performGameOverEffects() {
-        // Dramatic screen flash
-        performScreenFlash()
-        
+        // Dramatic death flash
+        performScreenFlash(color: .white, intensity: 0.6)
+
         // Camera shake
-        cameraEffects.performImpactShake()
+        cameraEffects.performDeathShake()
         
         // Slow motion effect
         cameraEffects.performSlowMotion(duration: 1.0, factor: 0.2)
@@ -546,6 +550,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
 
         // Update game objects
         player.update()
+        player.updateDash(deltaTime: deltaTime)
         meteorController.update(delta: deltaTime)
         starController.update(delta: deltaTime)
         
@@ -607,7 +612,6 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     
     private func handleGameplayTouch(at location: CGPoint) {
         // Check if pause button was tapped
-        // Get pause button position in scene coordinates
         let pauseButtonScenePosition = convert(statusBar.pauseButton.position, from: statusBar)
         let pauseButtonFrame = CGRect(
             x: pauseButtonScenePosition.x - statusBar.pauseButton.size.width / 2,
@@ -615,15 +619,36 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
             width: statusBar.pauseButton.size.width,
             height: statusBar.pauseButton.size.height
         )
-        
         if pauseButtonFrame.contains(location) {
             statusBar.pauseButton.tapped()
             setCurrentPhase(.paused)
             return
         }
-        
-        // Otherwise, move player
-        player.updateTargetLocation(newLocation: location)
+
+        // Double-tap detection → dash toward tap location
+        let now = CACurrentMediaTime()
+        let timeDelta = now - lastTapTime
+        let dist = hypot(location.x - lastTapLocation.x, location.y - lastTapLocation.y)
+
+        if timeDelta < 0.32 && dist < 90 && player.dashChargeAvailable {
+            let direction = CGPoint(x: location.x - player.position.x, y: location.y - player.position.y)
+            player.dash(toward: direction)
+            cameraEffects.performDashZoom()
+            lastTapTime = 0 // reset to prevent triple-tap chaining
+        } else {
+            player.updateTargetLocation(newLocation: location)
+            lastTapTime = now
+            lastTapLocation = location
+        }
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first, gameState.currentPhase == .running else { return }
+        let location = touch.location(in: self)
+        // Only redirect ship if not mid-dash
+        if !player.isDashing {
+            player.updateTargetLocation(newLocation: location)
+        }
     }
     
     private func handlePausedTouch(at location: CGPoint) {
@@ -660,8 +685,14 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         if let meteorNode = meteor as? Meteor {
             // Enhanced collision effects
             performExplosionEffect(at: meteorNode.position)
-            performScreenFlash()
-            cameraEffects.performImpactShake()
+            // Red flash on hit, white on last life
+            let isLastLife = player.lives <= 1 && !player.immune
+            performScreenFlash(color: isLastLife ? .white : .red, intensity: isLastLife ? 0.5 : 0.28)
+            if isLastLife {
+                cameraEffects.performDeathShake()
+            } else {
+                cameraEffects.performImpactShake()
+            }
 
             // Ship break effect — only fires on a real (non-immune) hit.
             if !player.immune && player.lives > 0 {
@@ -677,6 +708,10 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
             // Update game state
             player.hitMeteor()
             meteorNode.hitMeteor()
+
+            // Haptic feedback — heavy on last life, medium otherwise
+            let hapticType: HapticFeedbackType = (player.lives <= 0) ? .heavy : .medium
+            accessibilityManager.playHapticFeedback(hapticType)
 
             // Enhanced audio with spatial effects
             audioManager.playSoundEffect(.explosion, at: meteorNode.position)
@@ -701,7 +736,10 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
             starNode.pickedUpStar()
             gameState.starsCollected += 1
             player.pickedUpStar()
-            
+
+            // Light haptic on star collect
+            accessibilityManager.playHapticFeedback(.light)
+
             // Dynamic lighting effect
             dynamicLighting.flashAt(starNode.position, color: .yellow, intensity: 1.5)
             
@@ -739,15 +777,16 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         createFloatingScoreIndicator(at: position, value: 250)
     }
     
-    private func performScreenFlash() {
-        screenFlash.alpha = 0.3
+    private func performScreenFlash(color: SKColor = .white, intensity: CGFloat = 0.3) {
+        screenFlash.color = color
+        screenFlash.alpha = intensity
         let flash = SKAction.sequence([
-            SKAction.fadeOut(withDuration: 0.1),
-            SKAction.wait(forDuration: 0.05),
-            SKAction.fadeAlpha(to: 0.1, duration: 0.1),
-            SKAction.fadeOut(withDuration: 0.2)
+            SKAction.fadeOut(withDuration: 0.12),
+            SKAction.wait(forDuration: 0.04),
+            SKAction.fadeAlpha(to: intensity * 0.4, duration: 0.08),
+            SKAction.fadeOut(withDuration: 0.22)
         ])
-        screenFlash.run(flash)
+        screenFlash.run(flash, withKey: "screenFlash")
     }
     
     private func createShockwave(at position: CGPoint) -> SKNode {

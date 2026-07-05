@@ -106,14 +106,17 @@ final class MotionController {
 
         // Roll → left / right movement
         let roll = attitude.roll
-        let filteredRoll = abs(roll) > deadzone ? roll : 0.0
-        tiltX = CGFloat(min(max(filteredRoll, -1.0), 1.0))
+        let rawRoll = abs(roll) > deadzone ? roll : 0.0
+        // Cubic ease: preserves sign, amplifies small tilts less than large ones
+        let cubeRoll = rawRoll * abs(rawRoll) // sign(x) * x²
+        tiltX = CGFloat(min(max(cubeRoll * 2.5, -1.0), 1.0))
 
         // Pitch → up / down movement; tilting the phone forward (decreasing pitch)
         // moves the ship upward, matching the intuitive "lean in" gesture.
         let pitch = attitude.pitch
-        let filteredPitch = abs(pitch) > deadzone ? pitch : 0.0
-        tiltY = CGFloat(min(max(-filteredPitch, -1.0), 1.0))
+        let rawPitch = abs(pitch) > deadzone ? pitch : 0.0
+        let cubePitch = rawPitch * abs(rawPitch)
+        tiltY = CGFloat(min(max(-cubePitch * 2.5, -1.0), 1.0))
     }
 }
 #endif // os(iOS)

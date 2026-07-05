@@ -133,9 +133,8 @@ final class AccessibilityManager {
     }
     
     // MARK: - VoiceOver Announcements
-    func announceGameEvent(_ message: String, priority: UIAccessibility.AnnouncementPriority = .medium) {
+    func announceGameEvent(_ message: String) {
         guard isVoiceOverEnabled else { return }
-        
         UIAccessibility.post(notification: .announcement, argument: message)
         logger.info("VoiceOver announcement: \(message)")
     }

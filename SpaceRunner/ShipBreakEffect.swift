@@ -117,21 +117,31 @@ enum ShipBreakEffect {
             scene.addChild(f)
         }
 
-        // ── Small coloured debris shards ────────────────────────────────────
+        // ── Small coloured neon debris shards ───────────────────────────────
         let shardColors: [SKColor] = [
             Colors.colorFromRGB(rgbvalue: Colors.EngineYellow),
             Colors.colorFromRGB(rgbvalue: Colors.EngineGreen),
             Colors.colorFromRGB(rgbvalue: Colors.Magic),
             Colors.colorFromRGB(rgbvalue: Colors.EngineRed),
+            Colors.colorFromRGB(rgbvalue: Colors.AccentCyan),
+            Colors.colorFromRGB(rgbvalue: Colors.AccentMagenta),
+            Colors.colorFromRGB(rgbvalue: Colors.AccentYellow),
+            Colors.colorFromRGB(rgbvalue: Colors.DangerRed),
         ]
         let debris: [SKShapeNode] = shardColors.map { color in
-            let side = CGFloat.random(in: 5...9)
+            let side = CGFloat.random(in: 4...10)
             let shard = SKShapeNode(rectOf: CGSize(width: side, height: side),
-                                    cornerRadius: 1)
+                                    cornerRadius: 2)
             shard.fillColor   = color
             shard.strokeColor = .clear
             shard.position    = origin
             shard.zPosition   = player.zPosition + 2
+            // Additive glow overlay for neon punch
+            let glow = SKShapeNode(rectOf: CGSize(width: side * 2.2, height: side * 2.2), cornerRadius: side)
+            glow.fillColor   = color.withAlphaComponent(0.35)
+            glow.strokeColor = .clear
+            glow.blendMode   = .add
+            shard.addChild(glow)
             scene.addChild(shard)
             return shard
         }

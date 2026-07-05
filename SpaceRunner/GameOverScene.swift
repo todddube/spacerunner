@@ -120,7 +120,7 @@ class GameOverScene: SKScene {
     
     // MARK: - Load Scene Menu
     fileprivate func loadMenuScene() {
-        let menuScene = MenuScene(size: kViewSize)
+        let menuScene = EnhancedMenuScene(size: kViewSize)
         let transition = SKTransition.fade(with: SKColor.black, duration: 0.25)
         self.view?.presentScene(menuScene, transition: transition)
     }

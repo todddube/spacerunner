@@ -5,141 +5,141 @@
 //  © 2026 Todd Dube. All rights reserved.
 //
 //  PURPOSE
-//  Three-layer parallax star-field that creates convincing depth as the player
-//  moves through space. Each layer scrolls at a different speed — far, mid, and
-//  near — and wraps seamlessly when it scrolls off the bottom of the screen.
+//  Five-layer parallax star-field creating convincing depth and speed.
+//  Layers 1–3 are round dot stars scrolling slowly; layers 4–5 are elongated
+//  streak sprites (motion-blur look) that scroll fast, amplifying the sense
+//  of speed. Layer scroll speeds increase with the current difficulty tier.
 //
 //  RESPONSIBILITIES
-//  - setupLayers(for:)  — create three tiled star-field layers sized to the scene
-//  - startScrolling()   — begin continuous downward scroll per layer speed
-//  - stopScrolling()    — halt scroll (used on game over / pause)
-//  - update(deltaTime:gameSpeed:) — advance each layer position each frame,
-//      wrapping tiles when they exit the bottom of the visible area
+//  - setupLayers(for:)            — create all five tiled layers
+//  - startScrolling() / stopScrolling() — toggle continuous scroll
+//  - setSpeedMultiplier(_:)       — called by progression system to ramp streaks
+//  - update(deltaTime:gameSpeed:) — advance each layer each frame, wrapping tiles
 //
 
 import SpriteKit
 
 @MainActor
 class ParallaxBackground: SKNode {
-    
+
     private struct Layer {
         let node: SKNode
-        let speed: CGFloat
-        let starCount: Int
-        let starSize: CGSize
-        let color: UIColor
-        let alpha: CGFloat
+        let baseSpeed: CGFloat
+        let isStreak: Bool
     }
-    
+
     private var layers: [Layer] = []
     private var isScrolling = false
-    
+
+    // Multiplier bumped by progression system (e.g. 1.0 → 2.0 at tier 4)
+    var speedMultiplier: CGFloat = 1.0
+
+    // MARK: - Setup
+
     func setupLayers(for size: CGSize) {
-        // Layer 1: Distant stars (slowest)
-        let distantLayer = createStarLayer(
-            size: size,
-            starCount: 40,
-            starSize: CGSize(width: 1, height: 1),
-            color: .white,
-            alpha: 0.3,
-            speed: 0.2
-        )
-        
-        // Layer 2: Mid-distance stars
-        let midLayer = createStarLayer(
-            size: size,
-            starCount: 25,
-            starSize: CGSize(width: 2, height: 2),
-            color: .cyan,
-            alpha: 0.5,
-            speed: 0.5
-        )
-        
-        // Layer 3: Close stars (fastest)
-        let closeLayer = createStarLayer(
-            size: size,
-            starCount: 15,
-            starSize: CGSize(width: 3, height: 3),
-            color: .white,
-            alpha: 0.8,
-            speed: 1.0
-        )
-        
-        layers = [
-            Layer(node: distantLayer, speed: 0.2, starCount: 40, starSize: CGSize(width: 1, height: 1), color: .white, alpha: 0.3),
-            Layer(node: midLayer, speed: 0.5, starCount: 25, starSize: CGSize(width: 2, height: 2), color: .cyan, alpha: 0.5),
-            Layer(node: closeLayer, speed: 1.0, starCount: 15, starSize: CGSize(width: 3, height: 3), color: .white, alpha: 0.8)
+        let configs: [(count: Int, dotSize: CGSize, color: UIColor, alpha: CGFloat, speed: CGFloat, isStreak: Bool)] = [
+            // Layer 1 — tiny distant dots, very slow
+            (50, CGSize(width: 1, height: 1),
+             .white, 0.25, 15, false),
+            // Layer 2 — small dots, slightly warmer, slow
+            (35, CGSize(width: 1.5, height: 1.5),
+             UIColor(red: 0.9, green: 0.95, blue: 1.0, alpha: 1), 0.40, 35, false),
+            // Layer 3 — medium dots with subtle color, medium
+            (22, CGSize(width: 2.5, height: 2.5),
+             UIColor(red: 0.7, green: 0.9, blue: 1.0, alpha: 1), 0.60, 70, false),
+            // Layer 4 — star streaks, fast
+            (18, CGSize(width: 1.5, height: 7),
+             UIColor(red: 0.85, green: 0.95, blue: 1.0, alpha: 1), 0.70, 160, true),
+            // Layer 5 — wide streaks, fastest — really sells the speed
+            (12, CGSize(width: 2, height: 12),
+             UIColor(red: 0.6, green: 0.85, blue: 1.0, alpha: 1), 0.55, 280, true),
         ]
-        
-        for layer in layers {
-            addChild(layer.node)
+
+        for config in configs {
+            let layerNode = createLayer(
+                size: size,
+                starCount: config.count,
+                starSize: config.dotSize,
+                color: config.color,
+                alpha: config.alpha,
+                isStreak: config.isStreak
+            )
+            let layer = Layer(node: layerNode, baseSpeed: config.speed, isStreak: config.isStreak)
+            layers.append(layer)
+            addChild(layerNode)
         }
     }
-    
-    private func createStarLayer(size: CGSize, starCount: Int, starSize: CGSize, color: UIColor, alpha: CGFloat, speed: CGFloat) -> SKNode {
+
+    private func createLayer(size: CGSize, starCount: Int, starSize: CGSize, color: UIColor, alpha: CGFloat, isStreak: Bool) -> SKNode {
         let layerNode = SKNode()
-        
-        // Create two star fields for seamless scrolling
-        let field1 = createStarField(size: size, starCount: starCount, starSize: starSize, color: color, alpha: alpha)
-        let field2 = createStarField(size: size, starCount: starCount, starSize: starSize, color: color, alpha: alpha)
-        
-        field1.position = CGPoint(x: 0, y: 0)
+        // Two tiled fields for seamless wrapping
+        let field1 = createStarField(size: size, count: starCount, starSize: starSize,
+                                     color: color, alpha: alpha, isStreak: isStreak)
+        let field2 = createStarField(size: size, count: starCount, starSize: starSize,
+                                     color: color, alpha: alpha, isStreak: isStreak)
+        field1.position = .zero
         field2.position = CGPoint(x: 0, y: size.height)
-        
         layerNode.addChild(field1)
         layerNode.addChild(field2)
-        
         return layerNode
     }
-    
-    private func createStarField(size: CGSize, starCount: Int, starSize: CGSize, color: UIColor, alpha: CGFloat) -> SKNode {
+
+    private func createStarField(size: CGSize, count: Int, starSize: CGSize, color: UIColor, alpha: CGFloat, isStreak: Bool) -> SKNode {
         let field = SKNode()
-        
-        for _ in 0..<starCount {
+        for _ in 0..<count {
             let star = SKSpriteNode(color: color, size: starSize)
-            star.alpha = alpha
-            
-            // Random position
+            star.alpha = CGFloat.random(in: alpha * 0.6 ... alpha)
+            star.blendMode = isStreak ? .add : .alpha
             star.position = CGPoint(
                 x: CGFloat.random(in: 0...size.width),
                 y: CGFloat.random(in: 0...size.height)
             )
-            
-            // Add subtle twinkling
-            let twinkle = SKAction.sequence([
-                SKAction.fadeAlpha(to: alpha * 0.5, duration: Double.random(in: 1.0...3.0)),
-                SKAction.fadeAlpha(to: alpha, duration: Double.random(in: 1.0...3.0))
-            ])
-            star.run(SKAction.repeatForever(twinkle))
-            
+            if !isStreak {
+                // Subtle twinkle on dot stars only
+                let twinkleDur = Double.random(in: 1.5...4.0)
+                let twinkle = SKAction.sequence([
+                    SKAction.fadeAlpha(to: alpha * 0.4, duration: twinkleDur),
+                    SKAction.fadeAlpha(to: alpha, duration: twinkleDur)
+                ])
+                star.run(SKAction.repeatForever(twinkle))
+            }
             field.addChild(star)
         }
-        
         return field
     }
-    
+
+    // MARK: - Control
+
     func startScrolling() {
         isScrolling = true
     }
-    
+
     func stopScrolling() {
         isScrolling = false
     }
-    
+
+    func setSpeedMultiplier(_ multiplier: CGFloat) {
+        speedMultiplier = multiplier
+    }
+
+    // MARK: - Update
+
     func update(deltaTime: TimeInterval, gameSpeed: Float) {
         guard isScrolling else { return }
-        
-        let baseSpeed: CGFloat = 100.0
-        let speedMultiplier = CGFloat(gameSpeed)
-        
-        for layer in layers {
-            let scrollSpeed = baseSpeed * layer.speed * speedMultiplier * CGFloat(deltaTime)
-            layer.node.position.y -= scrollSpeed
-            
-            // Reset position for seamless scrolling
+
+        let dt = CGFloat(deltaTime)
+
+        for (i, layer) in layers.enumerated() {
+            // Streak layers scale with speedMultiplier; dot layers scale less
+            let tierScale: CGFloat = layer.isStreak ? speedMultiplier : (1.0 + (speedMultiplier - 1.0) * 0.4)
+            let scroll = layer.baseSpeed * tierScale * CGFloat(gameSpeed) * dt
+            layer.node.position.y -= scroll
+
+            // Seamless wrap — tile height = kViewSize.height
             if layer.node.position.y <= -kViewSize.height {
                 layer.node.position.y = 0
             }
+            _ = i // suppress unused warning
         }
     }
 }
