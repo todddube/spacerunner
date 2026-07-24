@@ -1,9 +1,9 @@
 # SpaceRunner
 
-A fast-paced iOS space endless runner built with SpriteKit, targeting iOS 18+.
+A fast-paced iOS space endless runner built with SpriteKit, targeting iOS 26+.
 
 [![Swift](https://img.shields.io/badge/Swift-6.0-orange.svg)](https://swift.org)
-[![iOS](https://img.shields.io/badge/iOS-18.0+-blue.svg)](https://developer.apple.com/ios/)
+[![iOS](https://img.shields.io/badge/iOS-26.0+-blue.svg)](https://developer.apple.com/ios/)
 [![Xcode](https://img.shields.io/badge/Xcode-16+-blue.svg)](https://developer.apple.com/xcode/)
 
 ---
@@ -31,13 +31,13 @@ SpaceRunner is an arcade endless runner where you pilot a spaceship through an e
 | **HUD** | Compact top-of-screen glass bar — lives, score, spinning star count, tier badge, power-up indicator, pause |
 | **Audio** | AVAudioEngine spatial audio, layered engine sounds, background music with background/foreground lifecycle management |
 | **Accessibility** | VoiceOver, haptic feedback, Dynamic Type support |
-| **Modern iOS** | `@Observable`, `@MainActor`, `async/await`, SwiftUI-ready overlays |
+| **Modern iOS** | `@Observable`, `@MainActor`, `async/await`, Swift 6 concurrency |
 
 ---
 
 ## Requirements
 
-- **iOS 18.0+** (uses `@Observable`, `@MainActor`)
+- **iOS 26.0+** (uses `@Observable`, `@MainActor`)
 - **Xcode 16+**
 - **Swift 6**
 - Portrait orientation only; supports iPhone and iPad
@@ -76,8 +76,8 @@ Version is managed via Xcode build settings:
 
 | Setting | Key | Current |
 |---|---|---|
-| Marketing version | `MARKETING_VERSION` | 0.5.12 |
-| Build number | `CURRENT_PROJECT_VERSION` | 25 |
+| Marketing version | `MARKETING_VERSION` | 1.0.0 |
+| Build number | `CURRENT_PROJECT_VERSION` | 0705 |
 
 To bump the version, open **Xcode → Target → General → Identity** and update the fields there. `Info.plist` resolves the values at build time via `$(MARKETING_VERSION)` and `$(CURRENT_PROJECT_VERSION)`. No script needed.
 
@@ -123,6 +123,7 @@ To bump the version, open **Xcode → Target → General → Identity** and upda
 | `StatusBar+GlassEffect.swift` | Show/hide slide animations and reactive pulses |
 | `ModernStartButton.swift` | Liquid-glass play button with shimmer |
 | `PauseButton.swift` | Pause ↔ resume texture toggle |
+| `GameOverScene.swift` | End-game summary and retry — built from `SKLabelNode`s |
 
 ### Resources & Systems
 
@@ -139,30 +140,29 @@ To bump the version, open **Xcode → Target → General → Identity** and upda
 
 ## Project Structure
 
+Source files live flat in `SpaceRunner/`, grouped here by role for readability:
+
 ```
 SpaceRunner/
-├── Classes/
-│   ├── Background/         ParallaxBackground, NebulaSystem, Background
-│   ├── Buttons/            PauseButton, RetryButton, ModernStartButton
-│   ├── Core/               Constants, Colors, Math, MotionController
-│   ├── Effects/            CameraEffects, AnimationController, DynamicLighting,
-│   │                       EnhancedParticleManager, ShipBreakEffect,
-│   │                       ShipAssemblyAnimation
-│   ├── Nodes/              GameTitle, GameTitleShip, GameOverTitle, ScoreBoard
-│   ├── Obstacles/          Meteor, MeteorController, LaserBeam
-│   ├── Player/             Player, Player+EnhancedEffects, TouchCircle
-│   ├── PowerUps/           PowerUp, PowerUpController
-│   ├── Resources/          GameTextures, GameParticles, GameFonts, GameSettings,
-│   │                       GameShaders, GameAudio, GameAudio+SpatialEffects
-│   ├── Scenes/             GameScene, EnhancedMenuScene, GameOverScene
-│   ├── Stars/              Star, StarController
-│   ├── StatusBar/          StatusBar, StatusBar+GlassEffect
-│   └── ViewController/     GameViewController, AppDelegate
+├── Scenes            GameScene, EnhancedMenuScene, GameOverScene, GameViewController, AppDelegate
+├── Background        ParallaxBackground, NebulaSystem, Background
+├── Buttons / UI      PauseButton, ModernStartButton, StatusBar (+GlassEffect)
+├── Effects           CameraEffects, AnimationController, DynamicLighting,
+│                     EnhancedParticleManager, ShipBreakEffect, ShipAssemblyAnimation
+├── Title Nodes       GameTitle, GameTitleShip
+├── Obstacles         Meteor, MeteorController, LaserBeam
+├── Player            Player (+EnhancedEffects), TouchCircle, MotionController
+├── Collectibles      Star, StarController, PowerUp, PowerUpController
+├── Resources         GameTextures, GameParticles, GameFonts, GameSettings,
+│                     GameShaders, GameAudio (+SpatialEffects)
+├── Core              Constants, Colors, Math
+├── Accessibility/    AccessibilityManager
 ├── GameResources/
-│   ├── Fonts/              editundo.ttf
-│   ├── Music/              GameMusic.mp3
-│   └── Sounds/             ButtonTap, Explosion, Pickup, ShieldDown, ShieldUp (.caf)
-└── Assets.xcassets         Sprites, icons, particle atlases
+│   ├── Fonts/        editundo.ttf
+│   ├── Music/        GameMusic.mp3
+│   ├── Sounds/       ButtonTap, Explosion, Pickup, ShieldDown, ShieldUp (.caf)
+│   └── Library/      SKTUtils — third-party SpriteKit helpers
+└── Assets.xcassets  Sprites, icons, particle atlases
 ```
 
 ---

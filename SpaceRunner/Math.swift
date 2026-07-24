@@ -14,7 +14,6 @@
 //  - RandomIntegerBetween(min:max:) — uniform random Int in [min, max] via GameplayKit
 //  - RandomFloatRange(min:max:)    — uniform random CGFloat in [min, max] via GameplayKit
 //  - DegressToRadians(degrees:)   — convert degrees → radians
-//  - AngleToRotate(…)             — heading angle between two CGPoints
 //
 
 import Foundation
@@ -22,7 +21,10 @@ import SpriteKit
 import GameplayKit
 
 // MARK: - Shared random source (arc4random-seeded, cryptographic quality)
-nonisolated(unsafe) let sharedRandom = GKARC4RandomSource()
+// Isolated to the main actor: all gameplay (SpriteKit scenes/nodes/controllers)
+// runs on the main actor, so this avoids the `nonisolated(unsafe)` escape hatch
+// while keeping a single shared sequence.
+@MainActor let sharedRandom = GKARC4RandomSource()
 
 // MARK: - Interpolation
 func Smooth(startPoint: CGFloat, endPoint: CGFloat, filter: CGFloat) -> CGFloat {
@@ -30,14 +32,14 @@ func Smooth(startPoint: CGFloat, endPoint: CGFloat, filter: CGFloat) -> CGFloat 
 }
 
 // MARK: - Integer random [min, max] inclusive
-func RandomIntegerBetween(min: Int, max: Int) -> Int {
+@MainActor func RandomIntegerBetween(min: Int, max: Int) -> Int {
     guard max >= min else { return min }
     let distribution = GKRandomDistribution(randomSource: sharedRandom, lowestValue: min, highestValue: max)
     return distribution.nextInt()
 }
 
 // MARK: - Float random [min, max]
-func RandomFloatRange(min: CGFloat, max: CGFloat) -> CGFloat {
+@MainActor func RandomFloatRange(min: CGFloat, max: CGFloat) -> CGFloat {
     guard max > min else { return min }
     let t = CGFloat(sharedRandom.nextUniform())
     return min + t * (max - min)
@@ -46,11 +48,4 @@ func RandomFloatRange(min: CGFloat, max: CGFloat) -> CGFloat {
 // MARK: - Angle conversions
 func DegressToRadians(degrees: CGFloat) -> CGFloat {
     return degrees * CGFloat(Double.pi) / 180.0
-}
-
-func AngleToRotate(firstPostion firstPositon: CGPoint, secondPositon: CGPoint) -> CGFloat {
-    let deltaX = Float(firstPositon.x - secondPositon.x)
-    let deltaY = Float(firstPositon.y - secondPositon.y)
-    let angle = atan2f(deltaX, deltaY)
-    return CGFloat(angle) - DegressToRadians(degrees: 90.0)
 }

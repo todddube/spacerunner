@@ -12,7 +12,7 @@
 //  - show(with:)  — fades in and slides down from above the safe area
 //  - hide(with:)  — fades out and slides up, then hides the node
 //
-//  REACTIVE ANIMATIONS (called by GameScene on game events)
+//  REACTIVE ANIMATIONS (triggered from StatusBar's update* methods on change)
 //  - animateScoreUpdate(newScore:)  — scale pulse + cyan flash on the score label
 //  - animateStarCollection()        — bounce + brief glow on the star icon
 //  - animateLifeLoss()              — shake the lives section
@@ -21,11 +21,6 @@
 import SpriteKit
 
 extension StatusBar {
-
-    // MARK: - Compatibility stub
-    // Glass is now built in StatusBar.init — this is kept so GameScene callers
-    // don't need to be updated immediately.
-    func applyGlassEffect() { }
 
     // MARK: - Show / Hide
 

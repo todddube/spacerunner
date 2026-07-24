@@ -22,7 +22,7 @@
 //  - animateFloatingLabel(node:)         — return an SKAction sequence for score pop-ups
 //  - updateFontSizesForAccessibility()   — manual refresh trigger for accessibility events
 //
-//  REQUIRES iOS 18.0+  — uses @Observable, @MainActor, and modern concurrency
+//  REQUIRES iOS 26.0+  — uses @Observable, @MainActor, and modern concurrency
 //
 
 import Foundation
@@ -33,7 +33,6 @@ import OSLog
 import CoreText
 import CoreGraphics
 
-@available(iOS 18.0, *)
 @MainActor
 @Observable
 final class GameFonts {
@@ -93,7 +92,7 @@ final class GameFonts {
     }
     
     private func registerFont(from url: URL) {
-        // Use modern iOS 18 font registration API
+        // Use modern iOS 26 font registration API
         var error: Unmanaged<CFError>?
         if CTFontManagerRegisterFontsForURL(url as CFURL, .process, &error) {
             logger.info("Successfully registered font using modern API")

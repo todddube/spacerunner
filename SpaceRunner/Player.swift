@@ -337,7 +337,7 @@ class Player: SKSpriteNode {
         // Apply grayscale shader
         GameShaders.sharedInstance.shadeGray(node: self)
         
-        // Update high scores using modern iOS 18+ settings
+        // Update high scores using modern iOS 26+ settings
         let gameSettings = GameSettings.shared
         
         gameSettings.updateBestScore(self.score)

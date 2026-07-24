@@ -7,7 +7,7 @@
 //  PURPOSE
 //  Root view controller that hosts the SKView and wires it to the initial
 //  scene. Supports optional SwiftUI overlay layers for settings and pause
-//  menus using UIHostingController composition, following iOS 18+ patterns.
+//  menus using UIHostingController composition, following iOS 26+ patterns.
 //
 //  RESPONSIBILITIES
 //  - viewDidLoad()              — configure SKView (frame rate, debug flags) and
@@ -19,7 +19,7 @@
 //  - addSwiftUIOverlay(_:)      — utility to layer a SwiftUI view over the SpriteKit
 //      canvas without disturbing the scene graph
 //
-//  REQUIRES iOS 18.0+  — uses @MainActor and UIHostingController SwiftUI bridging
+//  REQUIRES iOS 26.0+  — uses @MainActor and UIHostingController SwiftUI bridging
 //
 
 import UIKit
@@ -27,7 +27,6 @@ import SpriteKit
 import SwiftUI
 import OSLog
 
-@available(iOS 18.0, *)
 @MainActor
 final class GameViewController: UIViewController {
     
@@ -35,7 +34,7 @@ final class GameViewController: UIViewController {
     private var skView: SKView!
     private var currentGameScene: GameScene?
     
-    // iOS 18+ specific properties
+    // iOS 26+ specific properties
     private var isSetupComplete = false
     
     private let logger = Logger(subsystem: "com.todddube.spacerunner", category: "GameViewController")
@@ -70,7 +69,7 @@ final class GameViewController: UIViewController {
     }
     
     private func setupModernFeatures() {
-        // Configure for better performance on iOS 18+
+        // Configure for better performance on iOS 26+
         view.layer.allowsGroupOpacity = false
         // Note: allowsGroupBlending is not available on CALayer
     }

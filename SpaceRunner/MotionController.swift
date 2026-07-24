@@ -20,14 +20,13 @@
 //  A 0.5 s settling delay fires automatically on startMotionUpdates() so the
 //  reference angle is captured while the player is already holding the phone.
 //
-//  REQUIRES iOS 18.0+ / CoreMotion framework
+//  REQUIRES iOS 26.0+ / CoreMotion framework
 //
 
 #if os(iOS)
 import CoreMotion
 import SpriteKit
 
-@available(iOS 18.0, *)
 @MainActor
 final class MotionController {
 

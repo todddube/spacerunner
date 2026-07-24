@@ -29,7 +29,7 @@
 //
 //  SPATIAL EXTENSIONS  → see GameAudio+SpatialEffects.swift
 //
-//  REQUIRES iOS 18.0+  — @Observable, @MainActor, @preconcurrency AVFoundation
+//  REQUIRES iOS 26.0+  — @Observable, @MainActor, @preconcurrency AVFoundation
 //
 
 import Foundation
@@ -37,7 +37,6 @@ import Foundation
 import OSLog
 import Observation
 
-@available(iOS 18.0, *)
 @MainActor
 @Observable
 final class GameAudio {

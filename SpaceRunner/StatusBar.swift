@@ -48,6 +48,12 @@ class StatusBar: SKNode {
     private var tierLabel  = SKLabelNode()
     private var powerUpDot = SKShapeNode(circleOfRadius: 5)
 
+    // Cached displayed values so the per-frame updateStatusBar() only does work
+    // (and fires reactive animations) when a value actually changes.
+    private var displayedScore = -1
+    private var displayedLives = -1
+    private var displayedStars = -1
+
     // MARK: - Public
     let pauseButton = PauseButton()
 
@@ -74,6 +80,10 @@ class StatusBar: SKNode {
 
         // Lives drawn last so it refreshes cleanly on updateLives()
         updateLives(lives: lives)
+
+        // Seed caches so the first frame's update is a no-op (no spurious pulse).
+        displayedScore = score
+        displayedStars = stars
 
         zPosition = 100
     }
@@ -152,6 +162,10 @@ class StatusBar: SKNode {
     // MARK: - Lives
 
     func updateLives(lives: Int) {
+        guard lives != displayedLives else { return }
+        let lostLife = displayedLives >= 0 && lives < displayedLives
+        displayedLives = lives
+
         livesContainer.removeFromParent()
         livesContainer = SKNode()
         livesContainer.zPosition = 5
@@ -171,6 +185,8 @@ class StatusBar: SKNode {
             icon.zPosition = 5
             livesContainer.addChild(icon)
         }
+
+        if lostLife { animateLifeLoss() }
     }
 
     // MARK: - Score
@@ -188,7 +204,11 @@ class StatusBar: SKNode {
     }
 
     func updateScore(score: Int) {
+        guard score != displayedScore else { return }
+        let gained = displayedScore >= 0 && score > displayedScore
+        displayedScore = score
         scoreLabel.text = format(score)
+        if gained { animateScoreUpdate(newScore: score) }
     }
 
     private func format(_ score: Int) -> String {
@@ -228,6 +248,8 @@ class StatusBar: SKNode {
     }
 
     func updateStarsCollected(collected: Int) {
+        guard collected != displayedStars else { return }
+        displayedStars = collected
         starCountLabel.text = "\(collected)"
         starIcon.run(bounce())
     }

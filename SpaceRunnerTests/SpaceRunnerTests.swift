@@ -16,6 +16,9 @@ import GameplayKit
 @testable import SpaceRunner
 
 // MARK: - Math Helper Tests
+// @MainActor: RandomIntegerBetween / RandomFloatRange are main-actor isolated
+// (they share the main-actor `sharedRandom` source used by the game).
+@MainActor
 final class MathTests: XCTestCase {
 
     // MARK: Smooth (lerp)
@@ -278,9 +281,6 @@ final class GameSettingsTests: XCTestCase {
 final class ConstantsTests: XCTestCase {
 
     func testSpriteNameButtonsAreDefined() {
-        XCTAssertFalse(SpriteName.ButtonPlay.isEmpty)
-        XCTAssertFalse(SpriteName.ButtonStart.isEmpty)
-        XCTAssertFalse(SpriteName.ButtonRetry.isEmpty)
         XCTAssertFalse(SpriteName.ButtonPause.isEmpty)
         XCTAssertFalse(SpriteName.ButtonResume.isEmpty)
     }
@@ -410,6 +410,7 @@ final class PlayerScoringTests: XCTestCase {
 }
 
 // MARK: - Meteor & Star Physics Logic Tests
+@MainActor
 final class GameObjectTests: XCTestCase {
 
     func testMeteorPhysicsCategory() {

@@ -45,17 +45,12 @@ nonisolated(unsafe) var kDeviceTablet: Bool = false
 // MARK: - Sprite Names
 class SpriteName {
     // Button Sprite Names
-    class var ButtonPlay: String    { return "PlayButton" }
-    class var ButtonStart: String   { return "StartButton" }
-    class var ButtonRetry: String   { return "RetryButton" }
     class var ButtonPause: String   { return "PauseButton" }
     class var ButtonResume: String  { return "ResumeButton" }
 
     // Interface title Names
     class var TitleGame: String     { return "GameTitle" }
     class var TitleGameShip: String { return "GameTitleShip" }
-    class var TitleGameOver: String { return "GameOverTitle" }
-    class var HandTap: String       { return "HandTap" }
 
     // Meteors
     class var MeteorHuge: String    { return "MeteorHuge" }

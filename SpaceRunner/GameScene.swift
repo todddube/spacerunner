@@ -41,14 +41,13 @@
 //  - Running phase:  tap pauseButton to pause; elsewhere to redirect player
 //  - Paused phase:   any tap resumes
 //
-//  REQUIRES iOS 18.0+  — uses @Observable, @MainActor, and modern concurrency
+//  REQUIRES iOS 26.0+  — uses @Observable, @MainActor, and modern concurrency
 //
 
 import SpriteKit
 import OSLog
 import Observation
 
-@available(iOS 18.0, *)
 @MainActor
 final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     

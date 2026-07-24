@@ -21,14 +21,13 @@
 //  - toggleTouchCircles() — flip showTouchCircles and persist
 //  - resetAllStats()      — wipe all persisted records (debug / test use)
 //
-//  REQUIRES iOS 18.0+  — uses @Observable and @MainActor
+//  REQUIRES iOS 26.0+  — uses @Observable and @MainActor
 //
 
 import Foundation
 
 import Observation
 
-@available(iOS 18.0, *)
 @MainActor
 @Observable
 final class GameSettings {
