@@ -42,6 +42,15 @@ class SpaceRunnerUITestBase: XCTestCase {
         let exists = app.wait(for: .runningForeground, timeout: timeout)
         XCTAssertTrue(exists, "App should reach running-foreground state within \(timeout)s")
     }
+
+    /// Assert the app is in the foreground, polling instead of sampling once.
+    /// `app.state` transitions are asynchronous — a bare `XCTAssertEqual` right
+    /// after `activate()` / a scene transition races the state machine and flakes
+    /// (observed as state 3 (.runningBackground) != 4 (.runningForeground)).
+    func assertRunningForeground(timeout: TimeInterval = 5,
+                                 _ message: String = "App should be in the foreground") {
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: timeout), message)
+    }
 }
 
 // MARK: - Launch Tests
@@ -49,7 +58,7 @@ final class LaunchTests: SpaceRunnerUITestBase {
 
     func testAppLaunchesSuccessfully() {
         waitForAppReady()
-        XCTAssertEqual(app.state, .runningForeground, "App must be in foreground after launch")
+        assertRunningForeground("App must be in foreground after launch")
     }
 
     func testAppDisplaysGameWindow() {
@@ -59,16 +68,17 @@ final class LaunchTests: SpaceRunnerUITestBase {
     }
 
     func testAppLaunchPerformance() {
-        // Baseline: app should reach foreground within 5 seconds on a simulator
-        let options = XCTMeasureOptions()
-        options.invocationOptions = [.manuallyStart]
-        measure(metrics: [XCTApplicationLaunchMetric()], options: options) {
-            app.launch()
-            startMeasuring()
-            waitForAppReady(timeout: 10)
-            stopMeasuring()
-            app.terminate()
-        }
+        // NOTE: XCTApplicationLaunchMetric crashes on some simulator/OS combos
+        // (Apple tooling bug in MetricKit MXMMetric.m), so we measure cold-launch
+        // wall-clock time directly instead of using the launch metric.
+        app.terminate()
+        let start = Date()
+        app.launch()
+        XCTAssertTrue(app.wait(for: .runningForeground, timeout: 10),
+                      "App must reach foreground after relaunch")
+        let elapsed = Date().timeIntervalSince(start)
+        XCTAssertLessThan(elapsed, 10,
+                          "Cold launch should reach foreground within 10s (was \(elapsed)s)")
     }
 }
 
@@ -80,7 +90,7 @@ final class MenuSceneTests: SpaceRunnerUITestBase {
         // Give SpriteKit a moment to present the initial scene
         sleep(2)
         // App should still be in foreground — scene transition should not crash
-        XCTAssertEqual(app.state, .runningForeground)
+        assertRunningForeground()
     }
 
     func testStatusBarIsHidden() {
@@ -121,7 +131,7 @@ final class GameStartFlowTests: SpaceRunnerUITestBase {
         sleep(2)
 
         // App should still be alive and responsive
-        XCTAssertEqual(app.state, .runningForeground, "Game should still be running after tapping start")
+        assertRunningForeground("Game should still be running after tapping start")
     }
 
     func testGameDoesNotCrashOnMultipleTaps() {
@@ -137,7 +147,7 @@ final class GameStartFlowTests: SpaceRunnerUITestBase {
             usleep(200_000) // 200ms between taps
         }
 
-        XCTAssertEqual(app.state, .runningForeground)
+        assertRunningForeground()
     }
 
     func testTapDifferentLocationsDoesNotCrash() {
@@ -164,7 +174,7 @@ final class GameStartFlowTests: SpaceRunnerUITestBase {
             usleep(300_000)
         }
 
-        XCTAssertEqual(app.state, .runningForeground)
+        assertRunningForeground()
     }
 }
 
@@ -183,8 +193,7 @@ final class LifecycleTests: SpaceRunnerUITestBase {
         app.activate()
         sleep(1)
 
-        XCTAssertEqual(app.state, .runningForeground,
-                       "App should resume to foreground after background/foreground cycle")
+        assertRunningForeground("App should resume to foreground after background/foreground cycle")
     }
 
     func testGamePausesWhenBackgrounded() {
@@ -206,7 +215,7 @@ final class LifecycleTests: SpaceRunnerUITestBase {
         sleep(1)
 
         // App should be responsive — not frozen or crashed
-        XCTAssertEqual(app.state, .runningForeground)
+        assertRunningForeground()
     }
 }
 
@@ -241,7 +250,6 @@ final class StressTests: SpaceRunnerUITestBase {
             }
         }
 
-        XCTAssertEqual(app.state, .runningForeground,
-                       "App should survive rapid input stress")
+        assertRunningForeground("App should survive rapid input stress")
     }
 }

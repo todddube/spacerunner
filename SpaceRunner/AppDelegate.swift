@@ -21,8 +21,6 @@
 //
 
 import UIKit
-import SpriteKit
-import AVFoundation
 
 // iOS 26 / Swift 6: Use @main on a struct instead of @UIApplicationMain on AppDelegate.
 // The @UIApplicationMain attribute is deprecated in iOS 26.
@@ -41,8 +39,6 @@ struct SpaceRunnerApp {
 @MainActor
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-    var window: UIWindow?
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Initialize audio system early
         Task { @MainActor in
@@ -51,38 +47,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
 
-    func applicationWillResignActive(_ application: UIApplication) {
-        // Post message to pause the game
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "PauseGame"), object: nil)
-
-        // Pause the music
-        GameAudio.shared.pauseBackgroundMusic()
-
-        // Pause the SpriteKit view
-        if let skView = window?.rootViewController?.view as? SKView {
-            skView.isPaused = true
-        }
-    }
-
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        GameAudio.shared.handleAppBackground()
-    }
-
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        // Audio session will be re-activated in applicationDidBecomeActive
-    }
-
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        // Resume the SpriteKit view
-        if let skView = window?.rootViewController?.view as? SKView {
-            skView.isPaused = false
-        }
-
-        // Post message to resume the game
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "ResumeGame"), object: nil)
-
-        // Resume music
-        GameAudio.shared.handleAppForeground()
+    // MARK: - Scene Configuration
+    // The app is scene-based (see UIApplicationSceneManifest in Info.plist).
+    // Foreground / background handling lives in SceneDelegate — the legacy
+    // application(will/did …Active/Background) hooks are not called for
+    // scene-based apps and have been removed.
+    func application(_ application: UIApplication,
+                     configurationForConnecting connectingSceneSession: UISceneSession,
+                     options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        UISceneConfiguration(name: "Default Configuration",
+                             sessionRole: connectingSceneSession.role)
     }
 
     func applicationWillTerminate(_ application: UIApplication) {

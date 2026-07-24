@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		2706E41F1C9E1AC20068CDAD /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E41E1C9E1AC20068CDAD /* AppDelegate.swift */; };
+		27FE00A11C9E1AC20068CDAD /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FE00A01C9E1AC20068CDAD /* SceneDelegate.swift */; };
+		27FE00B11C9E1AC20068CDAD /* GameProgression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FE00B01C9E1AC20068CDAD /* GameProgression.swift */; };
 		2706E4231C9E1AC20068CDAD /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E4221C9E1AC20068CDAD /* GameScene.swift */; };
 		2706E4251C9E1AC20068CDAD /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2706E4241C9E1AC20068CDAD /* GameViewController.swift */; };
 		2706E42A1C9E1AC20068CDAD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2706E4291C9E1AC20068CDAD /* Assets.xcassets */; };
@@ -61,7 +63,6 @@
 		279B4BDD1CA32B8A008D7245 /* StatusBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 279B4BDC1CA32B8A008D7245 /* StatusBar.swift */; };
 		27B6EEC01CCD2DE400D48CCE /* StarParticle.sks in Resources */ = {isa = PBXBuildFile; fileRef = 27B6EEBF1CCD2DE400D48CCE /* StarParticle.sks */; };
 		27B9C8E51CA59F30001CF0A0 /* GameSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27B9C8E41CA59F30001CF0A0 /* GameSettings.swift */; };
-		27D586E21CC29ACF00D78CEC /* spark.png in Resources */ = {isa = PBXBuildFile; fileRef = 27D586E01CC29ACF00D78CEC /* spark.png */; };
 		27FC50881CA2CB9600F601A2 /* Meteor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FC50871CA2CB9600F601A2 /* Meteor.swift */; };
 		27FC508A1CA2D16400F601A2 /* MeteorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FC50891CA2D16400F601A2 /* MeteorController.swift */; };
 		27FE352C1CA5ED1D00FF85D6 /* Star.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27FE352B1CA5ED1D00FF85D6 /* Star.swift */; };
@@ -99,6 +100,8 @@
 		01861BA986194BD99B8E07E8 /* ShipBreakEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShipBreakEffect.swift; sourceTree = "<group>"; };
 		2706E41B1C9E1AC20068CDAD /* SpaceRunner.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SpaceRunner.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2706E41E1C9E1AC20068CDAD /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		27FE00A01C9E1AC20068CDAD /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		27FE00B01C9E1AC20068CDAD /* GameProgression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameProgression.swift; sourceTree = "<group>"; };
 		2706E4221C9E1AC20068CDAD /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		2706E4241C9E1AC20068CDAD /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		2706E4291C9E1AC20068CDAD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -157,7 +160,6 @@
 		279B4BDC1CA32B8A008D7245 /* StatusBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBar.swift; sourceTree = "<group>"; };
 		27B6EEBF1CCD2DE400D48CCE /* StarParticle.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; name = StarParticle.sks; path = ../StarParticle.sks; sourceTree = "<group>"; };
 		27B9C8E41CA59F30001CF0A0 /* GameSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameSettings.swift; sourceTree = "<group>"; };
-		27D586E01CC29ACF00D78CEC /* spark.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = spark.png; path = ../spark.png; sourceTree = "<group>"; };
 		27FC50871CA2CB9600F601A2 /* Meteor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Meteor.swift; sourceTree = "<group>"; };
 		27FC50891CA2D16400F601A2 /* MeteorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MeteorController.swift; sourceTree = "<group>"; };
 		27FE352B1CA5ED1D00FF85D6 /* Star.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Star.swift; sourceTree = "<group>"; };
@@ -324,6 +326,8 @@
 			isa = PBXGroup;
 			children = (
 				2706E41E1C9E1AC20068CDAD /* AppDelegate.swift */,
+				27FE00A01C9E1AC20068CDAD /* SceneDelegate.swift */,
+				27FE00B01C9E1AC20068CDAD /* GameProgression.swift */,
 				2706E4241C9E1AC20068CDAD /* GameViewController.swift */,
 			);
 			name = ViewController;
@@ -432,7 +436,6 @@
 			children = (
 				270759091D3173F100D9C0C0 /* ExplosionParticle.sks */,
 				2782E469247B058B00204498 /* Assets.xcassets */,
-				27D586E01CC29ACF00D78CEC /* spark.png */,
 				27B6EEBF1CCD2DE400D48CCE /* StarParticle.sks */,
 				271AA3CB2975FB3D004FC52D /* explode.sks */,
 			);
@@ -612,7 +615,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				27D586E21CC29ACF00D78CEC /* spark.png in Resources */,
 				271AA3CC2975FB3D004FC52D /* explode.sks in Resources */,
 				2782E46B247B058B00204498 /* Assets.xcassets in Resources */,
 				2706E47D1C9EE5080068CDAD /* ShieldDown.caf in Resources */,
@@ -700,6 +702,8 @@
 				2706E46E1C9EE5080068CDAD /* CGFloat+Extensions.swift in Sources */,
 				275F8ABE1CAED3C30081543A /* PauseButton.swift in Sources */,
 				2706E41F1C9E1AC20068CDAD /* AppDelegate.swift in Sources */,
+				27FE00A11C9E1AC20068CDAD /* SceneDelegate.swift in Sources */,
+				27FE00B11C9E1AC20068CDAD /* GameProgression.swift in Sources */,
 				276F59032E8049A6000A7D20 /* GameAudio+SpatialEffects.swift in Sources */,
 				AA1MC0012EA000000001MC01 /* MotionController.swift in Sources */,
 				AA001002000010020000ACC0 /* AccessibilityManager.swift in Sources */,

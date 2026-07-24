@@ -5,26 +5,22 @@
 //  © 2026 Todd Dube. All rights reserved.
 //
 //  PURPOSE
-//  Root view controller that hosts the SKView and wires it to the initial
-//  scene. Supports optional SwiftUI overlay layers for settings and pause
-//  menus using UIHostingController composition, following iOS 26+ patterns.
+//  Root view controller that hosts the SKView and presents the game's scenes.
+//  Instantiated programmatically by SceneDelegate (no storyboard) — its root
+//  view is created as an SKView in loadView().
 //
 //  RESPONSIBILITIES
-//  - viewDidLoad()              — configure SKView (frame rate, debug flags) and
-//      present the initial scene (MenuScene or EnhancedMenuScene)
-//  - setupSKView()              — disable unnecessary render statistics in release,
-//      enable physics debug outlines when kDebug is true
-//  - presentInitialScene()      — choose starting scene and apply entry transition
+//  - loadView()                 — create the root SKView (required, since there is
+//      no storyboard to supply an SKView-typed view)
+//  - viewDidLoad()              — configure the SKView and present EnhancedMenuScene
+//  - presentMenuScene() / presentGameScene() / returnToMenuScene() — scene flow
 //  - orientationSupport         — lock to portrait via supportedInterfaceOrientations
-//  - addSwiftUIOverlay(_:)      — utility to layer a SwiftUI view over the SpriteKit
-//      canvas without disturbing the scene graph
 //
-//  REQUIRES iOS 26.0+  — uses @MainActor and UIHostingController SwiftUI bridging
+//  REQUIRES iOS 26.0+  — uses @MainActor and modern concurrency
 //
 
 import UIKit
 import SpriteKit
-import SwiftUI
 import OSLog
 
 @MainActor
@@ -40,6 +36,17 @@ final class GameViewController: UIViewController {
     private let logger = Logger(subsystem: "com.todddube.spacerunner", category: "GameViewController")
     
     // MARK: - Lifecycle
+
+    /// The view controller is instantiated programmatically by `SceneDelegate`
+    /// (no storyboard), so its root view must be created here as an `SKView` —
+    /// `setupSpriteKitView()` guards on `view as? SKView`.
+    override func loadView() {
+        let skView = SKView(frame: .zero)
+        skView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        skView.backgroundColor = .black
+        view = skView
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         Task { @MainActor in

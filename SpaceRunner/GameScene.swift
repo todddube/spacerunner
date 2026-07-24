@@ -98,12 +98,8 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     private var pauseResumeRect: CGRect = .zero
     private var pauseMenuRect:   CGRect = .zero
 
-    // Progression & boss wave
-    private var currentTier: Int = 1
-    private var bossWaveActive: Bool = false
-    private var bossWaveTimer: TimeInterval = 0
-    private var lastBossScore: Int = 0
-    private let bossWaveDuration: TimeInterval = 15.0
+    // Progression & boss wave — pure state machine (see GameProgression).
+    private var progression = GameProgression()
     
     // Visual Effects
     private let screenFlash = SKSpriteNode()
@@ -509,8 +505,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         starController.startSendingStars()
         powerUpController.startSpawning()
         motionController.startMotionUpdates()
-        currentTier = 1
-        lastBossScore = 0
+        progression.reset()
         
         // Update dynamic lighting
         dynamicLighting.transitionToGameplay()
@@ -647,7 +642,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         powerUpController.stopSpawning()
         powerUpController.reset()
         player.hasShield = false
-        bossWaveActive = false
+        progression.cancelBossWave()
 
         // Enhanced game over effects
         performGameOverEffects()
@@ -743,17 +738,16 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         player.hasShield = powerUpController.isShieldActive
         if powerUpController.isSlowMoActive {
             physicsWorld.speed = 0.4
-        } else if !bossWaveActive {
+        } else if !progression.isBossWaveActive {
             physicsWorld.speed = 1.0
         }
         if powerUpController.isMagnetActive {
             applyMagnetEffect(deltaTime: deltaTime)
         }
 
-        // Update boss wave timer
-        if bossWaveActive {
-            bossWaveTimer -= deltaTime
-            if bossWaveTimer <= 0 { endBossWave() }
+        // Advance the boss-wave countdown; endBossWave() plays the reward when it ends.
+        if progression.tickBossWave(delta: deltaTime) {
+            endBossWave()
         }
 
         // Update game state
@@ -782,14 +776,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
 
         // Progression tier escalation
         let score = gameState.score
-        let newTier: Int
-        if score >= 3000      { newTier = 4 }
-        else if score >= 1500 { newTier = 3 }
-        else if score >= 500  { newTier = 2 }
-        else                  { newTier = 1 }
-
-        if newTier != currentTier {
-            currentTier = newTier
+        if let newTier = progression.advanceTier(forScore: score) {
             meteorController.setTier(newTier)
             powerUpController.currentTier = newTier
             parallaxBackground.speedMultiplier = GameTier.speedMultipliers[newTier] ?? 1.0
@@ -797,9 +784,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         }
 
         // Boss wave every 1000 points
-        let bossThreshold = (score / 1000) * 1000
-        if bossThreshold > 0 && bossThreshold > lastBossScore && !bossWaveActive {
-            lastBossScore = bossThreshold
+        if progression.shouldStartBossWave(forScore: score) {
             startBossWave()
         }
     }
@@ -830,8 +815,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     }
 
     private func startBossWave() {
-        bossWaveActive = true
-        bossWaveTimer = bossWaveDuration
+        progression.startBossWave()
         // Crank up speed
         meteorController.speedMultiplier *= 1.8
         physicsWorld.speed = 1.0
@@ -858,9 +842,8 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
     }
 
     private func endBossWave() {
-        bossWaveActive = false
-        // Restore speed
-        meteorController.speedMultiplier = GameTier.speedMultipliers[currentTier] ?? 1.0
+        // State already cleared by progression.tickBossWave(); restore speed for the current tier.
+        meteorController.speedMultiplier = GameTier.speedMultipliers[progression.tier] ?? 1.0
         // Bonus score
         player.score += 100
 
@@ -901,7 +884,7 @@ final class GameScene: SKScene, @preconcurrency SKPhysicsContactDelegate {
         statusBar.updateScore(score: gameState.score)
         statusBar.updateLives(lives: gameState.lives)
         statusBar.updateStarsCollected(collected: gameState.starsCollected)
-        statusBar.updateTier(currentTier)
+        statusBar.updateTier(progression.tier)
         statusBar.updatePowerUpStatus(
             shield: powerUpController.isShieldActive,
             magnet: powerUpController.isMagnetActive,

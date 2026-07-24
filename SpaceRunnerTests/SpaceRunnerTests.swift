@@ -551,3 +551,115 @@ final class PerformanceTests: XCTestCase {
         }
     }
 }
+
+// MARK: - Game Progression Tests
+// GameProgression is the pure tier / boss-wave state machine extracted from
+// GameScene. Plain value type — no scene, no main-actor isolation required.
+final class GameProgressionTests: XCTestCase {
+
+    // MARK: Tier thresholds
+
+    func testTierForScoreBoundaries() {
+        XCTAssertEqual(GameProgression.tier(forScore: 0), 1)
+        XCTAssertEqual(GameProgression.tier(forScore: 499), 1)
+        XCTAssertEqual(GameProgression.tier(forScore: 500), 2)   // tier 2 unlocks at 500
+        XCTAssertEqual(GameProgression.tier(forScore: 1499), 2)
+        XCTAssertEqual(GameProgression.tier(forScore: 1500), 3)  // tier 3 unlocks at 1500
+        XCTAssertEqual(GameProgression.tier(forScore: 2999), 3)
+        XCTAssertEqual(GameProgression.tier(forScore: 3000), 4)  // tier 4 unlocks at 3000
+        XCTAssertEqual(GameProgression.tier(forScore: 99_999), 4)
+    }
+
+    func testStartsAtTierOne() {
+        let p = GameProgression()
+        XCTAssertEqual(p.tier, 1)
+        XCTAssertFalse(p.isBossWaveActive)
+    }
+
+    func testAdvanceTierReturnsNewTierOnlyOnChange() {
+        var p = GameProgression()
+        XCTAssertNil(p.advanceTier(forScore: 100), "No change below the first threshold")
+        XCTAssertEqual(p.advanceTier(forScore: 500), 2, "Crossing 500 advances to tier 2")
+        XCTAssertNil(p.advanceTier(forScore: 600), "Still tier 2 — no repeat trigger")
+        XCTAssertEqual(p.advanceTier(forScore: 1500), 3)
+        XCTAssertEqual(p.advanceTier(forScore: 3000), 4)
+        XCTAssertNil(p.advanceTier(forScore: 5000), "Already tier 4")
+        XCTAssertEqual(p.tier, 4)
+    }
+
+    // MARK: Boss-wave scheduling
+
+    func testBossWaveTriggersOncePerThousandBoundary() {
+        var p = GameProgression()
+        XCTAssertFalse(p.shouldStartBossWave(forScore: 0), "Score 0 never triggers")
+        XCTAssertFalse(p.shouldStartBossWave(forScore: 999), "Below first boundary")
+        XCTAssertTrue(p.shouldStartBossWave(forScore: 1000), "Crossing 1000 triggers")
+        p.startBossWave()
+        // Same boundary must not retrigger, even after the wave ends.
+        _ = p.tickBossWave(delta: 999)
+        XCTAssertFalse(p.shouldStartBossWave(forScore: 1500), "Boundary 1000 already spent")
+        XCTAssertTrue(p.shouldStartBossWave(forScore: 2000), "Next boundary triggers")
+    }
+
+    func testBossWaveNotTriggeredWhileActive() {
+        var p = GameProgression()
+        XCTAssertTrue(p.shouldStartBossWave(forScore: 1000))
+        p.startBossWave()
+        XCTAssertTrue(p.isBossWaveActive)
+        XCTAssertFalse(p.shouldStartBossWave(forScore: 2000),
+                       "No new wave should start while one is active")
+    }
+
+    func testSkippingABoundaryStillTriggersOnce() {
+        var p = GameProgression()
+        // Jump straight past 1000 to 2500 (e.g. a big star pickup) — one wave, not two.
+        XCTAssertTrue(p.shouldStartBossWave(forScore: 2500))
+        p.startBossWave()
+        _ = p.tickBossWave(delta: 100)
+        XCTAssertFalse(p.shouldStartBossWave(forScore: 2600), "Boundary 2000 already recorded")
+        XCTAssertTrue(p.shouldStartBossWave(forScore: 3000))
+    }
+
+    // MARK: Boss-wave timer
+
+    func testTickBossWaveEndsExactlyOnce() {
+        var p = GameProgression(bossWaveDuration: 10)
+        p.startBossWave()
+        XCTAssertTrue(p.isBossWaveActive)
+        XCTAssertFalse(p.tickBossWave(delta: 4), "Still running at 6s remaining")
+        XCTAssertFalse(p.tickBossWave(delta: 4), "Still running at 2s remaining")
+        XCTAssertTrue(p.tickBossWave(delta: 4), "Crosses zero — ends now, returns true once")
+        XCTAssertFalse(p.isBossWaveActive)
+        XCTAssertFalse(p.tickBossWave(delta: 4), "Already ended — never returns true again")
+    }
+
+    func testTickWithoutActiveWaveIsNoOp() {
+        var p = GameProgression()
+        XCTAssertFalse(p.tickBossWave(delta: 100))
+        XCTAssertFalse(p.isBossWaveActive)
+    }
+
+    func testCancelBossWaveClearsState() {
+        var p = GameProgression(bossWaveDuration: 10)
+        p.startBossWave()
+        p.cancelBossWave()
+        XCTAssertFalse(p.isBossWaveActive)
+        XCTAssertFalse(p.tickBossWave(delta: 1))
+    }
+
+    // MARK: Reset
+
+    func testResetRestoresInitialState() {
+        var p = GameProgression()
+        _ = p.advanceTier(forScore: 3000)
+        _ = p.shouldStartBossWave(forScore: 3000)
+        p.startBossWave()
+
+        p.reset()
+
+        XCTAssertEqual(p.tier, 1)
+        XCTAssertFalse(p.isBossWaveActive)
+        // After reset, the 1000 boundary should be available again.
+        XCTAssertTrue(p.shouldStartBossWave(forScore: 1000))
+    }
+}
